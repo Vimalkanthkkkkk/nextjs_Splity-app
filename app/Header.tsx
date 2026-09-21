@@ -1,11 +1,14 @@
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Header(){
     return(
-        <div>
-            <a href="/">
-                <img src="split-app\public\noun_bill_5997839_@700.png" alt="Splity logo"/>
-                <span>Splity</span>
-            </a>
+        <div className="flex flex-row justify-around items-center z-10">
+            <Link href={"/"} className="flex items-center">
+                <Image width={70} height={50} className="items-start" preload loading="eager" src={"/noun_bill_5997839_@700.png"} alt="Splity logo"/>
+                <span className="text-black font-bold">Splity</span>
+            </Link>
+            <Link href={""} className="text-black font-bold">Log in</Link>
         </div>
     );
 }
