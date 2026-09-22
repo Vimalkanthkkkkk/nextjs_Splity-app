@@ -5,7 +5,7 @@ type NotesArg = {
 
 export function Notes(args : NotesArg){
     return(
-        <div>
+        <div className="text-center">
             <span className="text-2xl">{args.name}</span>
         </div>
     );
