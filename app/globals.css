@@ -28,41 +28,42 @@
   }
 }
 
-select::picker-icon{
-  padding-right: 4px;
-  transition: 0.4s rotate;
-  transform-origin: center;
+select[appearance="base-select"] {
+  border: none;
+  background: transparent;
+  padding: 0;
 }
 
-option {
-  display: flex;
-  justify-content: flex-start;
-  gap: 20px;
-  border-radius: 12px;
-  border: 2px solid #dddddd;
-  transition: 0.4s;
-}
-
-
-select:open::picker-icon {
-  rotate: 180deg;
-}
-
-option:first-of-type {
-  border-radius: 8px 8px 0 0;
-}
-
-option:last-of-type {
-  border-radius: 0 0 8px 8px;
+select::picker-icon {
+  display: none !important;
 }
 
 ::picker(select) {
   border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  position-area: bottom left;
+  position-try-options: flip-block, flip-inline;
 }
 
-::picker(select) {
-  border: none;
+select[appearance="base-select"] option {
+  padding: 8px 16px;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: #000000;
+  display: flex;
 }
+
+select[appearance="base-select"] option:hover,
+select[appearance="base-select"] option:focus {
+  background-color: #2563eb !important; 
+  color: #ffffff !important;
+}
+
+@utility invisible-none {
+  visibility: visible;
+}
+
 
 body {
   background: var(--background);
