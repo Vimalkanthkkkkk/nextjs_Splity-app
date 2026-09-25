@@ -20,39 +20,45 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                     <div className="relative inline-block text-left group">
                         <button 
                             type="button" 
-                            className="duration-400 inline-flex items-center justify-between px-4 py-2 bg-slate-900 text-white rounded-md border border-slate-700 cursor-pointer shadow-sm hover:bg-slate-800 transition-colors focus:outline-none"
+                            className="duration-400 inline-flex items-center justify-between px-4 py-2 text-white rounded-md cursor-pointer transition-colors focus:outline-none"
                         >
                             Actions
                             <span className="ml-2 text-xs transition-transform duration-300 pointer-events-none group-focus-within:rotate-180">▼</span>
                         </button>
-                        <ul className="absolute z-150 right-0 mt-2 w-48 origin-top-right rounded-md bg-white border border-slate-200 shadow-lg ring-1 ring-black/5 opacity-0 invisible scale-95 transition-all duration-200 pointer-events-none group-focus-within:opacity-100 group-focus-within:invisible-none group-focus-within:scale-100 group-focus-within:pointer-events-auto">
+                        <ul className="absolute z-10 -right-12 mt-2 w-48 p-2
+                                origin-top-right rounded-md bg-white border border-slate-200 
+                                shadow-lg ring-1 ring-black/5 opacity-0 invisible 
+                                scale-95 transition-all duration-200 pointer-events-none 
+                                group-focus-within:opacity-100 [&_button]:rounded-sm
+                                group-focus-within:invisible-none group-focus-within:scale-100 
+                                group-focus-within:pointer-events-auto">
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">
+                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
                                 Edit Event
                             </button>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">
+                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
                                 Invite to Event
                             </button>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">
+                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
                                 Manage Participant
                             </button>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">
+                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
                                 insights
                             </button>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">
+                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
                                 Export as Excel file
                             </button>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">
+                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
                                 Show history
                             </button>
                             </li>
