@@ -75,21 +75,29 @@ export default function ManageParticipantsPage(){
                         <span>Manage participant</span>
                         <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">+ Add participant</button>
                     </div>
-                    <div className="flex flex-1 text-black items-center p-4 justify-between">
-                        <span>Names</span>
-                        <span className="text-black">Shares</span>
-                        <div style={{ width: '1px' }} />
-                    </div>
-                    <hr className="w-full bg-gray-950 h-0.5"/>
-                    <div className="flex flex-1 text-black items-center p-4 justify-between">
-                        <span className="mr-10">Names</span>
-                        <span className="text-black">0</span>
-                        <button type="submit" className="mr-2 p-1 rounded-sm bg-gray-200">Edit</button>
-                    </div><div className="flex flex-1 text-black items-center p-4 justify-between">
-                        <span className="mr-10">Names</span>
-                        <span className="text-black">0</span>
-                        <button type="submit" className="mr-2 p-1 rounded-sm bg-gray-200">Edit</button>
-                    </div>  
+                    <ul className="list-none ">
+                        <li className="">
+                            <div className="grid grid-cols-12 items-center text-black p-4">
+                                <span className="col-span-4">Names</span>
+                                <span className="col-span-6 text-center">Shares</span>
+                                <div  className="col-span-2" style={{ width: '1px' }} />
+                            </div>
+                        </li>
+                        <li>
+                            <div className="grid grid-cols-12 items-center border-t border-gray-200 text-black p-4">
+                                <span className="col-span-4">vimal</span>
+                                <span className="col-span-6 text-center">0</span>
+                                <button type="submit" className="mr-2 p-1 rounded-sm wrap-anywhere col-span-2 bg-gray-200">Edit</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="grid grid-cols-12 items-center border-t border-gray-200 text-black p-4">
+                                <span className="col-span-4">kavi</span>
+                                <span className="col-span-6 text-center">0</span>
+                                <button type="submit" className="mr-2 p-1 wrap-anywhere rounded-sm col-span-2 bg-gray-200">Edit</button>
+                            </div>
+                        </li>
+                    </ul>                    
                 </div>
             </div>
         </div>
