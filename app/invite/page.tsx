@@ -67,7 +67,7 @@ export default function InvitePage(){
                 </div>
             </nav>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-14 shrink">
-                <div className="bg-amber-500 w-full rounded-4xl h-50 self-center relative ">
+                <div className="bg-amber-500 w-full rounded-4xl h-50 mt-2 self-center relative shadow-[1px_1px_7px_6px_rgba(0,0,0,0.15)]">
                     <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
                 </div>
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
