@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function ManageParticipantsPage(){
+export default function InsightPage(){
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
