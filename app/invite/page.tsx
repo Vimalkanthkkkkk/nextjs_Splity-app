@@ -66,7 +66,7 @@ export default function InvitePage(){
                     <div style={{ width: '50px' }} />
                 </div>
             </nav>
-            <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-4 shrink">
+            <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-14 shrink">
                 <div className="bg-amber-500 w-full rounded-4xl h-50 self-center relative ">
                     <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
                 </div>
@@ -76,18 +76,28 @@ export default function InvitePage(){
                     </div>
                     <span className="text-black mt-4">Everyone with this link can modify the Kitty and add expenses.</span>
                     <div className="text-black flex flex-1 flex-row">
-                        <div className="bg-gray-300 rounded-tl-sm rounded-bl-sm content-center p-1">vimal</div>
-                        <button type="submit" className="p-1 bg-gray-300">View</button>
-                        <button type="submit" className="bg-gray-300 p-1">Add </button>
+                        <div className="bg-gray-300 rounded-tl-sm rounded-bl-sm content-center p-1">
+                            <Image width={0} height={0} style={{ width: "30px", height: '14px' , borderRadius: 20 , objectFit: "contain" }} className="self-center" preload loading="eager" src="/link.png" alt="Splity logo" />
+                        </div>
                         <input type="text" name="eventName" id="eventName"
                             className="
-                                text-black
+                                text-black focus:outline-0
                                 p-2 max-w-full w-full h-8 border
-                                border-gray-400
+                                border-gray-300
                             "
                         />
-                        <button type="submit" className="p-1 bg-gray-300">View</button>
-                        <button type="submit" className="bg-gray-300 p-1 rounded-tr-sm rounded-br-sm">Add </button>
+                        <button type="submit" className="p-1 bg-gray-300">
+                            <Image width={0} height={0} style={{ width: "30px", height: '14px' , borderRadius: 20 , objectFit: "contain" }} className="self-center" preload loading="eager" src="/file.png" alt="Splity logo" />
+                        </button>
+                        <button type="submit" className="bg-gray-300 p-1">
+                            <Image width={0} height={0} style={{ width: "30px", height: '14px' , borderRadius: 20 , objectFit: "contain" }} className="self-center" preload loading="eager" src="/email.png" alt="Splity logo" />
+                        </button>
+                        <button type="submit" className="p-1 bg-green-400">
+                            <Image width={0} height={0} style={{ width: "30px", height: '14px' , borderRadius: 20 , objectFit: "contain" }} className="self-center" preload loading="eager" src="/whatsapp.png" alt="Splity logo" />
+                        </button>
+                        <button type="submit" className="bg-blue-600 p-1 rounded-tr-sm rounded-br-sm">
+                            <Image width={0} height={0} style={{ width: "30px", height: '14px' , borderRadius: 20 , objectFit: "contain" }} className="self-center" preload loading="eager" src="/fb.png" alt="Splity logo" />
+                        </button>
                     </div>
                 </div>
             </div>
