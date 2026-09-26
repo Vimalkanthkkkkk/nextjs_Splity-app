@@ -22,7 +22,7 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                             type="button" 
                             className="duration-400 inline-flex items-center justify-between px-4 py-2 text-white rounded-md cursor-pointer transition-colors focus:outline-none"
                         >
-                            Actions
+                            {slug}
                             <span className="ml-2 text-xs transition-transform duration-300 pointer-events-none group-focus-within:rotate-180">▼</span>
                         </button>
                         <ul className="absolute z-10 -right-12 mt-2 w-48 p-2
