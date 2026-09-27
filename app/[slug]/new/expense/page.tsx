@@ -84,73 +84,58 @@ export default function ExpensePage(){
                             </div>
                             <form action="">
                                 <ParticipantDropdownPage participants={participants} />
-                                <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                <input type="number" name="amount" id="amount" placeholder="Amount" className="
                                     p-2 text-black
-                                    w-60 max-w-full
+                                    w-54 max-w-full outline-none
                                     h-8 border-r border-t border-b
                                     border-gray-600 rounded-tr-sm rounded-br-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
                                 <CategoryDropdown/>
-                                <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
+                                <label htmlFor="date" className="text-black block mt-2 mb-1">When?</label>
+                                <input type="date" name="date" id="date" placeholder="Amount" className="
+                                    p-2 text-black outline-none
                                     w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                    h-8 border
+                                    border-gray-600 rounded-sm
                                 "/>
-                                <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="you" id="you" placeholder="Amount" className="
-                                    p-2 text-black
-                                    w-60 max-w-full
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                "/>
+                                <label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
+                                <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
+                                className="
+                                    p-2 text-black outline-none field-sizing-content 
+                                    w-60 h-fit 
+                                    border
+                                    border-gray-600 rounded-sm
+                                "></textarea>
+                                <label htmlFor="attach" className="text-black block mt-2 mb-1">Any Attachment ?</label>
+                                <input 
+                                    type="file" 
+                                    name="date" 
+                                    id="date" 
+                                    accept="image/png, image/jpeg" 
+                                    className="
+                                        text-gray-700 outline-none border-0
+                                        w-60 max-w-full 
+                                        h-8 
+                                    "
+                                />
+                                <label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
+                                <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
+                                className="
+                                    p-2 text-black outline-none field-sizing-content 
+                                    w-60 h-fit 
+                                    border
+                                    border-gray-600 rounded-sm
+                                "></textarea><label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
+                                <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
+                                className="
+                                    p-2 text-black outline-none field-sizing-content 
+                                    w-60 h-fit 
+                                    border
+                                    border-gray-600 rounded-sm
+                                "></textarea>                      
                             </form>
                         </div>
                     </div>

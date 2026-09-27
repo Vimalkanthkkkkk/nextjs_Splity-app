@@ -78,10 +78,10 @@ export default function ParticipantDropdownPage({participants}: ParticipantDropd
                     </ul>
                 )}
                 <span>Paid for Something</span>
-                <label htmlFor="you" className="text-black block mt-4 mb-2">What for? </label>
-                <input type="text" name="you" id="you" className="
+                <label htmlFor="what" className="text-black block mt-4 mb-2">What for? </label>
+                <input type="text" name="what" id="what" className="
                         p-2
-                        text-black
+                        text-black outline-none
                         w-60
                         max-w-full
                         h-8
