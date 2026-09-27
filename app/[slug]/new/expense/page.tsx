@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { createElement } from "react";
 import ParticipantDropdownPage from "./ParticipantDropdown";
 
 
@@ -76,15 +75,23 @@ export default function ExpensePage(){
                 </div>
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 gap-10 flex flex-col w-full h-fit self-center">
                     <div className="grid grid-cols-12 grid-rows-1">
-                        <div className="flex flex-1 flex-col col-span-8">
+                        <div className="flex flex-1 flex-col col-span-12 gap-4">
                             <div className="flex flex-row gap-2 text-black">
                                 <a href="" className="border-b-3">Expense</a>
                                 <a href="">Transfer</a>
                                 <a href="">Income</a>
                             </div>
-                            <div>
+                            <form action="">
                                 <ParticipantDropdownPage participants={participants} />
-                            </div>
+                                <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -26,56 +26,82 @@ export default function ParticipantDropdownPage({participants}: ParticipantDropd
     };
 
     return (
-        <div ref={dropdownRef} className="inline-block">
-            <button
-                type="button"
-                onClick={() => setIsOpen((prev) => !prev)}
-                style={{ anchorName: "--dropdown-trigger" } as React.CSSProperties}
-                className="inline-flex min-w-30 items-center justify-between rounded-md bg-gray-400 px-4 py-2 text-white transition-colors duration-200 cursor-pointer focus:outline-none"
-            >
-                <span>{selected}</span>
-                <span className={`ml-2 text-xs transition-transform duration-300 pointer-events-none ${isOpen ? "rotate-180" : ""}`}>
-                    ▼
-                </span>
-            </button>
-        {isOpen && (
-            <ul
-                style={{
-                    positionAnchor: "--dropdown-trigger",
-                    top: "anchor(bottom)",
-                    left: "anchor(left)",
-                } as React.CSSProperties}
-            className="fixed z-10 mt-2 w-48 rounded-md border border-slate-200 bg-gray-200 p-2 shadow-lg ring-1 ring-black/5"
-            >
-            {participants.map((p, i): ReactNode => (
-                <li key={i}>
-                    <button
-                        type="button"
-                        onClick={() => handleSelect(p)}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer rounded-sm"
+        <div className="grid grid-cols-12 ">
+            <div ref={dropdownRef} className="block w-full text-black mt-3 col-span-8">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    style={{ anchorName: "--dropdown-trigger" } as React.CSSProperties}
+                    className="inline-flex min-w-20 mr-1 items-center justify-between rounded-md bg-gray-400 px-4 py-2 text-white transition-colors duration-200 cursor-pointer focus:outline-none"
+                >
+                    <span>{selected}</span>
+                    <span className={`ml-2 text-xs transition-transform duration-300 pointer-events-none ${isOpen ? "rotate-180" : ""}`}>
+                        ▼
+                    </span>
+                </button>
+                {isOpen && (
+                    <ul
+                        style={{
+                            positionAnchor: "--dropdown-trigger",
+                            top: "anchor(bottom)",
+                            left: "anchor(left)",
+                        } as React.CSSProperties}
+                    className="fixed z-10 mt-2 w-48 rounded-md border border-slate-200 bg-gray-200 p-2 shadow-lg ring-1 ring-black/5"
                     >
-                        {p}
-                    </button>
-                </li>
-            ))}
-                <li>
-                    <button type="button"
-                    onClick={() => handleSelect("vimal")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer"
-                    >
-                        vimal
-                    </button>
-                </li>
-                <li>
-                    <button type="button"
-                    onClick={() => handleSelect("Kavi")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer"
-                    >
-                    Kavi
-                    </button>
-                </li>
-            </ul>
-        )}
+                    {participants.map((p, i): ReactNode => (
+                        <li key={i}>
+                            <button
+                                type="button"
+                                onClick={() => handleSelect(p)}
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer rounded-sm"
+                            >
+                                {p}
+                            </button>
+                        </li>
+                    ))}
+                        <li>
+                            <button type="button"
+                            onClick={() => handleSelect("vimal")}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer"
+                            >
+                                vimal
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button"
+                            onClick={() => handleSelect("Kavi")}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer"
+                            >
+                            Kavi
+                            </button>
+                        </li>
+                    </ul>
+                )}
+                <span>Paid for Something</span>
+                <label htmlFor="you" className="text-black block mt-4 mb-2">What for? </label>
+                <input type="text" name="you" id="you" className="
+                        p-2
+                        text-black
+                        w-60
+                        max-w-full
+                        h-8
+                        border
+                        border-gray-600
+                        rounded-sm
+                    "
+                />
+            </div>
+            <div className="text-black self-center col-span-4">
+                <span className="text-lg">Some Ideas</span>
+                <div className="flex gap-1 mb-2">
+                    <div className="bg-amber-300 w-1 h-12"></div>
+                    <span className="text-wrap">{selected} paid for the rental car.</span>
+                </div>
+                <div className="flex gap-1">
+                    <div className="bg-amber-300 w-1 h-12"></div>
+                    <span className="text-wrap">{selected} paid for the rental car.</span>
+                </div>
+            </div>
         </div>
     );
 }
