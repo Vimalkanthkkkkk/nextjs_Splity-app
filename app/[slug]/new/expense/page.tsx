@@ -121,21 +121,20 @@ export default function ExpensePage(){
                                         h-8 
                                     "
                                 />
-                                <label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
-                                <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
-                                className="
-                                    p-2 text-black outline-none field-sizing-content 
-                                    w-60 h-fit 
-                                    border
-                                    border-gray-600 rounded-sm
-                                "></textarea><label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
-                                <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
-                                className="
-                                    p-2 text-black outline-none field-sizing-content 
-                                    w-60 h-fit 
-                                    border
-                                    border-gray-600 rounded-sm
-                                "></textarea>                      
+                                <div className="flex gap-2 text-center text-wrap">
+                                    <input 
+                                        type="radio" id="split" name="split" value="Equal" 
+                                        className="text-black outline-none border-0 accent-gray-400"
+                                    />
+                                    <label htmlFor="split" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
+                                </div>
+                                <div className="flex gap-2 text-center text-wrap">
+                                    <input 
+                                        type="radio" id="split" name="split" value="diff" 
+                                        className="text-black outline-none border-0 accent-gray-400"
+                                    />
+                                    <label htmlFor="split" className="text-black self-center inline mt-1 mb-1">Split differently</label>
+                                </div>                     
                             </form>
                         </div>
                     </div>
