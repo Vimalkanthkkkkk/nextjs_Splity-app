@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ParticipantDropdownPage from "./ParticipantDropdown";
 import CategoryDropdown from "./CategorydropDown";
+import SplitBox from "./SplitBox";
 
 
 export default function ExpensePage(){
@@ -121,20 +122,7 @@ export default function ExpensePage(){
                                         h-8 
                                     "
                                 />
-                                <div className="flex gap-2 text-center text-wrap">
-                                    <input 
-                                        type="radio" id="split" name="split" value="Equal" 
-                                        className="text-black outline-none border-0 accent-gray-400"
-                                    />
-                                    <label htmlFor="split" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
-                                </div>
-                                <div className="flex gap-2 text-center text-wrap">
-                                    <input 
-                                        type="radio" id="split" name="split" value="diff" 
-                                        className="text-black outline-none border-0 accent-gray-400"
-                                    />
-                                    <label htmlFor="split" className="text-black self-center inline mt-1 mb-1">Split differently</label>
-                                </div>                     
+                                <SplitBox/>                     
                             </form>
                         </div>
                     </div>
