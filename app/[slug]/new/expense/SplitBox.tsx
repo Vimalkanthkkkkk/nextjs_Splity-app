@@ -91,7 +91,6 @@ export default function SplitBox() : ReactNode{
                     "
                 >
                     <ul className="flex flex-col gap-2">
-
                         <li className="flex justify-between gap-1 pl-2 pr-2">
                             <label className="text-black flex gap-2 items-center">
                                 <input
@@ -101,12 +100,10 @@ export default function SplitBox() : ReactNode{
                                 />
                                 all
                             </label>
-
                             <span className="text-black text-[12px] self-center">
                                 e.g. stays in a vacation home
                             </span>
                         </li>
-
                         <li className="flex justify-between gap-1 border-t p-2">
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
@@ -116,12 +113,10 @@ export default function SplitBox() : ReactNode{
                                 />
                                 Vimal
                             </label>
-
                             <span className="text-black text-[12px]">
                                 = 5000
                             </span>
                         </li>
-
                         <li className="flex justify-between gap-1 border-t p-2">
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
@@ -131,77 +126,128 @@ export default function SplitBox() : ReactNode{
                                 />
                                 Kavi
                             </label>
-
                             <span className="text-black text-[12px]">
                                 = 5000
                             </span>
                         </li>
-
                     </ul>
                 </div>
-                <div
-                    className="
+                <div className="
                         hidden
                         peer-checked/split-amount:block
-                    "
-                >
+                ">
                     <ul className="flex flex-col gap-2">
-                        <li className="flex justify-between border-t p-2">
-                            <span className="text-black">
+                        <li className="flex justify-between gap-1 pl-2 pr-2">
+                            <label className="text-black flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="spilt-amount-all"
+                                    className="accent-gray-400"
+                                />
+                                all
+                            </label>
+                        </li>
+                        <li className="flex flex-col justify-between border-t p-2">
+                            <label className="text-black text-sm flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="amount-vimal-f"
+                                    className="accent-gray-400"
+                                />
                                 Vimal
-                            </span>
-
-                            <input
-                                type="number"
-                                name="amount-vimal"
-                                className="w-24 border text-black"
-                            />
+                            </label>
+                            <div>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="vimal-amount" className="
+                                    p-2 text-black
+                                    w-54 max-w-full outline-none
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                    [&::-webkit-inner-spin-button]:appearance-none
+                                "/>
+                            </div>
                         </li>
-
-                        <li className="flex justify-between border-t p-2">
-                            <span className="text-black">
+                        <li className="flex flex-col justify-between border-t p-2">
+                            <label className="text-black text-sm flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="amount-kavi-f"
+                                    className="accent-gray-400"
+                                />
                                 Kavi
-                            </span>
-
-                            <input
-                                type="number"
-                                name="amount-kavi"
-                                className="w-24 border text-black"
-                            />
+                            </label>
+                            <div>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="amount-kavi"
+                                    className="p-2 text-black
+                                    w-54 max-w-ful outline-none
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                    [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                            </div>    
                         </li>
-
                     </ul>
                 </div>
                 <div
                     className="
                         hidden
                         peer-checked/shares:block
-                    "
-                >
+                ">
                     <ul className="flex flex-col gap-2">
-
-                        <li className="flex justify-between border-t p-2">
-                            <span className="text-black">
-                                Vimal
-                            </span>
-
-                            <input
-                                type="number"
-                                name="shares-vimal"
-                                className="w-24 border text-black"
-                            />
+                        <li className="flex justify-between gap-1 pl-2 pr-2">
+                            <label className="text-black flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="shares-all"
+                                    className="accent-gray-400"
+                                />
+                                all
+                            </label>
                         </li>
-
-                        <li className="flex justify-between border-t p-2">
-                            <span className="text-black">
+                        <li className="flex flex-col justify-between border-t p-2">
+                             <label className="text-black text-sm flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="share-vimal-f"
+                                    className="accent-gray-400"
+                                />
+                                Vimal
+                            </label>
+                            <div>
+                                <input type="number" name="share-vimal" className="
+                                    p-2 text-black
+                                    w-54 max-w-full outline-none
+                                    h-8 border-l border-t border-b
+                                    border-gray-600 rounded-tl-sm rounded-bl-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                    [&::-webkit-inner-spin-button]:appearance-none
+                                "/>
+                            <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
+                            </div>
+                        </li>
+                        <li className="flex flex-col justify-between border-t p-2">
+                            <label className="text-black text-sm flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="share-kavi-f"
+                                    className="accent-gray-400"
+                                />
                                 Kavi
-                            </span>
-
-                            <input
-                                type="number"
-                                name="shares-kavi"
-                                className="w-24 border text-black"
-                            />
+                            </label>
+                            <div>
+                                <input type="number" name="share-kavi"
+                                    className="p-2 text-black
+                                    w-54 max-w-ful outline-none
+                                    h-8 border-l border-t border-b
+                                    border-gray-600 rounded-tl-sm rounded-bl-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                    [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
+                            </div>
                         </li>
 
                     </ul>
@@ -213,37 +259,58 @@ export default function SplitBox() : ReactNode{
                     "
                 >
                     <ul className="flex flex-col gap-2">
-
-                        <li className="flex justify-between border-t p-2">
-                            <span className="text-black">
+                        <li className="flex justify-between gap-1 pl-2 pr-2">
+                            <label className="text-black flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="percent-all"
+                                    className="accent-gray-400"
+                                />
+                                all
+                            </label>
+                        </li>
+                        <li className="flex flex-col justify-between border-t p-2">
+                            <label className="text-black text-sm flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="per-vimal-f"
+                                    className="accent-gray-400"
+                                />
                                 Vimal
-                            </span>
-
-                            <div className="flex items-center gap-1">
-                                <input
-                                    type="number"
-                                    name="percent-vimal"
-                                    className="w-24 border text-black"
-                                />
-                                <span className="text-black">%</span>
+                            </label>
+                            <div>
+                                <input type="number" name="percent-vimal" className="
+                                    p-2 text-black
+                                    w-54 max-w-full outline-none
+                                    h-8 border-l border-t border-b
+                                    border-gray-600 rounded-tl-sm rounded-bl-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                    [&::-webkit-inner-spin-button]:appearance-none
+                                "/>
+                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
                             </div>
                         </li>
-
-                        <li className="flex justify-between border-t p-2">
-                            <span className="text-black">
+                        <li className="flex flex-col justify-between border-t p-2">
+                            <label className="text-black text-sm flex gap-2 items-center">
+                                <input
+                                    type="checkbox"
+                                    name="per-kavi-f"
+                                    className="accent-gray-400"
+                                />
                                 Kavi
-                            </span>
-
-                            <div className="flex items-center gap-1">
-                                <input
-                                    type="number"
-                                    name="percent-kavi"
-                                    className="w-24 border text-black"
+                            </label>
+                            <div>
+                                <input type="number" name="percent-kavi"
+                                    className="p-2 text-black
+                                    w-54 max-w-ful outline-none
+                                    h-8 border-l border-t border-b
+                                    border-gray-600 rounded-tl-sm rounded-bl-sm
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                    [&::-webkit-inner-spin-button]:appearance-none"
                                 />
-                                <span className="text-black">%</span>
+                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
                             </div>
                         </li>
-
                     </ul>
                 </div>
             </div>
