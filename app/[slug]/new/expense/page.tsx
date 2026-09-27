@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ParticipantDropdownPage from "./ParticipantDropdown";
+import CategoryDropdown from "./CategorydropDown";
 
 
 export default function ExpensePage(){
@@ -84,6 +85,65 @@ export default function ExpensePage(){
                             <form action="">
                                 <ParticipantDropdownPage participants={participants} />
                                 <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/>
+                                <CategoryDropdown/>
+                                <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/>
+                                <label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
+                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                <input type="number" name="you" id="you" placeholder="Amount" className="
+                                    p-2 text-black
+                                    w-60 max-w-full
+                                    h-8 border-r border-t border-b
+                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                "/><label htmlFor="you" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="you" id="you" placeholder="Amount" className="
                                     p-2 text-black

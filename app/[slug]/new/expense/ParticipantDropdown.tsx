@@ -26,7 +26,7 @@ export default function ParticipantDropdownPage({participants}: ParticipantDropd
     };
 
     return (
-        <div className="grid grid-cols-12 ">
+        <div className="grid grid-cols-12">
             <div ref={dropdownRef} className="block w-full text-black mt-3 col-span-8">
                 <button
                     type="button"
