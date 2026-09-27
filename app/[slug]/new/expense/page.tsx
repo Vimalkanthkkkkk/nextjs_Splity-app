@@ -1,6 +1,10 @@
 import Image from "next/image";
+import { createElement } from "react";
+import ParticipantDropdownPage from "./ParticipantDropdown";
+
 
 export default function ExpensePage(){
+    const participants = [""];
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
@@ -78,31 +82,8 @@ export default function ExpensePage(){
                                 <a href="">Transfer</a>
                                 <a href="">Income</a>
                             </div>
-                            <div className="relative inline-block w-fit bg-gray-400 text-left group" tabIndex={0}>
-                                <button 
-                                    type="button" 
-                                    className="duration-400 inline-flex items-center justify-between px-4 py-2 text-white rounded-md cursor-pointer transition-colors focus:outline-none"
-                                >
-                                    vimal
-                                    <span className="ml-2 text-xs transition-transform duration-300 pointer-events-none group-focus-within:rotate-180">▼</span>
-                                </button>
-                                <ul className="absolute z-10 -right-26 mt-2 w-48 p-2
-                                        origin-top-right rounded-md bg-gray-200 border border-slate-200 
-                                        shadow-lg ring-1 ring-black/5 opacity-0 invisible 
-                                        scale-95 transition-all duration-200 pointer-events-none 
-                                        group-focus-within:opacity-100 group-focus-within:invisible-none group-focus-within:scale-100 
-                                        group-focus-within:pointer-events-auto group-active:pointer-events-none hover:pointer-events-auto">
-                                    <li>
-                                    <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer">
-                                        vimal
-                                    </button>
-                                    </li>
-                                    <li>
-                                    <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer">
-                                        Kavi
-                                    </button>
-                                    </li>
-                                </ul>
+                            <div>
+                                <ParticipantDropdownPage participants={participants} />
                             </div>
                         </div>
                     </div>
