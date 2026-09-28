@@ -8,7 +8,7 @@ export default function SplitBox() : ReactNode{
         <>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split" name="split" value="Equal" 
+                    type="radio" id="split" name="split" defaultChecked value="Equal" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
@@ -19,6 +19,28 @@ export default function SplitBox() : ReactNode{
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split" className="text-black self-center inline mt-1 mb-1">Split differently</label>
+            </div>
+            <div className="flex flex-col gap-2 mb-4 text-black">
+                <span>Summary</span>
+                <span>Equally between Everyone</span>
+                <ul className="flex flex-col gap-2">
+                    <li className="grid grid-cols-2 wrap-anywhere gap-0">
+                        <label className="text-black text-sm flex gap-2 items-center">
+                            Vimal
+                        </label>
+                        <span className="text-black text-[12px]">
+                            5000
+                        </span>
+                    </li>
+                    <li className="grid grid-cols-2 wrap-anywhere gap-0">
+                        <label className="text-black text-sm flex gap-2 items-center">
+                            Kavi
+                        </label>
+                        <span className="text-black text-[12px]">
+                            5000
+                        </span>
+                    </li>
+                </ul>
             </div>
             <div className="w-fit border-2">
                 <input
