@@ -46,12 +46,16 @@ export default function SplitBox() : ReactNode{
     const handleAmount = (event : React.ChangeEvent<HTMLInputElement>) => {
         let final_value = 0;
         const target = event.target;
+        const target_value = parseFloat(target.value);
+        const float_amount = parseFloat(amount);
         participants_amount_elements.forEach( ele => {
             if(ele === target){
-                final_value = isFloat(parseFloat(target.value)) ? parseFloat(target.value) : parseInt(target.value);
+                final_value = isFloat(target_value) ? target_value : parseInt(target.value);
             }else{
-                const result = final_value > parseFloat(amount) ? 0 : parseFloat(amount) - ( hasThreeOrMoreDecimals(final_value) ? parseFloat(amount) : final_value );
-                ele!.value = result <= 0 || result > parseFloat(amount) ? '' : result.toString()
+                const result = final_value > float_amount ? 
+                    0 : 
+                    float_amount - ( hasThreeOrMoreDecimals(final_value) ? float_amount : final_value );
+                ele!.value = result <= 0 || result > float_amount ? '' : result.toString()
             }
         })
     };
@@ -79,16 +83,18 @@ export default function SplitBox() : ReactNode{
 
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
-        const per_res = isFloat(parseFloat(target.value)) ? 
-                    (parseFloat(amount) * ((parseFloat(target.value) || 0 / 100) )).toFixed(2) : 
-                    (parseFloat(amount)* (0.01 * parseFloat(target.value)) ).toFixed(2) || 0;
+        const target_value = parseFloat(target.value);
+        const float_amount = parseFloat(amount);
+        const per_res = isFloat(target_value) ? 
+                    (float_amount * ((target_value || 0 / 100) )).toFixed(2) : 
+                    (float_amount * (0.01 * target_value) ).toFixed(2) || 0;
         participants_percent_elements.forEach( ele => {
             if(ele === target){
                 ele.nextElementSibling!.nextElementSibling!.textContent = `= $ ${per_res}`
             }else{
-                const bal_per = (100 - parseFloat(target.value)) || 100;
+                const bal_per = (100 - target_value) || 100;
                 ele!.value = bal_per.toFixed(2).toString();
-                const others_res = parseFloat(amount) * ((0.01 * bal_per) / (participants_percent_elements.length - 1));
+                const others_res = float_amount * ((0.01 * bal_per) / (participants_percent_elements.length - 1));
                 ele!.nextElementSibling!.nextElementSibling!.textContent = `= $ ${others_res.toFixed(2)}`
             }
         })
