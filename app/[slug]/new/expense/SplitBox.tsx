@@ -52,7 +52,64 @@ export default function SplitBox() : ReactNode{
         );
         elements.forEach((input) => {
             input.checked = checked;
+            const span = type === "equal"
+                ? input.parentElement!.nextElementSibling as HTMLSpanElement
+                : input.nextElementSibling!.nextElementSibling! as HTMLSpanElement;
+            if (!checked) {
+                span.textContent = "";
+            }
         });
+        if (!checked) return;
+        switch (type) {
+            case "equal": {
+                const amountValue = parseFloat(amount) || 0;
+                const eachAmount = elements.length > 0
+                    ? (amountValue / elements.length).toFixed(2)
+                    : "0.00";
+                elements.forEach((input) => {
+                    const span = input.parentElement!.nextElementSibling as HTMLSpanElement;
+                    span.textContent = `= $ ${eachAmount}`;
+                });
+                settotal(elements.length);
+                break;
+            }
+            case "amount": {
+                break;
+            }
+
+            case "share": {
+                const amountValue = parseFloat(amount) || 0;
+                const totalShares = elements.reduce(
+                    (total, input) =>
+                        total + (parseFloat(input.value) || 0),
+                    0
+                );
+                elements.forEach((input) => {
+                    const share = parseFloat(input.value) || 0;
+                    const result = totalShares > 0
+                        ? ((share / totalShares) * amountValue).toFixed(2)
+                        : "0.00";
+                    const span =
+                        input.nextElementSibling!
+                            .nextElementSibling! as HTMLSpanElement;
+                    span.textContent = `= $ ${result}`;
+                });
+                break;
+            }
+            case "per": {
+                const amountValue = parseFloat(amount) || 0;
+                elements.forEach((input) => {
+                    const percentage = parseFloat(input.value) || 0;
+                    const result = (
+                        amountValue * percentage / 100
+                    ).toFixed(2);
+                    const span = input.nextElementSibling!
+                        .nextElementSibling! as HTMLSpanElement;
+                    span.textContent = `= $ ${result}`;
+                });
+                break;
+            }
+        }
     };
 
     const getElements = (classes: string[]) => {
@@ -385,6 +442,7 @@ export default function SplitBox() : ReactNode{
                                     name="amount-vimal"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    onChange={handleAmount}
                                 />
                                 Vimal
                             </label>
@@ -408,6 +466,7 @@ export default function SplitBox() : ReactNode{
                                     name="amount-kavi"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    onChange={handleAmount}
                                 />
                                 Kavi
                             </label>
@@ -449,6 +508,7 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="share-vimal"
+                                    onChange={handleShare}
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -474,6 +534,7 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="share-kavi"
+                                    onChange={handleShare}
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -524,6 +585,7 @@ export default function SplitBox() : ReactNode{
                                     name="per-vimal"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    onChange={handlePercent}
                                 />
                                 Vimal
                             </label>
@@ -550,6 +612,7 @@ export default function SplitBox() : ReactNode{
                                     name="per-kavi"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    onChange={handlePercent}
                                 />
                                 Kavi
                             </label>
