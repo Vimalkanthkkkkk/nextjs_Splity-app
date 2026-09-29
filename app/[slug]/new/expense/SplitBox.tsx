@@ -6,7 +6,8 @@ export default function SplitBox() : ReactNode{
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>('');
     const [value, setValue] = useState<number>();
-    const TOTAL_PARTICIPANTS = 2  ;
+    const TOTAL_PARTICIPANTS = 2;
+
     const selectSplitMethod = () => {
         setoption(p => { return !p });
     }
@@ -24,16 +25,21 @@ export default function SplitBox() : ReactNode{
         return false;
     }
 
-
-    const participants_elements = participants.map((p) => {
+    const participants_amount_elements = participants.map((p) => {
         if (typeof window !== 'undefined') {
             return document.getElementsByClassName(`${p}-amount`)[0] as HTMLInputElement;
         }
     });
 
+    const participants_share_elements = participants.map((p) => {
+        if (typeof window !== 'undefined') {
+            return document.getElementsByClassName(`share-${p}`)[0] as HTMLInputElement;
+        }
+    });
+
     const handleAmount = (event : React.ChangeEvent<HTMLInputElement>) => {
         let final_value = 0;
-        participants_elements.forEach( ele => {
+        participants_amount_elements.forEach( ele => {
             if(ele === event.target){
                 final_value = isFloat(parseFloat(event.target.value)) ? parseFloat(event.target.value) : parseInt(event.target.value);
             }else{
@@ -41,14 +47,35 @@ export default function SplitBox() : ReactNode{
                 ele!.value = result <= 0 || result > parseFloat(amount) ? '' : result.toString()
             }
         })
-    }
+    };
+
+    const handleShare = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const target = event.target;
+        const others_share = participants_share_elements.reduce((pre, cur) => {
+            return pre + (
+                cur !== target
+                    ? parseFloat(cur!.value) || 0
+                    : 0
+            );
+        }, 0);
+        const share_result = parseFloat(target.value || '0') + others_share;
+        participants_share_elements.forEach((ele) => {
+            const share = parseFloat(ele!.value) || 0;
+            const shr_amount = share_result > 0
+                    ? ((share / share_result) * parseFloat(amount)).toFixed(2)
+                    : "";
+            ele!.nextElementSibling!
+                .nextElementSibling!
+                .textContent = `= $ ${shr_amount}`;
+        });
+    };
 
     useEffect(() => {
         const input = document.getElementById("amount") as HTMLInputElement;
         if (!input) return;
         const handleInput = () => {
             setAmount(input.value);
-            participants_elements.forEach((i) => {
+            participants_amount_elements.forEach((i) => {
                 i!.value = input.value ;
             });
 
@@ -97,7 +124,7 @@ export default function SplitBox() : ReactNode{
                     </li>
                 </ul>
             </div>
-            <div className=" w-fit border-2
+            <div className=" w-fit border-2 wrap-anywhere
                 [&:has(#equally:checked)_label[for='equally']]:font-bold
                 [&:has(#equally:checked)_label[for='equally']]:underline
                 [&:has(#splitamount:checked)_label[for='splitamount']]:font-bold
@@ -302,15 +329,18 @@ export default function SplitBox() : ReactNode{
                                 Vimal
                             </label>
                             <div>
-                                <input type="number" name="share-vimal" className="
-                                    p-2 text-black
-                                    w-54 max-w-full outline-none
+                                <input type="number" name="share-vimal" onChange={handleShare}
+                                    className="p-2 text-black share-vimal
+                                    max-w-full outline-none text-right
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                     [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
-                            <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
+                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
+                                <span className="text-black ml-10 shr-vimal">
+                                    {amount ? `= ${amount}` : ''}
+                                </span>
                             </div>
                         </li>
                         <li className="flex flex-col justify-between border-t p-2">
@@ -324,15 +354,18 @@ export default function SplitBox() : ReactNode{
                                 Kavi
                             </label>
                             <div>
-                                <input type="number" name="share-kavi"
-                                    className="p-2 text-black
-                                    w-54 max-w-ful outline-none
+                                <input type="number" name="share-kavi" onChange={handleShare}
+                                    className="p-2 text-black share-kavi
+                                    max-w-ful outline-none text-right
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                     [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
+                                <span className="text-black ml-10 shr-kavi">
+                                    {amount ? `= ${amount}` : ''}
+                                </span>
                             </div>
                         </li>
 
