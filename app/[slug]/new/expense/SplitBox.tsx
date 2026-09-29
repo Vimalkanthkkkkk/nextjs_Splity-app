@@ -6,7 +6,6 @@ export default function SplitBox() : ReactNode{
     const TOTAL_PARTICIPANTS = 2;
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>('');
-    const [all, setAll] = useState<boolean>(true);
     const [total, settotal] = useState<number>(TOTAL_PARTICIPANTS);
     
 
@@ -67,38 +66,15 @@ export default function SplitBox() : ReactNode{
             .filter((el): el is HTMLInputElement => el !== null);
     };
 
-    const handleAllEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = event.target.checked;
+
+    const handleEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
         const elements = getElements(
             participants.map((p) => `equally-${p}`)
         );
-        elements.forEach((input) => {
-            input.checked = checked;
-        });
-        const nextTotal = checked ? elements.length : 0;
+        const nextTotal = elements.filter(
+            (input) => input.checked
+        ).length;
         settotal(nextTotal);
-        const amountValue = parseFloat(amount) || 0;
-        elements.forEach((input) => {
-            const span = input.parentElement
-                ?.nextElementSibling as HTMLSpanElement | null;
-            if (!span) return;
-            if (checked) {
-                const calculated = (amountValue / nextTotal).toFixed(2);
-                span.textContent = `= $ ${calculated}`;
-            } else {
-                span.textContent = "";
-            }
-        });
-    };
-
-    const handleEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const nextTotal = event.target.checked
-            ? total + 1
-            : total - 1;
-        settotal(nextTotal);
-        const elements = participants.map((p) =>
-                document.getElementsByClassName(`equally-${p}`)[0] as HTMLInputElement
-            ).filter((el): el is HTMLInputElement => !!el);
         elements.forEach((p) => {
             const span = p.parentElement!.nextElementSibling as HTMLSpanElement;
             if (p.checked) {
@@ -344,7 +320,7 @@ export default function SplitBox() : ReactNode{
                                     defaultChecked
                                     data-type="equal"
                                     className="accent-gray-400"
-                                    onChange={handleAllEqual}
+                                    onChange={handleAll}
                                 />
                                 all
                             </label>
@@ -397,6 +373,7 @@ export default function SplitBox() : ReactNode{
                                     className="accent-gray-400"
                                     defaultChecked
                                     data-type="amount"
+                                    onChange={handleAll}
                                 />
                                 all
                             </label>
@@ -462,6 +439,7 @@ export default function SplitBox() : ReactNode{
                                     className="accent-gray-400"
                                     defaultChecked
                                     data-type="share"
+                                    onChange={handleAll}
                                 />
                                 all
                             </label>
@@ -534,6 +512,7 @@ export default function SplitBox() : ReactNode{
                                     className="accent-gray-400"
                                     defaultChecked
                                     data-type="per"
+                                    onChange={handleAll}
                                 />
                                 all
                             </label>
