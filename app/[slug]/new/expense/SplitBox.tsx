@@ -37,11 +37,18 @@ export default function SplitBox() : ReactNode{
         }
     });
 
+    const participants_percent_elements = participants.map((p) => {
+        if (typeof window !== 'undefined') {
+            return document.getElementsByClassName(`percent-${p}`)[0] as HTMLInputElement;
+        }
+    });
+
     const handleAmount = (event : React.ChangeEvent<HTMLInputElement>) => {
         let final_value = 0;
+        const target = event.target;
         participants_amount_elements.forEach( ele => {
-            if(ele === event.target){
-                final_value = isFloat(parseFloat(event.target.value)) ? parseFloat(event.target.value) : parseInt(event.target.value);
+            if(ele === target){
+                final_value = isFloat(parseFloat(target.value)) ? parseFloat(target.value) : parseInt(target.value);
             }else{
                 const result = final_value > parseFloat(amount) ? 0 : parseFloat(amount) - ( hasThreeOrMoreDecimals(final_value) ? parseFloat(amount) : final_value );
                 ele!.value = result <= 0 || result > parseFloat(amount) ? '' : result.toString()
@@ -70,6 +77,23 @@ export default function SplitBox() : ReactNode{
         });
     };
 
+    const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const target = event.target;
+        const per_res = isFloat(parseFloat(target.value)) ? 
+                    (parseFloat(amount) * ((parseFloat(target.value) / 100) )).toFixed(2) : 
+                    (parseFloat(amount)* (0.01 * parseFloat(target.value)) ).toFixed(2);
+        participants_percent_elements.forEach( ele => {
+            if(ele === target){
+                ele.nextElementSibling!.nextElementSibling!.textContent = `= $ ${per_res}`
+            }else{
+                const bal_per = 100 - parseFloat(target.value);
+                ele!.value = bal_per.toFixed(2).toString();
+                const others_res = parseFloat(amount) * ((0.01 * bal_per) / (participants_percent_elements.length - 1));
+                ele!.nextElementSibling!.nextElementSibling!.textContent = `= $ ${others_res.toFixed(2)}`
+            }
+        })
+    }
+
     useEffect(() => {
         const input = document.getElementById("amount") as HTMLInputElement;
         if (!input) return;
@@ -78,7 +102,6 @@ export default function SplitBox() : ReactNode{
             participants_amount_elements.forEach((i) => {
                 i!.value = input.value ;
             });
-
         };
         input.addEventListener("input", handleInput);
         return () => {
@@ -339,7 +362,7 @@ export default function SplitBox() : ReactNode{
                                 "/>
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
                                 <span className="text-black ml-10 shr-vimal">
-                                    {amount ? `= ${amount}` : ''}
+                                    {amount ? `= $ ${amount}` : ''}
                                 </span>
                             </div>
                         </li>
@@ -364,7 +387,7 @@ export default function SplitBox() : ReactNode{
                                 />
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
                                 <span className="text-black ml-10 shr-kavi">
-                                    {amount ? `= ${amount}` : ''}
+                                    {amount ? `= $ ${amount}` : ''}
                                 </span>
                             </div>
                         </li>
@@ -400,15 +423,19 @@ export default function SplitBox() : ReactNode{
                                 Vimal
                             </label>
                             <div>
-                                <input type="number" name="percent-vimal" className="
-                                    p-2 text-black
-                                    w-54 max-w-full outline-none
+                                <input type="number" name="percent-vimal" onChange={handlePercent}
+                                className="
+                                    p-2 text-black percent-vimal text-right
+                                    max-w-full outline-none
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                     [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
+                                <span className="text-black ml-10 shr-vimal">
+                                    {amount ? `= $ ${amount}` : ''}
+                                </span>
                             </div>
                         </li>
                         <li className="flex flex-col justify-between border-t p-2">
@@ -422,15 +449,18 @@ export default function SplitBox() : ReactNode{
                                 Kavi
                             </label>
                             <div>
-                                <input type="number" name="percent-kavi"
-                                    className="p-2 text-black
-                                    w-54 max-w-ful outline-none
+                                <input type="number" name="percent-kavi" onChange={handlePercent}
+                                    className="p-2 text-black percent-kavi
+                                    max-w-ful outline-none text-right
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                     [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
+                                <span className="text-black ml-10 shr-vimal">
+                                    {amount ? `= $ ${amount}` : ''}
+                                </span>
                             </div>
                         </li>
                     </ul>
