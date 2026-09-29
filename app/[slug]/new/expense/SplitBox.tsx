@@ -3,10 +3,12 @@ import { ReactNode, useEffect, useState  } from "react";
 
 export default function SplitBox() : ReactNode{
     const participants = ["vimal" , "kavi"];
+    const TOTAL_PARTICIPANTS = 2;
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>('');
-    const [value, setValue] = useState<number>();
-    const TOTAL_PARTICIPANTS = 2;
+    const [all, setAll] = useState<boolean>(true);
+    const [total, settotal] = useState<number>(TOTAL_PARTICIPANTS);
+    
 
     const selectSplitMethod = () => {
         setoption(p => { return !p });
@@ -42,6 +44,33 @@ export default function SplitBox() : ReactNode{
             return document.getElementsByClassName(`percent-${p}`)[0] as HTMLInputElement;
         }
     });
+
+    const participants_equal_elements = participants.map((p) => {
+        if (typeof window !== 'undefined') {
+            return document.getElementsByClassName(`equally-${p}`)[0] as HTMLInputElement;
+        }
+    });
+
+    const handleEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const nextTotal = event.target.checked
+            ? total + 1
+            : total - 1;
+        settotal(nextTotal);
+        const elements = participants.map((p) =>
+                document.getElementsByClassName(`equally-${p}`)[0] as HTMLInputElement
+            ).filter((el): el is HTMLInputElement => !!el);
+        elements.forEach((p) => {
+            const span = p.parentElement!.nextElementSibling as HTMLSpanElement;
+            if (p.checked) {
+                const calculated = nextTotal > 0
+                        ? (parseFloat(amount) / nextTotal).toFixed(2)
+                        : "0.00";
+                span.textContent = `= $ ${calculated}`;
+            } else {
+                span.textContent = "";
+            }
+        });
+    };
 
     const handleAmount = (event : React.ChangeEvent<HTMLInputElement>) => {
         let final_value = 0;
@@ -104,9 +133,23 @@ export default function SplitBox() : ReactNode{
         const input = document.getElementById("amount") as HTMLInputElement;
         if (!input) return;
         const handleInput = () => {
-            setAmount(input.value);
+            const newAmount = input.value;
+            setAmount(newAmount);
             participants_amount_elements.forEach((i) => {
-                i!.value = input.value ;
+                i!.value = newAmount ;
+            });
+            const calculated = total > 0
+                ? (parseFloat(newAmount) / total).toFixed(2)
+                : "0.00";
+            participants.forEach((p) => {
+                const input = document.getElementsByClassName(`equally-${p}`)[0] as HTMLInputElement;
+                if (!input) return;
+                const span = input.parentElement!.nextElementSibling as HTMLSpanElement;
+                if (input.checked) {
+                    span.textContent = `= $ ${calculated}`;
+                }else {
+                    span.textContent = "";
+                }
             });
         };
         input.addEventListener("input", handleInput);
@@ -242,13 +285,14 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="equally-vimal"
+                                    onChange={handleEqual}
                                     defaultChecked
-                                    className="accent-gray-400"
+                                    className="accent-gray-400 equally-vimal"
                                 />
                                 Vimal
                             </label>
                             <span className="text-black text-[12px]">
-                                {amount ? `= ${ isFloat(parseFloat(amount)) ? (parseFloat(amount)/TOTAL_PARTICIPANTS).toFixed(2) : parseInt(amount)/TOTAL_PARTICIPANTS }` : ""}
+                                
                             </span>
                         </li>
                         <li className="flex justify-between gap-1 border-t p-2">
@@ -256,13 +300,14 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="equally-kavi"
+                                    onChange={handleEqual}
                                     defaultChecked
-                                    className="accent-gray-400"
+                                    className="accent-gray-400 equally-kavi"
                                 />
                                 Kavi
                             </label>
                             <span className="text-black text-[12px]">
-                                {amount ? `= ${ isFloat(parseFloat(amount)) ? (parseFloat(amount)/TOTAL_PARTICIPANTS).toFixed(2) : parseInt(amount)/TOTAL_PARTICIPANTS }` : ""}
+                                
                             </span>
                         </li>
                     </ul>
