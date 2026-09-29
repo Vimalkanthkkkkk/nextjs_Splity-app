@@ -27,29 +27,69 @@ export default function SplitBox() : ReactNode{
         return false;
     }
 
-    const participants_amount_elements = participants.map((p) => {
-        if (typeof window !== 'undefined') {
-            return document.getElementsByClassName(`${p}-amount`)[0] as HTMLInputElement;
-        }
-    });
+    const handleAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { checked, dataset } = event.target;
+        const type = dataset.type;
+        if (!type) return;
+        const elements = getElements(
+            participants.map((p) => {
+                switch (type) {
+                    case "equal":
+                        return `equally-${p}`;
 
-    const participants_share_elements = participants.map((p) => {
-        if (typeof window !== 'undefined') {
-            return document.getElementsByClassName(`share-${p}`)[0] as HTMLInputElement;
-        }
-    });
+                    case "amount":
+                        return `amount-${p}`;
 
-    const participants_percent_elements = participants.map((p) => {
-        if (typeof window !== 'undefined') {
-            return document.getElementsByClassName(`percent-${p}`)[0] as HTMLInputElement;
-        }
-    });
+                    case "share":
+                        return `share-${p}`;
 
-    const participants_equal_elements = participants.map((p) => {
-        if (typeof window !== 'undefined') {
-            return document.getElementsByClassName(`equally-${p}`)[0] as HTMLInputElement;
-        }
-    });
+                    case "per":
+                        return `per-${p}`;
+
+                    default:
+                        return "";
+                }
+            })
+        );
+        elements.forEach((input) => {
+            input.checked = checked;
+        });
+    };
+
+    const getElements = (classes: string[]) => {
+        return classes
+            .map((className) => {
+                const element = document.getElementsByClassName(className)[0];
+                return element instanceof HTMLInputElement
+                    ? element
+                    : null;
+            })
+            .filter((el): el is HTMLInputElement => el !== null);
+    };
+
+    const handleAllEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = event.target.checked;
+        const elements = getElements(
+            participants.map((p) => `equally-${p}`)
+        );
+        elements.forEach((input) => {
+            input.checked = checked;
+        });
+        const nextTotal = checked ? elements.length : 0;
+        settotal(nextTotal);
+        const amountValue = parseFloat(amount) || 0;
+        elements.forEach((input) => {
+            const span = input.parentElement
+                ?.nextElementSibling as HTMLSpanElement | null;
+            if (!span) return;
+            if (checked) {
+                const calculated = (amountValue / nextTotal).toFixed(2);
+                span.textContent = `= $ ${calculated}`;
+            } else {
+                span.textContent = "";
+            }
+        });
+    };
 
     const handleEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
         const nextTotal = event.target.checked
@@ -72,62 +112,85 @@ export default function SplitBox() : ReactNode{
         });
     };
 
-    const handleAmount = (event : React.ChangeEvent<HTMLInputElement>) => {
-        let final_value = 0;
+    const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
+        const participants_amount_elements = getElements(
+            participants.map((p) => `${p}-amount`)
+        );
         const target_value = parseFloat(target.value);
         const float_amount = parseFloat(amount);
-        participants_amount_elements.forEach( ele => {
-            if(ele === target){
-                final_value = isFloat(target_value) ? target_value : parseInt(target.value);
-            }else{
-                const result = final_value > float_amount ? 
-                    0 : 
-                    float_amount - ( hasThreeOrMoreDecimals(final_value) ? float_amount : final_value );
-                ele!.value = result <= 0 || result > float_amount ? '' : result.toString()
+        let final_value = isFloat(target_value)
+            ? target_value
+            : parseInt(target.value);
+        participants_amount_elements.forEach((ele) => {
+            if (ele === target) {
+                return;
             }
-        })
+            const result = final_value > float_amount
+                ? 0
+                : float_amount -
+                (
+                    hasThreeOrMoreDecimals(final_value)
+                        ? float_amount
+                        : final_value
+                );
+            ele.value = result <= 0 || result > float_amount
+                ? ''
+                : result.toString();
+        });
     };
 
     const handleShare = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
+        const participants_share_elements = getElements(
+            participants.map((p) => `share-${p}`)
+        );
         const others_share = participants_share_elements.reduce((pre, cur) => {
             return pre + (
                 cur !== target
-                    ? parseFloat(cur!.value) || 0
+                    ? parseFloat(cur.value) || 0
                     : 0
             );
         }, 0);
-        const share_result = parseFloat(target.value || '0') + others_share;
+        const share_result = (parseFloat(target.value) || 0) + others_share;
+        const amount_value = parseFloat(amount) || 0;
         participants_share_elements.forEach((ele) => {
-            const share = parseFloat(ele!.value) || 0;
+            const share = parseFloat(ele.value) || 0;
             const shr_amount = share_result > 0
-                    ? ((share / share_result) * parseFloat(amount)).toFixed(2)
-                    : "";
-            ele!.nextElementSibling!
-                .nextElementSibling!
+                ? ((share / share_result) * amount_value).toFixed(2)
+                : "";
+            ele.nextElementSibling!.nextElementSibling!
                 .textContent = `= $ ${shr_amount}`;
         });
     };
 
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
-        const target_value = parseFloat(target.value);
-        const float_amount = parseFloat(amount);
-        const per_res = isFloat(target_value) ? 
-                    (float_amount * ((target_value || 0 / 100) )).toFixed(2) : 
-                    (float_amount * (0.01 * target_value) ).toFixed(2) || 0;
-        participants_percent_elements.forEach( ele => {
-            if(ele === target){
-                ele.nextElementSibling!.nextElementSibling!.textContent = `= $ ${per_res}`
-            }else{
+        const participants_percent_elements = getElements(
+            participants.map((p) => `percent-${p}`)
+        );
+        const target_value = parseFloat(target.value) || 0;
+        const float_amount = parseFloat(amount) || 0;
+        const per_res = (
+            float_amount * (target_value / 100)
+        ).toFixed(2);
+        participants_percent_elements.forEach((ele) => {
+            const output = ele.nextElementSibling!
+                .nextElementSibling!;
+            if (ele === target) {
+                output.textContent = `= $ ${per_res}`;
+            } else {
                 const bal_per = (100 - target_value) || 100;
-                ele!.value = bal_per.toFixed(2).toString();
-                const others_res = float_amount * ((0.01 * bal_per) / (participants_percent_elements.length - 1));
-                ele!.nextElementSibling!.nextElementSibling!.textContent = `= $ ${others_res.toFixed(2)}`
+                ele.value = bal_per.toFixed(2);
+                const others_res = float_amount *
+                    (
+                        (0.01 * bal_per) /
+                        (participants_percent_elements.length - 1)
+                    );
+                output.textContent = `= $ ${others_res.toFixed(2)}`;
             }
-        })
-    }
+        });
+    };
 
     useEffect(() => {
         const input = document.getElementById("amount") as HTMLInputElement;
@@ -135,19 +198,26 @@ export default function SplitBox() : ReactNode{
         const handleInput = () => {
             const newAmount = input.value;
             setAmount(newAmount);
-            participants_amount_elements.forEach((i) => {
-                i!.value = newAmount ;
+            const amountElements = getElements(
+                participants.map((p) => `${p}-amount`)
+            );
+            amountElements.forEach((element) => {
+                element.value = newAmount;
             });
-            const calculated = total > 0
-                ? (parseFloat(newAmount) / total).toFixed(2)
-                : "0.00";
-            participants.forEach((p) => {
-                const input = document.getElementsByClassName(`equally-${p}`)[0] as HTMLInputElement;
-                if (!input) return;
-                const span = input.parentElement!.nextElementSibling as HTMLSpanElement;
-                if (input.checked) {
-                    span.textContent = `= $ ${calculated}`;
-                }else {
+            const equalElements = getElements(
+                participants.map((p) => `equally-${p}`)
+            );
+            const checkedCount = equalElements.filter(
+                (element) => element.checked
+            ).length;
+            const amountValue = parseFloat(newAmount) || 0;
+            equalElements.forEach((element) => {
+                const span = element.parentElement
+                        ?.nextElementSibling as HTMLSpanElement | null;
+                if (!span) return;
+                if (element.checked && checkedCount > 0) {
+                    span.textContent = `= $ ${(amountValue / checkedCount).toFixed(2)}`;
+                } else {
                     span.textContent = "";
                 }
             });
@@ -272,7 +342,9 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="equally-all"
                                     defaultChecked
+                                    data-type="equal"
                                     className="accent-gray-400"
+                                    onChange={handleAllEqual}
                                 />
                                 all
                             </label>
@@ -292,7 +364,7 @@ export default function SplitBox() : ReactNode{
                                 Vimal
                             </label>
                             <span className="text-black text-[12px]">
-                                
+
                             </span>
                         </li>
                         <li className="flex justify-between gap-1 border-t p-2">
@@ -324,6 +396,7 @@ export default function SplitBox() : ReactNode{
                                     name="spilt-amount-all"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    data-type="amount"
                                 />
                                 all
                             </label>
@@ -332,7 +405,7 @@ export default function SplitBox() : ReactNode{
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
                                     type="checkbox"
-                                    name="amount-vimal-f"
+                                    name="amount-vimal"
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -355,7 +428,7 @@ export default function SplitBox() : ReactNode{
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
                                     type="checkbox"
-                                    name="amount-kavi-f"
+                                    name="amount-kavi"
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -388,6 +461,7 @@ export default function SplitBox() : ReactNode{
                                     name="shares-all"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    data-type="share"
                                 />
                                 all
                             </label>
@@ -396,7 +470,7 @@ export default function SplitBox() : ReactNode{
                              <label className="text-black text-sm flex gap-2 items-center">
                                 <input
                                     type="checkbox"
-                                    name="share-vimal-f"
+                                    name="share-vimal"
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -404,7 +478,7 @@ export default function SplitBox() : ReactNode{
                             </label>
                             <div>
                                 <input type="number" name="share-vimal" onChange={handleShare}
-                                    className="p-2 text-black share-vimal
+                                    className="p-2 text-black vimal-share
                                     max-w-full outline-none text-right
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
@@ -421,7 +495,7 @@ export default function SplitBox() : ReactNode{
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
                                     type="checkbox"
-                                    name="share-kavi-f"
+                                    name="share-kavi"
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -429,7 +503,7 @@ export default function SplitBox() : ReactNode{
                             </label>
                             <div>
                                 <input type="number" name="share-kavi" onChange={handleShare}
-                                    className="p-2 text-black share-kavi
+                                    className="p-2 text-black kavi-share
                                     max-w-ful outline-none text-right
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
@@ -459,6 +533,7 @@ export default function SplitBox() : ReactNode{
                                     name="percent-all"
                                     className="accent-gray-400"
                                     defaultChecked
+                                    data-type="per"
                                 />
                                 all
                             </label>
@@ -467,7 +542,7 @@ export default function SplitBox() : ReactNode{
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
                                     type="checkbox"
-                                    name="per-vimal-f"
+                                    name="per-vimal"
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
@@ -493,7 +568,7 @@ export default function SplitBox() : ReactNode{
                             <label className="text-black text-sm flex gap-2 items-center">
                                 <input
                                     type="checkbox"
-                                    name="per-kavi-f"
+                                    name="per-kavi"
                                     className="accent-gray-400"
                                     defaultChecked
                                 />
