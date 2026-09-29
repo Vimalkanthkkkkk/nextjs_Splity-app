@@ -84,7 +84,9 @@ export default function ExpensePage(){
                                 <a href="">Income</a>
                             </div>
                             <form action="">
+
                                 <ParticipantDropdownPage participants={participants} />
+
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="amount" id="amount" placeholder="Amount" className="
@@ -94,7 +96,9 @@ export default function ExpensePage(){
                                     border-gray-600 rounded-tr-sm rounded-br-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
+                                
                                 <CategoryDropdown/>
+
                                 <label htmlFor="date" className="text-black block mt-2 mb-1">When?</label>
                                 <input type="date" name="date" id="date" placeholder="Amount" className="
                                     p-2 text-black outline-none
@@ -113,8 +117,8 @@ export default function ExpensePage(){
                                 <label htmlFor="attach" className="text-black block mt-2 mb-1">Any Attachment ?</label>
                                 <input 
                                     type="file" 
-                                    name="date" 
-                                    id="date" 
+                                    name="attachment" 
+                                    id="attachment" 
                                     accept="image/png, image/jpeg" 
                                     className="
                                         text-gray-700 outline-none border-0
@@ -122,7 +126,9 @@ export default function ExpensePage(){
                                         h-8 
                                     "
                                 />
-                                <SplitBox/>                     
+                                
+                                <SplitBox/>  
+
                             </form>
                         </div>
                     </div>

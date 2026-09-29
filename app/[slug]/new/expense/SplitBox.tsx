@@ -1,26 +1,81 @@
 "use client"
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState  } from "react";
 
 export default function SplitBox() : ReactNode{
-    const [option , setoption] = useState<string[]>(["Eql" , "Amt" , "Shr" , "Prc"]);
+    const participants = ["vimal" , "kavi"];
+    const [option , setoption] = useState<boolean>(true);
+    const [amount, setAmount] = useState<string>('');
+    const [value, setValue] = useState<number>();
+    const TOTAL_PARTICIPANTS = 2  ;
+    const selectSplitMethod = () => {
+        setoption(p => { return !p });
+    }
+
+    function isFloat(value : number) {
+        return typeof value === 'number' && !Number.isInteger(value);
+    }
+
+    function hasThreeOrMoreDecimals(num : number) {
+        const numStr = num.toString();
+        if (numStr.includes('.')) {
+            const decimalPlaces = numStr.split('.')[1].length;
+            return decimalPlaces >= 3;
+        }
+        return false;
+    }
+
+
+    const participants_elements = participants.map((p) => {
+        if (typeof window !== 'undefined') {
+            return document.getElementsByClassName(`${p}-amount`)[0] as HTMLInputElement;
+        }
+    });
+
+    const handleAmount = (event : React.ChangeEvent<HTMLInputElement>) => {
+        let final_value = 0;
+        participants_elements.forEach( ele => {
+            if(ele === event.target){
+                final_value = isFloat(parseFloat(event.target.value)) ? parseFloat(event.target.value) : parseInt(event.target.value);
+            }else{
+                const result = final_value > parseFloat(amount) ? 0 : parseFloat(amount) - ( hasThreeOrMoreDecimals(final_value) ? parseFloat(amount) : final_value );
+                ele!.value = result <= 0 || result > parseFloat(amount) ? '' : result.toString()
+            }
+        })
+    }
+
+    useEffect(() => {
+        const input = document.getElementById("amount") as HTMLInputElement;
+        if (!input) return;
+        const handleInput = () => {
+            setAmount(input.value);
+            participants_elements.forEach((i) => {
+                i!.value = input.value ;
+            });
+
+        };
+        input.addEventListener("input", handleInput);
+        return () => {
+            input.removeEventListener("input", handleInput);
+        };
+    }, []);
 
     return(
         <>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split" name="split" defaultChecked value="Equal" 
+                    type="radio" id="split-ery-equally" name="split-method" onChange={selectSplitMethod} defaultChecked value="Equal-ery" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
-                <label htmlFor="split" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
+                <label htmlFor="split-ery-equally" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
             </div>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split" name="split" value="diff" 
+                    type="radio" id="split-diff" name="split-method" onChange={selectSplitMethod}  value="diff-ery" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
-                <label htmlFor="split" className="text-black self-center inline mt-1 mb-1">Split differently</label>
+                <label htmlFor="split-diff" className="text-black self-center inline mt-1 mb-1">Split differently</label>
             </div>
-            <div className="flex flex-col gap-2 mb-4 text-black">
+            <div className=" flex-col gap-2 mb-4 text-black" style={{ display: option===true ? "flex" : "none" }}>
                 <span>Summary</span>
                 <span>Equally between Everyone</span>
                 <ul className="flex flex-col gap-2">
@@ -42,7 +97,16 @@ export default function SplitBox() : ReactNode{
                     </li>
                 </ul>
             </div>
-            <div className="w-fit border-2">
+            <div className=" w-fit border-2
+                [&:has(#equally:checked)_label[for='equally']]:font-bold
+                [&:has(#equally:checked)_label[for='equally']]:underline
+                [&:has(#splitamount:checked)_label[for='splitamount']]:font-bold
+                [&:has(#splitamount:checked)_label[for='splitamount']]:underline
+                [&:has(#shares:checked)_label[for='shares']]:font-bold
+                [&:has(#shares:checked)_label[for='shares']]:underline
+                [&:has(#percent:checked)_label[for='percent']]:font-bold
+                [&:has(#percent:checked)_label[for='percent']]:underline
+            " style={{ display : !option ? "block" : "none" }}>
                 <input
                     type="radio"
                     id="equally"
@@ -75,49 +139,40 @@ export default function SplitBox() : ReactNode{
                 <div className="flex flex-row text-black gap-10 p-2">
                     <label
                         htmlFor="equally"
-                        className="cursor-pointer
-                                peer-checked/equally:font-bold
-                                peer-checked/equally:underline"
+                        className="cursor-pointer"
                     >
                         Equally
                     </label>
                     <label
                         htmlFor="splitamount"
-                        className="cursor-pointer
-                                peer-checked/split-amount:font-bold
-                                peer-checked/split-amount:underline"
+                        className="cursor-pointer"
                     >
                         Amount
                     </label>
                     <label
                         htmlFor="shares"
-                        className="cursor-pointer
-                                peer-checked/shares:font-bold
-                                peer-checked/shares:underline"
+                        className="cursor-pointer"
                     >
                         Shares
                     </label>
                     <label
                         htmlFor="percent"
-                        className="cursor-pointer
-                                peer-checked/percent:font-bold
-                                peer-checked/percent:underline"
+                        className="cursor-pointer"
                     >
                         Percent
                     </label>
                 </div>
-                <div
-                    className="
-                        hidden
-                        peer-checked/equally:block
-                    "
-                >
+                <div className="
+                    hidden
+                    peer-checked/equally:block
+                ">
                     <ul className="flex flex-col gap-2">
                         <li className="flex justify-between gap-1 pl-2 pr-2">
                             <label className="text-black flex gap-2 items-center">
                                 <input
                                     type="checkbox"
                                     name="equally-all"
+                                    defaultChecked
                                     className="accent-gray-400"
                                 />
                                 all
@@ -131,12 +186,13 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="equally-vimal"
+                                    defaultChecked
                                     className="accent-gray-400"
                                 />
                                 Vimal
                             </label>
                             <span className="text-black text-[12px]">
-                                = 5000
+                                {amount ? `= ${ isFloat(parseFloat(amount)) ? (parseFloat(amount)/TOTAL_PARTICIPANTS).toFixed(2) : parseInt(amount)/TOTAL_PARTICIPANTS }` : ""}
                             </span>
                         </li>
                         <li className="flex justify-between gap-1 border-t p-2">
@@ -144,12 +200,13 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="equally-kavi"
+                                    defaultChecked
                                     className="accent-gray-400"
                                 />
                                 Kavi
                             </label>
                             <span className="text-black text-[12px]">
-                                = 5000
+                                {amount ? `= ${ isFloat(parseFloat(amount)) ? (parseFloat(amount)/TOTAL_PARTICIPANTS).toFixed(2) : parseInt(amount)/TOTAL_PARTICIPANTS }` : ""}
                             </span>
                         </li>
                     </ul>
@@ -165,6 +222,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="spilt-amount-all"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 all
                             </label>
@@ -175,18 +233,20 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="amount-vimal-f"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 Vimal
                             </label>
                             <div>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="vimal-amount" className="
-                                    p-2 text-black
-                                    w-54 max-w-full outline-none
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                    [&::-webkit-inner-spin-button]:appearance-none
+                                <input type="number" name="vimal-amount" onChange={handleAmount} 
+                                    className=" vimal-amount
+                                        p-2 text-black text-right
+                                        w-54 max-w-full outline-none
+                                        h-8 border-r border-t border-b
+                                        border-gray-600 rounded-tr-sm rounded-br-sm
+                                        [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                        [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
                             </div>
                         </li>
@@ -196,13 +256,14 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="amount-kavi-f"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 Kavi
                             </label>
                             <div>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="amount-kavi"
-                                    className="p-2 text-black
+                                <input type="number" name="kavi-amount" onChange={handleAmount}
+                                    className="kavi-amount p-2 text-black text-right
                                     w-54 max-w-ful outline-none
                                     h-8 border-r border-t border-b
                                     border-gray-600 rounded-tr-sm rounded-br-sm
@@ -225,6 +286,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="shares-all"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 all
                             </label>
@@ -235,6 +297,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="share-vimal-f"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 Vimal
                             </label>
@@ -256,6 +319,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="share-kavi-f"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 Kavi
                             </label>
@@ -287,6 +351,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="percent-all"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 all
                             </label>
@@ -297,6 +362,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="per-vimal-f"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 Vimal
                             </label>
@@ -318,6 +384,7 @@ export default function SplitBox() : ReactNode{
                                     type="checkbox"
                                     name="per-kavi-f"
                                     className="accent-gray-400"
+                                    defaultChecked
                                 />
                                 Kavi
                             </label>
