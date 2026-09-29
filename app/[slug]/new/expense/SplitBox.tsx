@@ -80,13 +80,13 @@ export default function SplitBox() : ReactNode{
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
         const per_res = isFloat(parseFloat(target.value)) ? 
-                    (parseFloat(amount) * ((parseFloat(target.value) / 100) )).toFixed(2) : 
-                    (parseFloat(amount)* (0.01 * parseFloat(target.value)) ).toFixed(2);
+                    (parseFloat(amount) * ((parseFloat(target.value) || 0 / 100) )).toFixed(2) : 
+                    (parseFloat(amount)* (0.01 * parseFloat(target.value)) ).toFixed(2) || 0;
         participants_percent_elements.forEach( ele => {
             if(ele === target){
                 ele.nextElementSibling!.nextElementSibling!.textContent = `= $ ${per_res}`
             }else{
-                const bal_per = 100 - parseFloat(target.value);
+                const bal_per = (100 - parseFloat(target.value)) || 100;
                 ele!.value = bal_per.toFixed(2).toString();
                 const others_res = parseFloat(amount) * ((0.01 * bal_per) / (participants_percent_elements.length - 1));
                 ele!.nextElementSibling!.nextElementSibling!.textContent = `= $ ${others_res.toFixed(2)}`
