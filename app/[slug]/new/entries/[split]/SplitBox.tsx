@@ -19,12 +19,11 @@ const INPUT: Record<SplitType, (p: string) => string | null> = {
     per: (p) => `percent-${p}`,
 };
 
-const getAmount = () =>
-    parseFloat((document.getElementById("amount") as HTMLInputElement | null)?.value ?? "") || 0;
+const getAmount = () => parseFloat((document.getElementById("amount") as HTMLInputElement | null)?.value ?? "") || 0;
 
 const numStr = (n: number) => (n > 0 ? String(Math.round(n * 100) / 100) : "");
-
 const BAD_CLASSES = ["ring-2", "ring-red-300", "bg-red-50"];
+
 const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
     const box = input;
     if (!box) return;
@@ -45,6 +44,7 @@ export default function SplitBox() : ReactNode{
 
     const recalc = (type: SplitType, source?: HTMLInputElement) => {
         const amountValue = getAmount();
+        
         const rows = participants.flatMap((p) => {
             const check = document.querySelector<HTMLInputElement>(`.${CHECK[type](p)}`);
             if (!check) return [];

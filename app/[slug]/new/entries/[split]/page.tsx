@@ -3,8 +3,12 @@ import ParticipantDropdownPage from "./ParticipantDropdown";
 import CategoryDropdown from "./CategorydropDown";
 import SplitBox from "./SplitBox";
 
+interface PageProps {
+  params: Promise<{ split: string }>;
+}
 
-export default function ExpensePage(){
+export default async function ExpensePage( {params} : PageProps){
+    const { split } = await params;
     const participants = [""];
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
@@ -96,9 +100,17 @@ export default function ExpensePage(){
                                     border-gray-600 rounded-tr-sm rounded-br-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
-                                
-                                <CategoryDropdown/>
 
+                                {
+                                    split === "expense" ?
+                                        <>
+                                            <label htmlFor="amount" className="text-black block mt-3">Which Category?</label>
+                                            <CategoryDropdown/>
+                                        </>
+                                        :
+                                        <></>
+                                }
+                                
                                 <label htmlFor="date" className="text-black block mt-2 mb-1">When?</label>
                                 <input type="date" name="date" id="date" placeholder="Amount" className="
                                     p-2 text-black outline-none
@@ -114,20 +126,33 @@ export default function ExpensePage(){
                                     border
                                     border-gray-600 rounded-sm
                                 "></textarea>
-                                <label htmlFor="attach" className="text-black block mt-2 mb-1">Any Attachment ?</label>
-                                <input 
-                                    type="file" 
-                                    name="attachment" 
-                                    id="attachment" 
-                                    accept="image/png, image/jpeg" 
-                                    className="
-                                        text-gray-700 outline-none border-0
-                                        w-60 max-w-full 
-                                        h-8 
-                                    "
-                                />
-                                
-                                <SplitBox/>  
+
+                                {
+                                    split === "expense" ?
+                                        <>
+                                            <label htmlFor="attach" className="text-black block mt-2 mb-1">Any Attachment ?</label>
+                                            <input 
+                                                type="file" 
+                                                name="attachment" 
+                                                id="attachment" 
+                                                accept="image/png, image/jpeg" 
+                                                className="
+                                                    text-gray-700 outline-none border-0
+                                                    w-60 max-w-full 
+                                                    h-8 
+                                                "
+                                            />
+                                        </>
+                                        :
+                                        <></>
+                                }      
+
+                                {
+                                    split === " expense" ?
+                                    <SplitBox/> 
+                                    :
+                                    <></>
+                                }     
 
                             </form>
                         </div>
