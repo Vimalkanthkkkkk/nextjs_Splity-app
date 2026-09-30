@@ -1,5 +1,36 @@
 "use client"
-import { ReactNode, useEffect, useState  } from "react";
+import { ReactNode, useEffect, useState } from "react";
+
+type SplitType = "equal" | "amount" | "share" | "per";
+
+const SPLIT_TYPES: SplitType[] = ["equal", "amount", "share", "per"];
+
+const CHECK: Record<SplitType, (p: string) => string> = {
+    equal: (p) => `equally-${p}`,
+    amount: (p) => `amount-${p}`,
+    share: (p) => `share-${p}`,
+    per: (p) => `per-${p}`,
+};
+
+const INPUT: Record<SplitType, (p: string) => string | null> = {
+    equal: () => null,
+    amount: (p) => `${p}-amount`,
+    share: (p) => `${p}-share`,
+    per: (p) => `percent-${p}`,
+};
+
+const getAmount = () =>
+    parseFloat((document.getElementById("amount") as HTMLInputElement | null)?.value ?? "") || 0;
+
+const numStr = (n: number) => (n > 0 ? String(Math.round(n * 100) / 100) : "");
+
+const BAD_CLASSES = ["ring-2", "ring-red-300", "bg-red-50"];
+const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
+    const box = input;
+    if (!box) return;
+    BAD_CLASSES.forEach((c) => box.classList.toggle(c, bad));
+    box.title = bad ? msg : "";
+};
 
 export default function SplitBox() : ReactNode{
     const participants = ["vimal" , "kavi"];
@@ -7,253 +38,133 @@ export default function SplitBox() : ReactNode{
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>('');
     const [total, settotal] = useState<number>(TOTAL_PARTICIPANTS);
-    
 
     const selectSplitMethod = () => {
         setoption(p => { return !p });
     }
 
-    function isFloat(value : number) {
-        return typeof value === 'number' && !Number.isInteger(value);
-    }
+    const recalc = (type: SplitType, source?: HTMLInputElement) => {
+        const amountValue = getAmount();
+        const rows = participants.flatMap((p) => {
+            const check = document.querySelector<HTMLInputElement>(`.${CHECK[type](p)}`);
+            if (!check) return [];
+            const inputClass = INPUT[type](p);
+            const input = inputClass
+                ? document.querySelector<HTMLInputElement>(`.${inputClass}`)
+                : null;
+            const span = (
+                type === "equal"
+                    ? check.parentElement?.nextElementSibling
+                    : type === "amount"
+                        ? null
+                        : input?.nextElementSibling?.nextElementSibling
+            ) as HTMLElement | null | undefined;
+            return [{ check, input, span }];
+        });
 
-    function hasThreeOrMoreDecimals(num : number) {
-        const numStr = num.toString();
-        if (numStr.includes('.')) {
-            const decimalPlaces = numStr.split('.')[1].length;
-            return decimalPlaces >= 3;
-        }
-        return false;
-    }
-
-    const handleAll = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { checked, dataset } = event.target;
-        const type = dataset.type;
-        if (!type) return;
-        const elements = getElements(
-            participants.map((p) => {
-                switch (type) {
-                    case "equal":
-                        return `equally-${p}`;
-
-                    case "amount":
-                        return `amount-${p}`;
-
-                    case "share":
-                        return `share-${p}`;
-
-                    case "per":
-                        return `per-${p}`;
-
-                    default:
-                        return "";
-                }
-            })
-        );
-        elements.forEach((input) => {
-            input.checked = checked;
-            const span = type === "equal"
-                ? input.parentElement!.nextElementSibling as HTMLSpanElement
-                : input.nextElementSibling!.nextElementSibling! as HTMLSpanElement;
-            if (!checked) {
-                span.textContent = "";
+        const active = rows.filter((r) => r.check.checked);
+        const count = active.length;
+        const allBox = document.querySelector<HTMLInputElement>(`input[data-type="${type}"]`);
+        if (allBox) allBox.checked = count === rows.length;
+        rows.forEach((r) => {
+            if (r.check.checked) {
+                if (r.input) r.input.disabled = false;
+                return;
+            }
+            if (r.span) r.span.textContent = "";
+            if (r.input) {
+                flag(r.input, false);
+                r.input.disabled = true;
+                if (type !== "share") r.input.value = "";
             }
         });
-        if (!checked) return;
+
+        if (count === 0) return;
+
+        const srcRow = source ? active.find((r) => r.input === source) : undefined;
+        const typed = parseFloat(srcRow?.input?.value ?? "") || 0;
+        let owed: number[] = [];
+
         switch (type) {
             case "equal": {
-                const amountValue = parseFloat(amount) || 0;
-                const eachAmount = elements.length > 0
-                    ? (amountValue / elements.length).toFixed(2)
-                    : "0.00";
-                elements.forEach((input) => {
-                    const span = input.parentElement!.nextElementSibling as HTMLSpanElement;
-                    span.textContent = `= $ ${eachAmount}`;
-                });
-                settotal(elements.length);
+                settotal(count);
+                owed = active.map(() => amountValue / count);
                 break;
             }
             case "amount": {
+                const rest = srcRow && count > 1
+                    ? Math.max(0, amountValue - typed) / (count - 1)
+                    : amountValue / count;
+                active.forEach((r) => {
+                    if (r !== srcRow || count === 1) r.input!.value = numStr(rest);
+                });
                 break;
             }
-
             case "share": {
-                const amountValue = parseFloat(amount) || 0;
-                const totalShares = elements.reduce(
-                    (total, input) =>
-                        total + (parseFloat(input.value) || 0),
-                    0
-                );
-                elements.forEach((input) => {
-                    const share = parseFloat(input.value) || 0;
-                    const result = totalShares > 0
-                        ? ((share / totalShares) * amountValue).toFixed(2)
-                        : "0.00";
-                    const span =
-                        input.nextElementSibling!
-                            .nextElementSibling! as HTMLSpanElement;
-                    span.textContent = `= $ ${result}`;
-                });
+                const shares = active.map((r) => parseFloat(r.input!.value) || 0);
+                const totalShares = shares.reduce((a, b) => a + b, 0);
+                owed = count === 1
+                    ? [amountValue]
+                    : shares.map((s) => (totalShares > 0 ? (s / totalShares) * amountValue : NaN));
                 break;
             }
             case "per": {
-                const amountValue = parseFloat(amount) || 0;
-                elements.forEach((input) => {
-                    const percentage = parseFloat(input.value) || 0;
-                    const result = (
-                        amountValue * percentage / 100
-                    ).toFixed(2);
-                    const span = input.nextElementSibling!
-                        .nextElementSibling! as HTMLSpanElement;
-                    span.textContent = `= $ ${result}`;
+                const rest = srcRow && count > 1
+                    ? Math.max(0, 100 - typed) / (count - 1)
+                    : 100 / count;
+                active.forEach((r) => {
+                    if (r !== srcRow || count === 1) r.input!.value = numStr(rest);
                 });
+                owed = active.map((r) => (amountValue * (parseFloat(r.input!.value) || 0)) / 100);
                 break;
             }
         }
-    };
 
-    const getElements = (classes: string[]) => {
-        return classes
-            .map((className) => {
-                const element = document.getElementsByClassName(className)[0];
-                return element instanceof HTMLInputElement
-                    ? element
-                    : null;
-            })
-            .filter((el): el is HTMLInputElement => el !== null);
-    };
-
-
-    const handleEqual = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const elements = getElements(
-            participants.map((p) => `equally-${p}`)
-        );
-        const nextTotal = elements.filter(
-            (input) => input.checked
-        ).length;
-        settotal(nextTotal);
-        elements.forEach((p) => {
-            const span = p.parentElement!.nextElementSibling as HTMLSpanElement;
-            if (p.checked) {
-                const calculated = nextTotal > 0
-                        ? (parseFloat(amount) / nextTotal).toFixed(2)
-                        : "0.00";
-                span.textContent = `= $ ${calculated}`;
-            } else {
-                span.textContent = "";
+        active.forEach((r, i) => {
+            const v = parseFloat(r.input?.value ?? "");
+            const bad = type === "amount"
+                ? v > amountValue + 0.005 || v < 0
+                : type === "per"
+                    ? v > 100 || v < 0
+                    : owed[i] > amountValue + 0.005;
+            if (r.input) {
+                flag(r.input, bad, type === "per"
+                    ? "Must be between 0% and 100%"
+                    : "Cannot be more than the total amount");
+            }
+            if (r.span) {
+                r.span.textContent = !bad && amountValue > 0 && Number.isFinite(owed[i])
+                    ? `= $ ${owed[i].toFixed(2)}`
+                    : "";
             }
         });
     };
 
-    const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const target = event.target;
-        const participants_amount_elements = getElements(
-            participants.map((p) => `${p}-amount`)
-        );
-        const target_value = parseFloat(target.value);
-        const float_amount = parseFloat(amount);
-        let final_value = isFloat(target_value)
-            ? target_value
-            : parseInt(target.value);
-        participants_amount_elements.forEach((ele) => {
-            if (ele === target) {
-                return;
-            }
-            const result = final_value > float_amount
-                ? 0
-                : float_amount -
-                (
-                    hasThreeOrMoreDecimals(final_value)
-                        ? float_amount
-                        : final_value
-                );
-            ele.value = result <= 0 || result > float_amount
-                ? ''
-                : result.toString();
+    const handleAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { checked, dataset } = event.target;
+        const type = dataset.type as SplitType | undefined;
+        if (!type) return;
+        participants.forEach((p) => {
+            const c = document.querySelector<HTMLInputElement>(`.${CHECK[type](p)}`);
+            if (c) c.checked = checked;
         });
+        recalc(type);
     };
 
-    const handleShare = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const target = event.target;
-        const participants_share_elements = getElements(
-            participants.map((p) => `share-${p}`)
-        );
-        const others_share = participants_share_elements.reduce((pre, cur) => {
-            return pre + (
-                cur !== target
-                    ? parseFloat(cur.value) || 0
-                    : 0
-            );
-        }, 0);
-        const share_result = (parseFloat(target.value) || 0) + others_share;
-        const amount_value = parseFloat(amount) || 0;
-        participants_share_elements.forEach((ele) => {
-            const share = parseFloat(ele.value) || 0;
-            const shr_amount = share_result > 0
-                ? ((share / share_result) * amount_value).toFixed(2)
-                : "";
-            ele.nextElementSibling!.nextElementSibling!
-                .textContent = `= $ ${shr_amount}`;
-        });
+    const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        recalc(event.target.dataset.split as SplitType);
     };
 
-    const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const target = event.target;
-        const participants_percent_elements = getElements(
-            participants.map((p) => `percent-${p}`)
-        );
-        const target_value = parseFloat(target.value) || 0;
-        const float_amount = parseFloat(amount) || 0;
-        const per_res = (
-            float_amount * (target_value / 100)
-        ).toFixed(2);
-        participants_percent_elements.forEach((ele) => {
-            const output = ele.nextElementSibling!
-                .nextElementSibling!;
-            if (ele === target) {
-                output.textContent = `= $ ${per_res}`;
-            } else {
-                const bal_per = (100 - target_value) || 100;
-                ele.value = bal_per.toFixed(2);
-                const others_res = float_amount *
-                    (
-                        (0.01 * bal_per) /
-                        (participants_percent_elements.length - 1)
-                    );
-                output.textContent = `= $ ${others_res.toFixed(2)}`;
-            }
-        });
-    };
+    const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => recalc("amount", event.target);
+    const handleShare = (event: React.ChangeEvent<HTMLInputElement>) => recalc("share", event.target);
+    const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => recalc("per", event.target);
 
     useEffect(() => {
-        const input = document.getElementById("amount") as HTMLInputElement;
+        const input = document.getElementById("amount") as HTMLInputElement | null;
         if (!input) return;
         const handleInput = () => {
-            const newAmount = input.value;
-            setAmount(newAmount);
-            const amountElements = getElements(
-                participants.map((p) => `${p}-amount`)
-            );
-            amountElements.forEach((element) => {
-                element.value = newAmount;
-            });
-            const equalElements = getElements(
-                participants.map((p) => `equally-${p}`)
-            );
-            const checkedCount = equalElements.filter(
-                (element) => element.checked
-            ).length;
-            const amountValue = parseFloat(newAmount) || 0;
-            equalElements.forEach((element) => {
-                const span = element.parentElement
-                        ?.nextElementSibling as HTMLSpanElement | null;
-                if (!span) return;
-                if (element.checked && checkedCount > 0) {
-                    span.textContent = `= $ ${(amountValue / checkedCount).toFixed(2)}`;
-                } else {
-                    span.textContent = "";
-                }
-            });
+            setAmount(input.value);
+            SPLIT_TYPES.forEach((t) => recalc(t));
         };
         input.addEventListener("input", handleInput);
         return () => {
@@ -390,7 +301,8 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="equally-vimal"
-                                    onChange={handleEqual}
+                                    data-split="equal"
+                                    onChange={handleToggle}
                                     defaultChecked
                                     className="accent-gray-400 equally-vimal"
                                 />
@@ -405,7 +317,8 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="equally-kavi"
-                                    onChange={handleEqual}
+                                    data-split="equal"
+                                    onChange={handleToggle}
                                     defaultChecked
                                     className="accent-gray-400 equally-kavi"
                                 />
@@ -440,18 +353,19 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="amount-vimal"
-                                    className="accent-gray-400"
+                                    data-split="amount"
+                                    onChange={handleToggle}
+                                    className="accent-gray-400 amount-vimal"
                                     defaultChecked
-                                    onChange={handleAmount}
                                 />
                                 Vimal
                             </label>
-                            <div>
+                            <div className="w-fit rounded-sm transition">
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="vimal-amount" onChange={handleAmount} 
                                     className=" vimal-amount
                                         p-2 text-black text-right
-                                        w-54 max-w-full outline-none
+                                        max-w-full outline-none
                                         h-8 border-r border-t border-b
                                         border-gray-600 rounded-tr-sm rounded-br-sm
                                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
@@ -464,17 +378,18 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="amount-kavi"
-                                    className="accent-gray-400"
+                                    data-split="amount"
+                                    onChange={handleToggle}
+                                    className="accent-gray-400 amount-kavi"
                                     defaultChecked
-                                    onChange={handleAmount}
                                 />
                                 Kavi
                             </label>
-                            <div>
+                            <div className="w-fit rounded-sm transition">
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="kavi-amount" onChange={handleAmount}
                                     className="kavi-amount p-2 text-black text-right
-                                    w-54 max-w-ful outline-none
+                                    max-w-ful outline-none
                                     h-8 border-r border-t border-b
                                     border-gray-600 rounded-tr-sm rounded-br-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
@@ -508,13 +423,14 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="share-vimal"
-                                    onChange={handleShare}
-                                    className="accent-gray-400"
+                                    data-split="share"
+                                    onChange={handleToggle}
+                                    className="accent-gray-400 share-vimal"
                                     defaultChecked
                                 />
                                 Vimal
                             </label>
-                            <div>
+                            <div className="w-fit rounded-sm transition">
                                 <input type="number" name="share-vimal" onChange={handleShare}
                                     className="p-2 text-black vimal-share
                                     max-w-full outline-none text-right
@@ -524,9 +440,7 @@ export default function SplitBox() : ReactNode{
                                     [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
-                                <span className="text-black ml-10 shr-vimal">
-                                    {amount ? `= $ ${amount}` : ''}
-                                </span>
+                                <span className="text-black ml-10 shr-vimal"></span>
                             </div>
                         </li>
                         <li className="flex flex-col justify-between border-t p-2">
@@ -534,13 +448,14 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="share-kavi"
-                                    onChange={handleShare}
-                                    className="accent-gray-400"
+                                    data-split="share"
+                                    onChange={handleToggle}
+                                    className="accent-gray-400 share-kavi"
                                     defaultChecked
                                 />
                                 Kavi
                             </label>
-                            <div>
+                            <div className="w-fit rounded-sm transition">
                                 <input type="number" name="share-kavi" onChange={handleShare}
                                     className="p-2 text-black kavi-share
                                     max-w-ful outline-none text-right
@@ -550,9 +465,7 @@ export default function SplitBox() : ReactNode{
                                     [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
-                                <span className="text-black ml-10 shr-kavi">
-                                    {amount ? `= $ ${amount}` : ''}
-                                </span>
+                                <span className="text-black ml-10 shr-kavi"></span>
                             </div>
                         </li>
 
@@ -583,26 +496,25 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="per-vimal"
-                                    className="accent-gray-400"
+                                    data-split="per"
+                                    onChange={handleToggle}
+                                    className="accent-gray-400 per-vimal"
                                     defaultChecked
-                                    onChange={handlePercent}
                                 />
                                 Vimal
                             </label>
-                            <div>
+                            <div className="w-fit rounded-sm transition">
                                 <input type="number" name="percent-vimal" onChange={handlePercent}
                                 className="
                                     p-2 text-black percent-vimal text-right
-                                    max-w-full outline-none
+                                    outline-none max-w-ful
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                     [&::-webkit-inner-spin-button]:appearance-none
                                 "/>
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
-                                <span className="text-black ml-10 shr-vimal">
-                                    {amount ? `= $ ${amount}` : ''}
-                                </span>
+                                <span className="text-black ml-10 shr-vimal"></span>
                             </div>
                         </li>
                         <li className="flex flex-col justify-between border-t p-2">
@@ -610,25 +522,24 @@ export default function SplitBox() : ReactNode{
                                 <input
                                     type="checkbox"
                                     name="per-kavi"
-                                    className="accent-gray-400"
+                                    data-split="per"
+                                    onChange={handleToggle}
+                                    className="accent-gray-400 per-kavi"
                                     defaultChecked
-                                    onChange={handlePercent}
                                 />
                                 Kavi
                             </label>
-                            <div>
+                            <div className="w-fit rounded-sm transition">
                                 <input type="number" name="percent-kavi" onChange={handlePercent}
                                     className="p-2 text-black percent-kavi
-                                    max-w-ful outline-none text-right
+                                    outline-none text-right
                                     h-8 border-l border-t border-b
                                     border-gray-600 rounded-tl-sm rounded-bl-sm
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                     [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
-                                <span className="text-black ml-10 shr-vimal">
-                                    {amount ? `= $ ${amount}` : ''}
-                                </span>
+                                <span className="text-black ml-10 shr-kavi"></span>
                             </div>
                         </li>
                     </ul>
