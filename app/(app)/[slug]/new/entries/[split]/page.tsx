@@ -1,7 +1,7 @@
 import Image from "next/image";
-import ParticipantDropdownPage from "./ParticipantDropdown";
-import CategoryDropdown from "./CategorydropDown";
-import SplitBox from "./SplitBox";
+import ParticipantDropdownPage from "../../../../_components/ParticipantDropdown";
+import CategoryDropdown from "../../../../_components/CategorydropDown";
+import SplitBox from "../../../../_components/SplitBox";
 
 interface PageProps {
   params: Promise<{ split: string }>;

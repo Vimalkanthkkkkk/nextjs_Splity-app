@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import AddParticipants from "./AddParticipants";
+import AddParticipants from "@/app/_components/AddParticipants";
 
 export default function CreateEvent(){
     return(
