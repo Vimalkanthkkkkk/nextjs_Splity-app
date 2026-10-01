@@ -152,8 +152,23 @@ export default async function ExpensePage( {params} : PageProps){
                                     <SplitBox/> 
                                     :
                                     <></>
-                                }     
+                                }
 
+                                <label htmlFor="whom" className="text-black block mt-2 mb-1">To whom?</label>
+                                <div className="flex gap-2 text-center text-wrap">
+                                    <input 
+                                        type="radio" id="whom" name="whom" defaultChecked value="vimal" 
+                                        className="text-black  outline-none border-0 accent-gray-400"
+                                    />
+                                    <label htmlFor="split-ery-equally" className="text-black self-center inline mt-1">Vimal</label>
+                                </div>
+                                <div className="flex gap-2 text-center text-wrap">
+                                    <input 
+                                        type="radio" id="whom" name="whom" defaultChecked value="kavi" 
+                                        className="text-black  outline-none border-0 accent-gray-400"
+                                    />
+                                    <label htmlFor="whom" className="text-black self-center inline mt-1">Kavi</label>
+                                </div>
                             </form>
                         </div>
                     </div>
