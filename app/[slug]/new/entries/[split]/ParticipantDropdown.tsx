@@ -3,11 +3,13 @@ import { useState, useRef, useEffect, ReactNode } from "react";
 
 type ParticipantDropdownProps = {
   participants: string[];
+  split : string
 };
 
-export default function ParticipantDropdownPage({participants}: ParticipantDropdownProps): ReactNode {
+export default function ParticipantDropdownPage({participants , split}: ParticipantDropdownProps): ReactNode {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState<string>( participants[0]);
+    const [whom, setWhom] = useState<string>('');
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -24,6 +26,20 @@ export default function ParticipantDropdownPage({participants}: ParticipantDropd
         setSelected(option);
         setIsOpen(false);
     };
+
+    useEffect(() => {
+        const container = document.querySelector('.radio-group');
+        if (!container) return;
+        const handleChange = (event: Event) => {
+            const target = event.target;
+            if (target instanceof HTMLInputElement && target.value) {
+                setWhom(target.value);
+            }
+        };
+
+        container.addEventListener('change', handleChange);
+        return () => container.removeEventListener('change', handleChange);
+    }, []);
 
     return (
         <div className="grid grid-cols-12">
@@ -95,11 +111,33 @@ export default function ParticipantDropdownPage({participants}: ParticipantDropd
                 <span className="text-lg">Some Ideas</span>
                 <div className="flex gap-1 mb-2">
                     <div className="bg-amber-300 w-1 h-12"></div>
-                    <span className="text-wrap">{selected} paid for the rental car.</span>
+                    <span className="text-wrap">
+                        {selected} 
+                        {
+                         split === "expense" ?
+                            " paid for the rental car."
+                        :
+                         split === "transfer" ?
+                            ` withdrew money from the ATM for ${whom}.`
+                        : 
+                            " brought some bottles back to the store."
+                        }
+                    </span>
                 </div>
                 <div className="flex gap-1">
                     <div className="bg-amber-300 w-1 h-12"></div>
-                    <span className="text-wrap">{selected} paid for the rental car.</span>
+                    <span className="text-wrap">
+                        {selected} 
+                        {
+                         split === "expense" ?
+                            " got some supplies from the supermarket."
+                        :
+                         split === "transfer" ?
+                            ` paid the flat deposit for ${whom}.`
+                        : 
+                            " The landlord returned the deposit."
+                        }
+                    </span>
                 </div>
             </div>
         </div>

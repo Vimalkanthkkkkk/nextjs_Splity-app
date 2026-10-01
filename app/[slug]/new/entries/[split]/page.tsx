@@ -83,13 +83,13 @@ export default async function ExpensePage( {params} : PageProps){
                     <div className="grid grid-cols-12 grid-rows-1">
                         <div className="flex flex-1 flex-col col-span-12 gap-4">
                             <div className="flex flex-row gap-2 text-black">
-                                <a href="" className="border-b-3">Expense</a>
-                                <a href="">Transfer</a>
-                                <a href="">Income</a>
+                                <a href="/vfvfv/new/entries/expense" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "expense" ? '3px' : '' }` }}>Expense</a>
+                                <a href="/vfvfv/new/entries/transfer" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "transfer" ? '3px' : '' }` }}>Transfer</a>
+                                <a href="/vfvfv/new/entries/income" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "income" ? '3px' : '' }` }}>Income</a>
                             </div>
                             <form action="">
 
-                                <ParticipantDropdownPage participants={participants} />
+                                <ParticipantDropdownPage participants={participants} split={split} />
 
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
@@ -102,7 +102,7 @@ export default async function ExpensePage( {params} : PageProps){
                                 "/>
 
                                 {
-                                    split === "expense" ?
+                                    split !== "transfer" ?
                                         <>
                                             <label htmlFor="amount" className="text-black block mt-3">Which Category?</label>
                                             <CategoryDropdown/>
@@ -128,7 +128,7 @@ export default async function ExpensePage( {params} : PageProps){
                                 "></textarea>
 
                                 {
-                                    split === "expense" ?
+                                    split !== "transfer" ?
                                         <>
                                             <label htmlFor="attach" className="text-black block mt-2 mb-1">Any Attachment ?</label>
                                             <input 
@@ -142,34 +142,41 @@ export default async function ExpensePage( {params} : PageProps){
                                                     h-8 
                                                 "
                                             />
+                                            <SplitBox/>
                                         </>
                                         :
                                         <></>
                                 }      
 
-                                {
-                                    split === " expense" ?
-                                    <SplitBox/> 
-                                    :
-                                    <></>
-                                }
+                                 
 
-                                <label htmlFor="whom" className="text-black block mt-2 mb-1">To whom?</label>
-                                <div className="flex gap-2 text-center text-wrap">
-                                    <input 
-                                        type="radio" id="whom" name="whom" defaultChecked value="vimal" 
-                                        className="text-black  outline-none border-0 accent-gray-400"
-                                    />
-                                    <label htmlFor="split-ery-equally" className="text-black self-center inline mt-1">Vimal</label>
-                                </div>
-                                <div className="flex gap-2 text-center text-wrap">
-                                    <input 
-                                        type="radio" id="whom" name="whom" defaultChecked value="kavi" 
-                                        className="text-black  outline-none border-0 accent-gray-400"
-                                    />
-                                    <label htmlFor="whom" className="text-black self-center inline mt-1">Kavi</label>
-                                </div>
+                                {
+                                    split === "transfer" ? 
+                                    <>
+                                        <label className="text-black block mt-2 mb-1">To whom?</label>
+                                        <div className="flex gap-2 text-center text-wrap radio-group">
+                                            <input 
+                                                type="radio" id="whom-vimal" name="whom" defaultChecked value="vimal" 
+                                                className="text-black  outline-none border-0 accent-gray-400"
+                                            />
+                                            <label htmlFor="whom-vimal" className="text-black self-center mt-1">Vimal</label>
+                                            <input 
+                                                type="radio" id="whom-kavi" name="whom" value="kavi" 
+                                                className="text-black outline-none border-0 accent-gray-400"
+                                            />
+                                            <label htmlFor="whom-kavi" className="text-black self-center mt-1">Kavi</label>
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                    </>
+                                }
+                                
                             </form>
+                            <div className="flex gap-4">
+                                <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">Add</button>
+                                <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
