@@ -130,7 +130,7 @@ export default function ParticipantDropdownPage({participants , split}: Particip
                         {selected} 
                         {
                          split === "expense" ?
-                            " got some supplies from the supermarket."
+                            " got some supplies from supermarket."
                         :
                          split === "transfer" ?
                             ` paid the flat deposit for ${whom}.`

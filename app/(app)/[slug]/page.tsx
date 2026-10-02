@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function EventsMainPage({params}: {params: Promise<{ slug: string }>}){
     const { slug } = await params
@@ -74,7 +75,7 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                 <div className="content-center pl-2 w-full h-10 self-center">
                     <span className="text-black">Hi vimal</span>
                 </div>
-                <div className="bg-gray-400 rounded-sm border-2 text-black w-full h-10 self-center content-center pl-2">
+                <div className="bg-gray-400 wrap-anywhere rounded-sm border-2 text-black w-full p-2 self-center content-center pl-2">
                     Invite your friends to participate in this Event
                 </div>
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
@@ -105,6 +106,23 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                     <div className="text-black flex flex-1 flex-row self-end">
                         <button type="submit" className="mr-2 p-1 rounded-sm bg-gray-200">View Expenses</button>
                         <button type="submit" className="bg-gray-400 rounded-sm p-1">Add Expenses</button>
+                        <Link href='/' className="flex">
+                            <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" 
+                                className="h-8 w-8" preserveAspectRatio="xMidYMid meet" fill="#000000">
+                                <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+                                <g id="SVGRepo_tracerCarrier"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                                <g id="SVGRepo_iconCarrier">
+                                    <path fill="#CCD6DD" d="M32 36l-2-2l-2 2l-2-2l-2 2l-2-2l-2 2l-2-2l-2 2l-2-2l-2 2l-2-2l-2 2l-2-2l-2 2V0l2 2l1.958-2L10 2l2.042-2L14 2l2.042-2L18 2l2.083-2L22 2l2.125-2L26 2l1.958-2L30 2l2-2z">
+                                    </path>
+                                    <path fill="#99AAB5" d="M19 17H9c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm8 0h-4c-.55 0-1-.45-1-1s.45-1 1-1h4c.55 0 1 .45 1 1s-.45 1-1 1zm-8 4H9c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm8 0h-4c-.55 0-1-.45-1-1s.45-1 1-1h4c.55 0 1 .45 1 1s-.45 1-1 1zm0 6H9c-.55 0-1-.45-1-1s.45-1 1-1h18c.55 0 1 .45 1 1s-.45 1-1 1zm0 4h-4c-.55 0-1-.45-1-1s.45-1 1-1h4c.55 0 1 .45 1 1s-.45 1-1 1z">
+                                    </path>
+                                    <circle fill="#99AAB5" cx="18" cy="8" r="4"></circle>
+                                </g>
+                            </svg>
+                        </Link>
                     </div>
                 </div>
                 <div className="bg-white shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] text-black rounded-sm gap-2 flex flex-col w-full h-fit self-center p-4">
