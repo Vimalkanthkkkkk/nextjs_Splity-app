@@ -8,18 +8,85 @@ import { createWorker } from "tesseract.js";
 export default function OCRPage(){
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>(false);
+    const preprocessImage = (imageSrc: string): Promise<string> => {
+        return new Promise((resolve) => {
+            const img = new window.Image();
+            img.src = imageSrc;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    resolve(imageSrc);
+                    return;
+                }
+                canvas.width = img.width * 2;
+                canvas.height = img.height * 2;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+                    const color = brightness > 128 ? 255 : 0;
+                    data[i] = color;     
+                    data[i + 1] = color; 
+                    data[i + 2] = color; 
+                }
+                ctx.putImageData(imgData, 0, 0);
+                resolve(canvas.toDataURL()); 
+            };
+            img.onerror = () => resolve(imageSrc);
+        });
+    };
+
+    const handleLines = (lines: Tesseract.Line[]): { success: boolean; res: any[] } => {
+        const regex = /total/i;
+        const result: any[] = [];
+        lines.forEach((l) => {
+            if (!l.text) return; 
+            const text = l.text.toLowerCase();
+            const index = text.search(regex);
+            if (index !== -1) {
+                const total_text = text.slice(index); 
+                const stringNumbers = total_text.match(/\d+/g) || [];
+                const actualNumbers = stringNumbers.map(Number);
+                const ans = { actualNumbers, total_text: text.slice(index, index + 5) };
+                result.push(ans);
+            } 
+        });
+        if (result.length === 0) {
+            return { success: false, res: [] };
+        } else {
+            return { success: true, res: result };
+        }
+    };
 
     const handleProcessing = async () => {
-        if(selectedImage){
-            setProcessing( p => {return !p});
+        if (!selectedImage) return;
+        try {
+            setProcessing(true);
             const worker = await createWorker("eng");
-            const result = await worker.recognize(selectedImage , {} , {blocks : true , layoutBlocks : true , text : true , box : true});
-            console.log(result.data);
-            console.log(result.data.text);
-            setProcessing(false);
+            const result = await worker.recognize(selectedImage);
+            let lines = result.data.blocks![0].paragraphs[0].lines || []; 
+            let outcome = handleLines(lines);
+            if (!outcome.success) {
+                console.log("First pass failed. Trying preprocessed image...");
+                const cleanedImage = await preprocessImage(selectedImage);
+                const result2 = await worker.recognize(cleanedImage);
+                lines = result2.data.blocks![0].paragraphs[0].lines || [];
+                outcome = handleLines(lines);
+            }
+            if (outcome.success) {
+                console.log("Found totals:", outcome.res);
+            } else {
+                console.log("Couldn't find total value, please upload a clearer image.");
+            }
             await worker.terminate();
-        }   
-    }
+        } catch (error) {
+            console.error("OCR Processing error:", error);
+        } finally {
+            setProcessing(false);
+        }
+    };
 
     const handleImageChange = (e : React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
