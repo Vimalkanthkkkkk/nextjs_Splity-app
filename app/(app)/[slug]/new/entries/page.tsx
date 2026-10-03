@@ -7,14 +7,13 @@ import { createWorker } from "tesseract.js";
 import ParticipantDropdown from "@/app/_components/ParticipantDropdown";
 import SplitBox from "@/app//_components/SplitBox";
 
-
 export default function OCRPage() {
+    const participants = [""];
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>(false);
     const [totalInput, setTotalInput] = useState<string>("");
     const [hasResult, setHasResult] = useState(false);
     const [notFound, setNotFound] = useState(false);
-    const participants = [""];
     const [selected, setSelected] = useState<string>(participants[0]);
 
     const preprocessImage = (imageSrc: string): Promise<string> => {
@@ -167,6 +166,15 @@ export default function OCRPage() {
         setHasResult(false);
         setNotFound(false);
     };
+
+    const numberInputOnWheelPreventChange = (e : React.WheelEvent<HTMLInputElement>) => {
+        const input = e.currentTarget;
+        input.blur()
+        e.stopPropagation()
+        setTimeout(() => {
+            input.focus()
+        }, 0)
+    }
 
     return (
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
@@ -365,10 +373,11 @@ export default function OCRPage() {
                             <div className="flex items-center gap-2 bg-gray-100 rounded-sm p-3">
                                 <span className="text-black font-semibold">₹</span>
                                 <input id="total-input"
-                                    type="number" inputMode="decimal"
+                                    type="number" 
+                                    onWheel={numberInputOnWheelPreventChange}
                                     value={totalInput} onChange={handleTotalChange}
                                     placeholder="0.00"
-                                    className="flex-1 bg-white text-black font-semibold rounded-sm px-2 py-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-300"
+                                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none flex-1 bg-white text-black font-semibold rounded-sm px-2 py-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-300"
                                 />
                             </div>
                             {notFound ? (
