@@ -150,8 +150,6 @@ export default async function ExpensePage( {params} : PageProps){
                                         <></>
                                 }      
 
-                                 
-
                                 {
                                     split === "transfer" ? 
                                     <>

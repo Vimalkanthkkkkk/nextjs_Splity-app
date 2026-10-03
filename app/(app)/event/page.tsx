@@ -20,7 +20,7 @@ export default function CreateEvent(){
                         <span className="text-black"> Splity </span>
                     </Link>
                 </div>
-                <form className="bg-gray-50 wrap-anywhere row-start-2 col-start-2 col-span-2 h-fit w-full flex flex-col gap-y-2 p-2 mb-10" method="GET" action="">
+                <form className="bg-gray-50 wrap-anywhere row-start-2 col-start-2 col-span-2 h-fit w-full flex flex-col gap-y-2 p-2 mb-10" method="POST" encType="multipart/form-data" action="">
                     <h1 className="text-black"> Create a new Event </h1>
                     <label htmlFor="eventName" className="text-black"> Event Name </label>
                     <input type="text" name="eventName" id="eventName"
