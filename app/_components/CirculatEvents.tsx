@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { EventContextType, useEvent } from "./Context";
 import { Notes } from "./Notes";
-import { db } from "@/app/_orm/db";
+import { getAllEvent } from "../_orm/Queries";
 
-
-export function CircularEvents() {
+export async function CircularEvents() {
     const eventContext: EventContextType = useEvent();
-    const total_events = eventContext.events.length;
+    const events = await getAllEvent();
+    const total_events = events.length;
     const baseradius = 130;
     const baseStepAngle = 45; 
     const [parentRotation, setParentRotation] = useState(0);
@@ -69,7 +69,7 @@ export function CircularEvents() {
                         transform: `rotate(${parentRotation}deg)`
                     }}
                 >
-                    {eventContext.events.map((e, idx) => {
+                    {events.map((e, idx) => {
                         const angleDeg = idx * (stepAngleDeg) - 90 ;
                         const angle = (angleDeg * Math.PI) / 180;
                         const x = radius * Math.cos(angle);
@@ -77,15 +77,15 @@ export function CircularEvents() {
 
                         return (
                             <div
-                                key={`${e.who_ID}-${idx}`}
+                                key={`${e.id}-${idx}`}
                                 className="absolute w-20 h-20 border-2 border-white hover:border-gray-800 bg-white shadow-[inset_0px_0px_6px_rgba(0,0,0,0.1)] pointer-events-auto rounded-lg place-content-center"
                                 style={{
                                     transform: `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${-parentRotation}deg)`
                                 }}
                             >
                                 <Notes
-                                    id={e.who_ID}
-                                    name={e.event_name}
+                                    id={e.id}
+                                    name={e.event}
                                 />
                             </div>
                         );

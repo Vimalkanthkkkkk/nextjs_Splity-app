@@ -24,10 +24,10 @@ export default function Participants({participants , split}:ParticipantProps){
                 <span>Paid for Something</span>
                 <label htmlFor="what" className="text-black block mt-4 mb-2">What for? </label>
                 <input
-                type="text"
-                name="what"
-                id="what"
-                className="p-2 text-black outline-none w-60 max-w-full h-8 border border-gray-600 rounded-sm"
+                    type="text"
+                    name="what"
+                    id="what"
+                    className="p-2 text-black outline-none w-60 max-w-full h-8 border border-gray-600 rounded-sm"
                 />
             </ParticipantDropdown>
             <IdeasPanel className="col-span-4" selected={selected} split={split} />
