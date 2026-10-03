@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function EventsMainPage({params}: {params: Promise<{ slug: string }>}){
-    const { slug } = await params
+    const { slug } = await params;
+    
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">

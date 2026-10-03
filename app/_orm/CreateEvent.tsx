@@ -6,11 +6,10 @@ import { redirect } from "next/navigation";
 
 export async function createEventAction(formData: FormData) {
   const eventName = formData.get("eventName") as string;
-  const currency = formData.get("currency") as string;
-  const yourName = formData.get("you") as string;
+  const currency  = formData.get("currency") as string;
+  const yourName  = formData.get("you") as string;
   const yourEmail = formData.get("email") as string;
-  const person2 = formData.get("Person2") as string;
-  
+  const person2   = formData.get("Person2") as string;
   const additionalParticipants = formData.getAll("additionalParticipants") as string[];
 
   const imageFile = formData.get("eventImage") as File;
@@ -21,8 +20,8 @@ export async function createEventAction(formData: FormData) {
   }
 
   const [creator] = await db.insert(users).values({
-    username: yourName || "Organizer",
-    email: yourEmail || `anon-${Date.now()}@splity.com`, 
+    username: yourName ,
+    email: yourEmail , 
     profilePicture: null,
   }).returning();
 
@@ -40,5 +39,5 @@ export async function createEventAction(formData: FormData) {
     currency: currency,
   }).returning();
 
-  redirect(`/events/${newEvent.id}`);
+  redirect(`/${newEvent.id}/entries`);
 }

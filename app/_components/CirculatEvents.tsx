@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { EventContextType, useEvent } from "./Context";
 import { Notes } from "./Notes";
+import { db } from "@/app/_orm/db";
+
 
 export function CircularEvents() {
     const eventContext: EventContextType = useEvent();
