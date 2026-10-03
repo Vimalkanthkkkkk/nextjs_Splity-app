@@ -3,6 +3,10 @@ import { ReactNode, useEffect, useState } from "react";
 
 type SplitType = "equal" | "amount" | "share" | "per";
 
+type SplitProps = {
+    money? : string
+};
+
 const SPLIT_TYPES: SplitType[] = ["equal", "amount", "share", "per"];
 
 const CHECK: Record<SplitType, (p: string) => string> = {
@@ -31,11 +35,11 @@ const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
     box.title = bad ? msg : "";
 };
 
-export default function SplitBox() : ReactNode{
+export default function SplitBox( {money} : SplitProps ) : ReactNode{
     const participants = ["vimal" , "kavi"];
     const TOTAL_PARTICIPANTS = 2;
     const [option , setoption] = useState<boolean>(true);
-    const [amount, setAmount] = useState<string>('');
+    const [amount, setAmount] = useState<string>(money ? money.toString() : '' );
     const [total, settotal] = useState<number>(TOTAL_PARTICIPANTS);
 
     const selectSplitMethod = () => {
@@ -43,7 +47,7 @@ export default function SplitBox() : ReactNode{
     }
 
     const recalc = (type: SplitType, source?: HTMLInputElement) => {
-        const amountValue = getAmount();
+        const amountValue = money  ? parseFloat(money) : getAmount();
         
         const rows = participants.flatMap((p) => {
             const check = document.querySelector<HTMLInputElement>(`.${CHECK[type](p)}`);
@@ -160,6 +164,11 @@ export default function SplitBox() : ReactNode{
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => recalc("per", event.target);
 
     useEffect(() => {
+        if(money){
+            setAmount(money);
+            SPLIT_TYPES.forEach((t) => recalc(t));
+            return;
+        }
         const input = document.getElementById("amount") as HTMLInputElement | null;
         if (!input) return;
         const handleInput = () => {
@@ -197,7 +206,7 @@ export default function SplitBox() : ReactNode{
                             Vimal
                         </label>
                         <span className="text-black text-[12px]">
-                            5000
+                            { money ? (parseFloat(money)/total).toFixed(2) : (parseFloat(amount)/total).toFixed(2) }
                         </span>
                     </li>
                     <li className="grid grid-cols-2 wrap-anywhere gap-0">
@@ -205,7 +214,7 @@ export default function SplitBox() : ReactNode{
                             Kavi
                         </label>
                         <span className="text-black text-[12px]">
-                            5000
+                            { money ? (parseFloat(money)/total).toFixed(2) : (parseFloat(amount)/total).toFixed(2) }
                         </span>
                     </li>
                 </ul>

@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { createWorker } from "tesseract.js";
+import ParticipantDropdown from "@/app/_components/ParticipantDropdown";
+import SplitBox from "@/app//_components/SplitBox";
+
 
 export default function OCRPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -11,6 +14,8 @@ export default function OCRPage() {
     const [totalInput, setTotalInput] = useState<string>("");
     const [hasResult, setHasResult] = useState(false);
     const [notFound, setNotFound] = useState(false);
+    const participants = [""];
+    const [selected, setSelected] = useState<string>(participants[0]);
 
     const preprocessImage = (imageSrc: string): Promise<string> => {
         return new Promise((resolve) => {
@@ -311,7 +316,7 @@ export default function OCRPage() {
                         ) : null}
                         <label
                             htmlFor="file-upload"
-                            className="text-black cursor-pointer self-center block mt-2 mb-1"
+                            className="text-black cursor-pointer block self-center mt-2 mb-1"
                         >
                             {processing
                                 ? "Processing"
@@ -351,7 +356,8 @@ export default function OCRPage() {
                         </button>
 
                     </div>
-                    {hasResult && (
+                    {
+                    hasResult && (
                         <div className="flex flex-col gap-1">
                             <label htmlFor="total-input" className="text-black font-medium">
                                 Total
@@ -374,6 +380,12 @@ export default function OCRPage() {
                                     Detected automatically. Edit if it's not correct.
                                 </p>
                             )}
+                            <ParticipantDropdown selected={selected} participants={participants} onSelect={setSelected} />
+                            <SplitBox money={totalInput} />
+                            <div className="flex gap-4">
+                                <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">Add</button>
+                                <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">Cancel</button>
+                            </div>
                         </div>
                     )}                
                 </div>
