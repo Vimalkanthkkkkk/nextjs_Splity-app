@@ -1,6 +1,6 @@
 import Image from "next/image";
-import ParticipantDropdownPage from "@/app//_components/ParticipantDropdown";
 import CategoryDropdown from "@/app//_components/CategorydropDown";
+import Participants from "@/app/_components/Participants";
 import SplitBox from "@/app//_components/SplitBox";
 import Link from "next/link";
 
@@ -92,8 +92,7 @@ export default async function ExpensePage( {params} : PageProps){
                             </div>
                             <form action="">
 
-                                <ParticipantDropdownPage participants={participants} split={split} />
-
+                                <Participants split={split} participants={participants} />
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="amount" id="amount" placeholder="Amount" className="
