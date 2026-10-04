@@ -55,7 +55,7 @@ export async function createEventAction(formData: FormData) {
             };
         }
 
-        const who = parseFloat(formData.get("participant") as string);
+        const who = formData.get("participant") as string;
         const whatFor = formData.get("what") as string;
         const category = formData.get("category") as string;
         const notes = formData.get("notes") as string;
@@ -97,7 +97,7 @@ export async function createEventAction(formData: FormData) {
                     who : creatorID , 
                     whospayment : who,
                     whatFor : whatFor , 
-                    howMuch : howMuch.toFixed(2) ,
+                    howMuch : howMuch ,
                     category : category ,
                     when : when , 
                     notes : notes , 
@@ -165,22 +165,22 @@ export async function createEventAction(formData: FormData) {
             }
         }
 
-        const [payment] = await tx
-            .insert(payments)
-            .values({
-                eventId : eventID ,
-                type : type ,
-                who : creatorID , 
-                whospayment : who ,
-                whatFor : whatFor , 
-                howMuch : howMuch.toFixed(2) ,
-                category : category ,
-                when : when , 
-                notes : notes , 
-                attachment : attachmentBuffer , 
-                isSplitEqually : split_method === "Eql" ,
-                splitDifferent : json
-            }).returning();
+        const values: typeof payments.$inferInsert = {
+            eventId: eventID,
+            type: "transfer",
+            who: creatorID,
+            whospayment: who,
+            whatFor: whatFor,
+            howMuch: howMuch,
+            category: category,
+            when: when,
+            notes: notes,
+            attachment: attachmentBuffer,
+            isSplitEqually: false,
+            splitDifferent: json,
+        };
+
+        const [payment] = await tx.insert(payments).values(values).returning();
 
     
         await tx
