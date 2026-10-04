@@ -1,8 +1,15 @@
+import { getEvent } from "@/app/_orm/Queries";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
 
 export default async function EventsMainPage({params}: {params: Promise<{ slug: string }>}){
     const { slug } = await params;
+    const event = await getEvent(Number(slug));
+    if(!event){
+        redirect("/");
+    }
     
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
@@ -24,7 +31,7 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                             type="button" 
                             className="duration-400 inline-flex items-center justify-between px-4 py-2 text-white rounded-md cursor-pointer transition-colors focus:outline-none"
                         >
-                            {slug}
+                            {event.event}
                             <span className="ml-2 text-xs transition-transform duration-300 pointer-events-none group-focus-within:rotate-180">▼</span>
                         </button>
                         <ul className="absolute z-10 -right-12 mt-2 w-48 p-2
@@ -74,7 +81,7 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                     <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
                 </div>
                 <div className="content-center pl-2 w-full h-10 self-center">
-                    <span className="text-black">Hi vimal</span>
+                    <span className="text-black">Hi {event.creator.username}</span>
                 </div>
                 <div className="bg-gray-400 wrap-anywhere rounded-sm border-2 text-black w-full p-2 self-center content-center pl-2">
                     Invite your friends to participate in this Event
@@ -137,8 +144,13 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                     <div className="flex flex-1 items-center justify-between">
                         <span className="">Who has seen this Event?</span>
                     </div>
-                    <span>Vimal</span>
-                    <span>Vimal 2</span>
+                    {
+                        event.participants.map( (p , idx)  => {
+                            return (
+                                <span key={idx} >{p}</span>
+                            )
+                        })
+                    }
                     <button type="submit" className="p-1 w-fit self-end rounded-sm bg-gray-200">View Expenses</button>
                 </div>
                 <div className="bg-white shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] text-black rounded-sm gap-2 flex flex-col w-full h-fit self-center p-4">

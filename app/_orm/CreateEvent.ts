@@ -27,7 +27,7 @@ export async function createEventAction(formData: FormData) {
 
             return {
               duplicate: true,
-              id: existing?.resourceId,
+              id: existing?.resourceId ?? "",
             };
         }
 
@@ -74,6 +74,10 @@ export async function createEventAction(formData: FormData) {
 
         return newEvent;
     });
+
+    if (!result.id) {
+        throw new Error("Idempotency record has no resource ID");
+    }
 
     redirect(`/${result.id}`);
 }

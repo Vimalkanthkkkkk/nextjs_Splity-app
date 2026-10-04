@@ -32,7 +32,7 @@ export const idempotencyKeys = pgTable(
   "idempotency_keys",
   {
     id: serial("id").primaryKey(),
-    key: text("key").notNull(),
+    key: text("key").notNull().unique(),
     operation: text("operation").notNull(),
     resourceId: integer("resource_id"),
     createdAt: timestamp("created_at")

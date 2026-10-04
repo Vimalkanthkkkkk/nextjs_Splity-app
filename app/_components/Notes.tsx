@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type NotesArg = {
     id : number,
     name : string,
@@ -5,8 +7,8 @@ type NotesArg = {
 
 export function Notes(args : NotesArg){
     return(
-        <div className="text-center">
+        <Link className="text-center" href={`/${args.id}`}>
             <span className=" text-2xl">{args.name}</span>
-        </div>
+        </Link>
     );
 }
