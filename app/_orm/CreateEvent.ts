@@ -1,43 +1,79 @@
 "use server";
 
 import { db } from "@/app/_orm/db";
-import { users, events } from "@/app/_orm/schema";
+import { users, events , idempotencyKeys } from "@/app/_orm/schema";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export async function createEventAction(formData: FormData) {
-  const eventName = formData.get("eventName") as string;
-  const currency  = formData.get("currency") as string;
-  const yourName  = formData.get("you") as string;
-  const yourEmail = formData.get("email") as string;
-  const person2   = formData.get("Person2") as string;
-  const additionalParticipants = formData.getAll("additionalParticipants") as string[];
+    const idempotencyKey =  formData.get("idempotencyKey")?.toString();
+    if (!idempotencyKey) {
+      throw new Error("Missing idempotency key");
+    }
+    const result = await db.transaction(async (tx) => {
+        const [idempotency] = await tx.insert(idempotencyKeys)
+            .values({
+              key: idempotencyKey,
+              operation: "create_event",
+            })
+            .onConflictDoNothing({
+              target: idempotencyKeys.key,
+            })
+            .returning();
+        if (!idempotency) {
+            const existing = await tx.query.idempotencyKeys.findFirst({
+              where: eq(idempotencyKeys.key, idempotencyKey),
+            });
 
-  const imageFile = formData.get("eventImage") as File;
-  let imageBuffer: Buffer | null = null;
-  if (imageFile && imageFile.size > 0) {
-    const arrayBuffer = await imageFile.arrayBuffer();
-    imageBuffer = Buffer.from(arrayBuffer);
-  }
+            return {
+              duplicate: true,
+              id: existing?.resourceId,
+            };
+        }
 
-  const [creator] = await db.insert(users).values({
-    username: yourName ,
-    email: yourEmail , 
-    profilePicture: null,
-  }).returning();
+        const eventName = formData.get("eventName") as string;
+        const currency = formData.get("currency") as string;
+        const yourName = formData.get("you") as string;
+        const yourEmail = formData.get("email") as string;
+        const person2 = formData.get("Person2") as string;
+        const additionalParticipants = formData.getAll("additionalParticipants") as string[];
 
-  const allParticipants = [
-    yourName,
-    person2,
-    ...additionalParticipants
-  ].filter(Boolean); 
+        const [creator] = await tx
+            .insert(users)
+            .values({
+              username: yourName,
+              email: yourEmail || null,
+              profilePicture: null,
+            })
+            .returning();
 
-  const [newEvent] = await db.insert(events).values({
-    event: eventName,
-    whoCreated: creator.id,
-    participants: allParticipants,
-    eventImage: imageBuffer,
-    currency: currency,
-  }).returning();
+        const allParticipants = [
+            yourName,
+            person2,
+            ...additionalParticipants,
+        ].filter(Boolean);
 
-  redirect(`/${newEvent.id}/entries`);
+        const [newEvent] = await tx
+            .insert(events)
+            .values({
+                event: eventName,
+                whoCreated: creator.id,
+                participants: allParticipants,
+                currency,
+            })
+            .returning();
+
+        await tx
+            .update(idempotencyKeys)
+            .set({
+              resourceId: newEvent.id,
+            })
+            .where(
+              eq(idempotencyKeys.id, idempotency.id)
+            );
+
+        return newEvent;
+    });
+
+    redirect(`/${result.id}`);
 }

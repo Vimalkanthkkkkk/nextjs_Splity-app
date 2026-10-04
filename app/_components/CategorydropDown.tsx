@@ -107,6 +107,11 @@ export default function CategoryDropdown(): ReactNode {
 
     return (
         <div className="grid grid-cols-12  ">
+            <input
+                type="hidden"
+                name="category"
+                value={selected.mainTitle}
+            />
             <div ref={dropdownRef} className="block w-full text-black mt-1 col-span-8">
                 <button
                     type="button"

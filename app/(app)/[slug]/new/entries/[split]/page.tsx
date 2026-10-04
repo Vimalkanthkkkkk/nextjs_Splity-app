@@ -3,13 +3,17 @@ import CategoryDropdown from "@/app//_components/CategorydropDown";
 import Participants from "@/app/_components/Participants";
 import SplitBox from "@/app//_components/SplitBox";
 import Link from "next/link";
+import { createEventAction } from "@/app/_orm/CreateExpenses";
 
 interface PageProps {
-  params: Promise<{ split: string }>;
+  params: Promise<{
+    slug: string;
+    split: string;
+  }>;
 }
 
-export default async function ExpensePage( {params} : PageProps){
-    const { split } = await params;
+export default async function ExpensePage( {params } : PageProps){
+    const { split , slug } = await params;
     const participants = [""];
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
@@ -90,8 +94,17 @@ export default async function ExpensePage( {params} : PageProps){
                                 <a href="/vfvfv/new/entries/transfer" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "transfer" ? '3px' : '' }` }}>Transfer</a>
                                 <a href="/vfvfv/new/entries/income" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "income" ? '3px' : '' }` }}>Income</a>
                             </div>
-                            <form action="">
-
+                            <form method="POST" action={createEventAction}>
+                                <input
+                                    type="hidden"
+                                    name="event_id"
+                                    value={slug}
+                                />
+                                <input
+                                    type="hidden"
+                                    name="type"
+                                    value={split}
+                                />
                                 <Participants split={split} participants={participants} />
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
@@ -106,7 +119,7 @@ export default async function ExpensePage( {params} : PageProps){
                                 {
                                     split !== "transfer" ?
                                         <>
-                                            <label htmlFor="amount" className="text-black block mt-3">Which Category?</label>
+                                            <label htmlFor="category" className="text-black block mt-3">Which Category?</label>
                                             <CategoryDropdown/>
                                         </>
                                         :
@@ -135,8 +148,8 @@ export default async function ExpensePage( {params} : PageProps){
                                             <label htmlFor="attach" className="text-black block mt-2 mb-1">Any Attachment ?</label>
                                             <input 
                                                 type="file" 
-                                                name="attachment" 
-                                                id="attachment" 
+                                                name="attach" 
+                                                id="attach" 
                                                 accept="image/png, image/jpeg" 
                                                 className="
                                                     text-gray-700 outline-none border-0

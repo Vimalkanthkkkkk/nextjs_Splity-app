@@ -96,18 +96,6 @@ export default function CreateEvent(){
                         "
                     />
                     <AddParticipants />
-                    <button type="submit"
-                        className="
-                            bg-mauve-700
-                            p-2
-                            w-fit
-                            rounded-sm
-                            mt-2
-                        "
-                    >
-                        Create Event
-                    </button>
-                    
                 </form>
                 <div className="wrap-anywhere text-wrap bg-gray-50 row-start-2 col-start-4 col-span-2 flex flex-col gap-y-2 p-2 mb-10 text-black">
                     <span className="text-2xl">

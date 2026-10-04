@@ -185,14 +185,14 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
         <>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split-ery-equally" name="split-method" onChange={selectSplitMethod} defaultChecked value="Equal-ery" 
+                    type="radio" id="split-ery-equally" name="split-method" onChange={selectSplitMethod} defaultChecked value="Eql" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split-ery-equally" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
             </div>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split-diff" name="split-method" onChange={selectSplitMethod}  value="diff-ery" 
+                    type="radio" id="split-diff" name="split-method" onChange={selectSplitMethod}  value="dif" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split-diff" className="text-black self-center inline mt-1 mb-1">Split differently</label>
@@ -206,7 +206,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                             Vimal
                         </label>
                         <span className="text-black text-[12px]">
-                            { money ? (parseFloat(money)/total).toFixed(2) : (parseFloat(amount)/total).toFixed(2) }
+                            { money ? (parseFloat(money)/total).toFixed(2) : amount ? (parseFloat(amount)/total).toFixed(2) : '0.00'}
                         </span>
                     </li>
                     <li className="grid grid-cols-2 wrap-anywhere gap-0">
@@ -214,7 +214,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                             Kavi
                         </label>
                         <span className="text-black text-[12px]">
-                            { money ? (parseFloat(money)/total).toFixed(2) : (parseFloat(amount)/total).toFixed(2) }
+                            { money ? (parseFloat(money)/total).toFixed(2) : amount ? (parseFloat(amount)/total).toFixed(2) : '0.00'}
                         </span>
                     </li>
                 </ul>
@@ -440,7 +440,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                 Vimal
                             </label>
                             <div className="w-fit rounded-sm transition">
-                                <input type="number" name="share-vimal" onChange={handleShare}
+                                <input type="number" name="vimal-share" onChange={handleShare}
                                     className="p-2 text-black vimal-share
                                     max-w-full outline-none text-right
                                     h-8 border-l border-t border-b
@@ -465,7 +465,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                 Kavi
                             </label>
                             <div className="w-fit rounded-sm transition">
-                                <input type="number" name="share-kavi" onChange={handleShare}
+                                <input type="number" name="kavi-share" onChange={handleShare}
                                     className="p-2 text-black kavi-share
                                     max-w-ful outline-none text-right
                                     h-8 border-l border-t border-b
