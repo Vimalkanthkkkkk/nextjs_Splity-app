@@ -2,9 +2,10 @@ import {  EventProvider } from "../_components/Context";
 import Header from "../_components/Header";
 import { CircularEvents } from "../_components/CirculatEvents";
 import Link from "next/link";
+import { getAllEvent } from "../_orm/Queries";
 
-export default function Home() {
-  
+export default async function Home() {
+  const Allevents = await getAllEvent();
   return (
     <EventProvider>
       <div className="flex flex-1 flex-col text-black font-sansbg-[#fafbfc] bg-linear-to-b from-[#ffffff] to-[#ffffff]">
@@ -16,7 +17,7 @@ export default function Home() {
             <Link href="/event" className="cursor-default bg-mauve-500 min-w-20 p-2 rounded-sm self-center z-10 ">Start Now</Link>
           </div>
         </div>
-        <CircularEvents/>
+        <CircularEvents events={Allevents} />
       </div>
     </EventProvider>   
   );

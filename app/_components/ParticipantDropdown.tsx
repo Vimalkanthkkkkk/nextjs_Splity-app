@@ -70,7 +70,6 @@ export default function ParticipantDropdown({
           ))}
         </ul>
       )}
-
       {children}
     </div>
   );

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/app/_orm/db";
-import { users, events } from "@/app/_orm/tables";
+import { users, events } from "@/app/_orm/schema";
 import { redirect } from "next/navigation";
 
 export async function createEventAction(formData: FormData) {

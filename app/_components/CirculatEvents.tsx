@@ -3,11 +3,23 @@
 import { useEffect, useState } from "react";
 import { EventContextType, useEvent } from "./Context";
 import { Notes } from "./Notes";
-import { getAllEvent } from "../_orm/Queries";
 
-export async function CircularEvents() {
+type params ={
+    id: number;
+    event: string;
+    whoCreated: number;
+    participants: unknown;
+    eventImage: Buffer<ArrayBufferLike> | null;
+    currency: string;
+}
+
+type Props = {
+    events: params[];
+};
+
+
+export function CircularEvents( {events} : Props) {
     const eventContext: EventContextType = useEvent();
-    const events = await getAllEvent();
     const total_events = events.length;
     const baseradius = 130;
     const baseStepAngle = 45; 
@@ -20,6 +32,7 @@ export async function CircularEvents() {
     const radius = total_events > 6 
         ? baseradius + (total_events - 6) * 12 
         : baseradius;
+        
 
     useEffect(() => {
         if (total_events <= 3) {

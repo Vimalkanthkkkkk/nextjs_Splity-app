@@ -1,3 +1,4 @@
+"use server"
 import { db } from "@/app/_orm/db";
 
 export async function getAllEvent() {

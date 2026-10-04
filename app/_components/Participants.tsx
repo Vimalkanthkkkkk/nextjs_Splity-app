@@ -12,9 +12,19 @@ type ParticipantProps = {
 
 export default function Participants({participants , split}:ParticipantProps){
     const [selected, setSelected] = useState<string>(participants[0]);
-
+    const [idempotencyKey]        = useState(() => crypto.randomUUID());
     return(
         <div className="grid grid-cols-12">
+            <input
+                type="hidden"
+                name="idempotencyKey"
+                value={idempotencyKey}
+            />
+            <input
+                type="hidden"
+                name="participant"
+                value={selected}
+            />
             <ParticipantDropdown
                 className="col-span-8"
                 participants={participants}
