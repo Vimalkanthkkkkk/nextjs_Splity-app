@@ -27,29 +27,32 @@ export default function AddParticipants() {
         name="idempotencyKey"
         value={idempotencyKey}
     />
-    <div className="w-full">
-      
+    <div className="wrap-anywhere">
       {participantIds.map((id, idx) => {
         const personNumber = idx + 3;
         return (
-            <div key={id} className="block mb-2">
+            <div key={id} className="flex flex-col mb-2">
                 <label htmlFor={`person-${id}`} className="text-black block text-sm">
                     Person {personNumber}
                 </label>
-                <input 
-                    type="text" 
-                    name="additionalParticipants" 
-                    id={`person-${id}`}
-                    required 
-                    className="p-2 text-black w-60 h-8 border border-gray-600 rounded-tl-sm rounded-bl-sm"
-                /> 
-                <button 
-                    type="button" 
-                    className="bg-red-200 hover:bg-red-300 w-8 h-8 rounded-tr-sm rounded-br-sm text-red-700 font-bold transition-colors" 
-                    onClick={() => removeParticipant(id)} 
-                >
-                    ✕
-                </button>
+                <div className="flex max-[400px]:flex-col">
+                    <input type="text" name="Person2" id="Person2"
+                        className="
+                            p-2 text-black
+                            w-60 max-w-full border
+                            h-8 rounded-tl-sm rounded-bl-sm
+                            border-gray-600 
+                        "
+                    />
+                  <button 
+                      type="button" 
+                      className="bg-red-200  hover:bg-red-300 w-fit px-2 rounded-tr-sm rounded-br-sm text-red-700 font-bold transition-colors" 
+                      onClick={() => removeParticipant(id)} 
+                  >
+                      ✕
+                  </button>
+                </div>
+                
             </div>
         );
       })}

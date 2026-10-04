@@ -181,20 +181,16 @@ export async function createEventAction(formData: FormData) {
         };
 
         const [payment] = await tx.insert(payments).values(values).returning();
-
     
-        await tx
-            .update(idempotencyKeys)
+        await tx.update(idempotencyKeys)
             .set({
               resourceId: payment.id ,
-            })
-            .where(
+            }).where(
               eq(idempotencyKeys.id, claiming.id)
             );
-
+            
         return payment;
-
-    });
+    })
 
     redirect(`/${result?.id}`);
 }

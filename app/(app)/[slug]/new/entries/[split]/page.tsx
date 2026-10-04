@@ -4,6 +4,7 @@ import Participants from "@/app/_components/Participants";
 import SplitBox from "@/app//_components/SplitBox";
 import Link from "next/link";
 import { createEventAction } from "@/app/_orm/CreateExpenses";
+import { getAllparticipants } from "@/app/_orm/Queries";
 
 interface PageProps {
   params: Promise<{
@@ -14,7 +15,8 @@ interface PageProps {
 
 export default async function ExpensePage( {params } : PageProps){
     const { split , slug } = await params;
-    const participants = [""];
+    const participants = await getAllparticipants(Number(slug));
+    
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
@@ -105,7 +107,7 @@ export default async function ExpensePage( {params } : PageProps){
                                     name="type"
                                     value={split}
                                 />
-                                <Participants split={split} participants={participants} />
+                                <Participants split={split} participants={participants ? participants.participants : []} />
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="amount" id="amount" placeholder="Amount" className="
@@ -184,12 +186,12 @@ export default async function ExpensePage( {params } : PageProps){
                                     <>
                                     </>
                                 }
-                                
+                                <div className="flex gap-4">
+                                    <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">Add</button>
+                                    <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">Cancel</button>
+                                </div>
                             </form>
-                            <div className="flex gap-4">
-                                <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">Add</button>
-                                <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">Cancel</button>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

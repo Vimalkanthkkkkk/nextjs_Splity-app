@@ -6,9 +6,16 @@ import { useState } from "react";
 import { createWorker } from "tesseract.js";
 import ParticipantDropdown from "@/app/_components/ParticipantDropdown";
 import SplitBox from "@/app//_components/SplitBox";
+import { getAllparticipants } from "@/app/_orm/Queries";
 
-export default function OCRPage() {
-    const participants = [""];
+interface PageProps {
+  params: Promise<{slug: string;}>;
+}
+
+export default async function OCRPage( {params} : PageProps ) {
+    const { slug } = await params;
+    const Allparticipants = await getAllparticipants(Number(slug));
+    const participants = Allparticipants ? Allparticipants.participants : [];
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>(false);
     const [totalInput, setTotalInput] = useState<string>("");
