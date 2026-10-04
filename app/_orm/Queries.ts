@@ -1,7 +1,7 @@
 "use server"
 import { db } from "@/app/_orm/db";
 import { eq } from "drizzle-orm";
-import { events  } from "./schema";
+import { events, payments  } from "./schema";
 
 export async function getAllEvent() {
   const result = await db.query.events.findMany();
@@ -22,6 +22,13 @@ export async function getEvent(id:number) {
   return event;
 }
 
+export async function getAllpayments(id:number){
+  const Allpayments = await db.query.payments.findMany({
+    where : eq(payments.eventId , id)
+  })
+
+  return Allpayments;
+}
 
 export async function getAllparticipants(eventID : number){
   const participants = await db.query.events.findFirst({

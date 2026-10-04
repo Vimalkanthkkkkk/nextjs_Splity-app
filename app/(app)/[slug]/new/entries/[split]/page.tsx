@@ -96,7 +96,7 @@ export default async function ExpensePage( {params } : PageProps){
                                 <a href="/vfvfv/new/entries/transfer" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "transfer" ? '3px' : '' }` }}>Transfer</a>
                                 <a href="/vfvfv/new/entries/income" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "income" ? '3px' : '' }` }}>Income</a>
                             </div>
-                            <form method="POST" action={createEventAction}>
+                            <form action={createEventAction}>
                                 <input
                                     type="hidden"
                                     name="event_id"

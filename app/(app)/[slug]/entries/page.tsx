@@ -1,6 +1,9 @@
+import { getAllpayments } from "@/app/_orm/Queries";
 import Image from "next/image";
 
-export default function EntriesPage(){
+export default async function EntriesPage({params}: {params: Promise<{ slug: string }>}){
+    const { slug } = await params;
+    const payments = await getAllpayments(Number(slug));
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
@@ -79,24 +82,27 @@ export default function EntriesPage(){
                         <button type="submit" className="wrap-anywhere pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">+ Add participant</button>
                     </div>
                     <ul className="list-none ">
-                        <li>
-                            <div className="grid grid-cols-12 items-center border-gray-200 text-black p-4">
-                                <div className="col-span-8">
-                                    <span className="block">onl paid €77.00 for pnf</span>
-                                    <span className="text-center text-sm">People involved: everyone. 09/24/2026 Your share: €12,948.00</span>
-                                </div>
-                                <span className="text-center min-h-fit rounded-4xl p-1 text-sm min-w-fit wrap-anywhere col-start-11 col-span-2 bg-blue-200">Rent & Home</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="grid grid-cols-12 border-t items-center border-gray-200 text-black p-4">
-                                <div className="col-span-8">
-                                    <span className="block">onl paid €77.00 for pnf</span>
-                                    <span className="text-center text-sm">People involved: everyone. 09/24/2026 Your share: €12,948.00</span>
-                                </div>
-                                <span className="text-center min-h-fit rounded-4xl p-1 text-sm min-w-fit wrap-anywhere col-start-11 col-span-2 bg-blue-200">Rent & Home</span>
-                            </div>
-                        </li>
+                        {
+                            payments.length === 0 ? 
+
+                            "No payments yet"
+
+                            :
+                            
+                            payments.map((p)=> {
+                                return(
+                                    <li>
+                                        <div className="grid grid-cols-12 items-center border-gray-200 text-black p-4">
+                                            <div className="col-span-8">
+                                                <span className="block">{p.whospayment} paid {p.howMuch} for </span>
+                                                <span className="text-center text-sm">People involved: everyone. 09/24/2026 Your share: €12,948.00</span>
+                                            </div>
+                                            <span className="text-center min-h-fit rounded-4xl p-1 text-sm min-w-fit wrap-anywhere col-start-11 col-span-2 bg-blue-200">Rent & Home</span>
+                                        </div>
+                                    </li>
+                                )
+                            })
+                        }
                     </ul>                    
                 </div>
             </div>
