@@ -159,7 +159,7 @@ export default async function ExpensePage( {params } : PageProps){
                                                     h-8 
                                                 "
                                             />
-                                            <SplitBox/>
+                                            <SplitBox participants={participants ? participants.participants : []} />
                                         </>
                                         :
                                         <></>

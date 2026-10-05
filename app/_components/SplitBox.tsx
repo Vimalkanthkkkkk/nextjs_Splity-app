@@ -5,6 +5,7 @@ type SplitType = "equal" | "amount" | "share" | "per";
 
 type SplitProps = {
     money? : string
+    participants : string[]
 };
 
 const SPLIT_TYPES: SplitType[] = ["equal", "amount", "share", "per"];
@@ -36,9 +37,8 @@ const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
     box.title = bad ? msg : "";
 };
 
-export default function SplitBox( {money} : SplitProps ) : ReactNode{
-    const participants = ["vimal" , "kavi"];
-    const TOTAL_PARTICIPANTS = 2;
+export default function SplitBox( {money , participants} : SplitProps ) : ReactNode{
+    const TOTAL_PARTICIPANTS = participants.length;
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>(money ? money.toString() : '' );
     const [total, settotal] = useState<number>(TOTAL_PARTICIPANTS);
@@ -203,22 +203,20 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                 <span>Summary</span>
                 <span>Equally between Everyone</span>
                 <ul className="flex flex-col gap-2">
-                    <li className="grid grid-cols-2 wrap-anywhere gap-0">
-                        <label className="text-black text-sm flex gap-2 items-center">
-                            Vimal
-                        </label>
-                        <span className="text-black text-[12px]">
-                            { money ? (parseFloat(money)/total).toFixed(2) : amount ? (parseFloat(amount)/total).toFixed(2) : '0.00'}
-                        </span>
-                    </li>
-                    <li className="grid grid-cols-2 wrap-anywhere gap-0">
-                        <label className="text-black text-sm flex gap-2 items-center">
-                            Kavi
-                        </label>
-                        <span className="text-black text-[12px]">
-                            { money ? (parseFloat(money)/total).toFixed(2) : amount ? (parseFloat(amount)/total).toFixed(2) : '0.00'}
-                        </span>
-                    </li>
+                    {
+                        participants.map((p , idx)=>{
+                            return(
+                                <li key={idx} className="grid grid-cols-2 wrap-anywhere gap-0">
+                                    <label className="text-black text-sm flex gap-2 items-center">
+                                        {p}
+                                    </label>
+                                    <span className="text-black text-[12px]">
+                                        { money ? (parseFloat(money)/total).toFixed(2) : amount ? (parseFloat(amount)/total).toFixed(2) : '0.00'}
+                                    </span>
+                                </li>
+                            );
+                        })
+                    }
                 </ul>
             </div>
             <div className=" w-fit border-2 wrap-anywhere
@@ -307,39 +305,29 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                 e.g. stays in a vacation home
                             </span>
                         </li>
-                        <li className="flex justify-between gap-1 border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="equally-vimal"
-                                    data-split="equal"
-                                    value={"1"}
-                                    onChange={handleToggle}
-                                    defaultChecked
-                                    className="accent-gray-400 equally-vimal"
-                                />
-                                Vimal
-                            </label>
-                            <span className="text-black text-[12px]">
+                        {
+                            participants.map((p , idx) => {
+                                return (
+                                    <li key={idx} className="flex justify-between gap-1 border-t p-2">
+                                        <label className="text-black text-sm flex gap-2 items-center">
+                                            <input
+                                                type="checkbox"
+                                                name={`equally-${p}`}
+                                                data-split="equal"
+                                                value={"1"}
+                                                onChange={handleToggle}
+                                                defaultChecked
+                                                className={`accent-gray-400 equally-${p}`}
+                                            />
+                                            {p}
+                                        </label>
+                                        <span className="text-black text-[12px]">
 
-                            </span>
-                        </li>
-                        <li className="flex justify-between gap-1 border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="equally-kavi"
-                                    data-split="equal"
-                                    onChange={handleToggle}
-                                    defaultChecked
-                                    className="accent-gray-400 equally-kavi"
-                                />
-                                Kavi
-                            </label>
-                            <span className="text-black text-[12px]">
-                                
-                            </span>
-                        </li>
+                                        </span>
+                                    </li>
+                                );
+                            })
+                        }
                     </ul>
                 </div>
                 <div className="
@@ -360,55 +348,37 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                 all
                             </label>
                         </li>
-                        <li className="flex flex-col justify-between border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="amount-vimal"
-                                    data-split="amount"
-                                    onChange={handleToggle}
-                                    className="accent-gray-400 amount-vimal"
-                                    defaultChecked
-                                />
-                                Vimal
-                            </label>
-                            <div className="w-fit rounded-sm transition">
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="vimal-amount" onChange={handleAmount} 
-                                    className=" vimal-amount
-                                        p-2 text-black text-right
-                                        max-w-full outline-none
-                                        h-8 border-r border-t border-b
-                                        border-gray-600 rounded-tr-sm rounded-br-sm
-                                        [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                        [&::-webkit-inner-spin-button]:appearance-none
-                                "/>
-                            </div>
-                        </li>
-                        <li className="flex flex-col justify-between border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="amount-kavi"
-                                    data-split="amount"
-                                    onChange={handleToggle}
-                                    className="accent-gray-400 amount-kavi"
-                                    defaultChecked
-                                />
-                                Kavi
-                            </label>
-                            <div className="w-fit rounded-sm transition">
-                                <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                <input type="number" name="kavi-amount" onChange={handleAmount}
-                                    className="kavi-amount p-2 text-black text-right
-                                    max-w-ful outline-none
-                                    h-8 border-r border-t border-b
-                                    border-gray-600 rounded-tr-sm rounded-br-sm
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                    [&::-webkit-inner-spin-button]:appearance-none"
-                                />
-                            </div>    
-                        </li>
+                        {
+                            participants.map((p , idx) => {
+                                return(
+                                    <li key={idx} className="flex flex-col justify-between border-t p-2">
+                                        <label className="text-black text-sm flex gap-2 items-center">
+                                            <input
+                                                type="checkbox"
+                                                name={`amount-${p}`}
+                                                data-split="amount"
+                                                onChange={handleToggle}
+                                                className={`accent-gray-400 amount-${p}`}
+                                                defaultChecked
+                                            />
+                                            {p}
+                                        </label>
+                                        <div className="w-fit rounded-sm transition">
+                                            <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                                            <input type="number" name={`${p}-amount`} onChange={handleAmount} 
+                                                className={`${p}-amount
+                                                    p-2 text-black text-right
+                                                    max-w-full outline-none
+                                                    h-8 border-r border-t border-b
+                                                    border-gray-600 rounded-tr-sm rounded-br-sm
+                                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                                    [&::-webkit-inner-spin-button]:appearance-none
+                                            `}/>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                        }
                     </ul>
                 </div>
                 <div
@@ -431,57 +401,37 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                 all
                             </label>
                         </li>
-                        <li className="flex flex-col justify-between border-t p-2">
-                             <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="share-vimal"
-                                    data-split="share"
-                                    onChange={handleToggle}
-                                    className="accent-gray-400 share-vimal"
-                                    defaultChecked
-                                />
-                                Vimal
-                            </label>
-                            <div className="w-fit rounded-sm transition">
-                                <input type="number" name="vimal-share" onChange={handleShare}
-                                    className="p-2 text-black vimal-share
-                                    max-w-full outline-none text-right
-                                    h-8 border-l border-t border-b
-                                    border-gray-600 rounded-tl-sm rounded-bl-sm
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                    [&::-webkit-inner-spin-button]:appearance-none
-                                "/>
-                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
-                                <span className="text-black ml-10 shr-vimal"></span>
-                            </div>
-                        </li>
-                        <li className="flex flex-col justify-between border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="share-kavi"
-                                    data-split="share"
-                                    onChange={handleToggle}
-                                    className="accent-gray-400 share-kavi"
-                                    defaultChecked
-                                />
-                                Kavi
-                            </label>
-                            <div className="w-fit rounded-sm transition">
-                                <input type="number" name="kavi-share" onChange={handleShare}
-                                    className="p-2 text-black kavi-share
-                                    max-w-ful outline-none text-right
-                                    h-8 border-l border-t border-b
-                                    border-gray-600 rounded-tl-sm rounded-bl-sm
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                    [&::-webkit-inner-spin-button]:appearance-none"
-                                />
-                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
-                                <span className="text-black ml-10 shr-kavi"></span>
-                            </div>
-                        </li>
-
+                        {
+                            participants.map((p , idx)=>{
+                                return (
+                                    <li key={idx} className="flex flex-col justify-between border-t p-2">
+                                        <label className="text-black text-sm flex gap-2 items-center">
+                                            <input
+                                                type="checkbox"
+                                                name={`share-${p}`}
+                                                data-split="share"
+                                                onChange={handleToggle}
+                                                className={`accent-gray-400 share-${p}`}
+                                                defaultChecked
+                                            />
+                                            Vimal
+                                        </label>
+                                        <div className="w-fit rounded-sm transition">
+                                            <input type="number" name={`${p}-share`} onChange={handleShare}
+                                                className={`p-2 text-black ${p}-share
+                                                max-w-full outline-none text-right
+                                                h-8 border-l border-t border-b
+                                                border-gray-600 rounded-tl-sm rounded-bl-sm
+                                                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                                [&::-webkit-inner-spin-button]:appearance-none
+                                            `}/>
+                                            <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">$</span>
+                                            <span className="text-black ml-10"></span>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                        }
                     </ul>
                 </div>
                 <div
@@ -504,57 +454,38 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                 all
                             </label>
                         </li>
-                        <li className="flex flex-col justify-between border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="per-vimal"
-                                    data-split="per"
-                                    onChange={handleToggle}
-                                    className="accent-gray-400 per-vimal"
-                                    defaultChecked
-                                />
-                                Vimal
-                            </label>
-                            <div className="w-fit rounded-sm transition">
-                                <input type="number" name="percent-vimal" onChange={handlePercent}
-                                className="
-                                    p-2 text-black percent-vimal text-right
-                                    outline-none max-w-ful
-                                    h-8 border-l border-t border-b
-                                    border-gray-600 rounded-tl-sm rounded-bl-sm
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                    [&::-webkit-inner-spin-button]:appearance-none
-                                "/>
-                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
-                                <span className="text-black ml-10 shr-vimal"></span>
-                            </div>
-                        </li>
-                        <li className="flex flex-col justify-between border-t p-2">
-                            <label className="text-black text-sm flex gap-2 items-center">
-                                <input
-                                    type="checkbox"
-                                    name="per-kavi"
-                                    data-split="per"
-                                    onChange={handleToggle}
-                                    className="accent-gray-400 per-kavi"
-                                    defaultChecked
-                                />
-                                Kavi
-                            </label>
-                            <div className="w-fit rounded-sm transition">
-                                <input type="number" name="percent-kavi" onChange={handlePercent}
-                                    className="p-2 text-black percent-kavi
-                                    outline-none text-right
-                                    h-8 border-l border-t border-b
-                                    border-gray-600 rounded-tl-sm rounded-bl-sm
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
-                                    [&::-webkit-inner-spin-button]:appearance-none"
-                                />
-                                <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
-                                <span className="text-black ml-10 shr-kavi"></span>
-                            </div>
-                        </li>
+                        {
+                            participants.map((p,idx) => {
+                                return(
+                                    <li key={idx} className="flex flex-col justify-between border-t p-2">
+                                        <label className="text-black text-sm flex gap-2 items-center">
+                                            <input
+                                                type="checkbox"
+                                                name={`per-${p}`}
+                                                data-split="per"
+                                                onChange={handleToggle}
+                                                className={`accent-gray-400 per-${p}`}
+                                                defaultChecked
+                                            />
+                                            Vimal
+                                        </label>
+                                        <div className="w-fit rounded-sm transition">
+                                            <input type="number" name={`percent-${p}`} onChange={handlePercent}
+                                            className={`
+                                                p-2 text-black percent-${p} text-right
+                                                outline-none max-w-ful
+                                                h-8 border-l border-t border-b
+                                                border-gray-600 rounded-tl-sm rounded-bl-sm
+                                                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                                [&::-webkit-inner-spin-button]:appearance-none
+                                            `}/>
+                                            <span className="inline text-black border-t border-r border-b p-2 border-gray-600 rounded-tr-sm rounded-br-sm">%</span>
+                                            <span className="text-black ml-10"></span>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                        }
                     </ul>
                 </div>
             </div>
