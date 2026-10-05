@@ -39,7 +39,15 @@ export async function getAllpayments(id:number){
 
 export async function getpayment(id:number){
   const payment = await db.query.payments.findFirst({
-    where : eq(payments.id , id) 
+    where : eq(payments.id , id) ,
+    with : {
+      event : {
+        columns : {
+          currency : true,
+          participants : true
+        }
+      }
+    }
   })
 
   return payment;

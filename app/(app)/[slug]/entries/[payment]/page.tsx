@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getpayment } from "@/app/_orm/Queries";
+import { redirect } from "next/navigation";
+import { currencySymbols } from "@/app/_components/CurrencySymbols";
 
 interface PaymentProps {
   params: Promise<{
@@ -12,6 +14,16 @@ interface PaymentProps {
 export default async function EditpaymentsPage( {params } : PaymentProps){
     const {slug , payment} = await params;
     const expense = await getpayment(Number(payment));
+    if(!expense){
+        redirect(`/${slug}/entries`)
+    }
+    const currency = expense.event.currency;
+    const currencyCode = currency as keyof typeof currencySymbols;
+    const currencySymbol = currencySymbols[currencyCode] ;
+    const date = expense.when;
+    const type = expense.type;
+    const word = type === "expense" ? "Paid by" : type === "income" ? "Received by" : ''
+    const wordtwo = type !== "transfer" ? "on" : "gave to";
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
@@ -84,28 +96,27 @@ export default async function EditpaymentsPage( {params } : PaymentProps){
                     <span className="text-black">{`<- Back`}</span>
                 </div>
                 <div className="bg-white gap-2 text-black p-4 rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] flex flex-col w-full h-fit self-center">
-                    <span>INCOME</span>
+                    <span>{type.toLocaleUpperCase()}</span>
                     <div className="flex mt-6 flex-1 justify-between">
-                        <span>income</span>
-                        <span>$100.00</span>
+                        <span>{expense.whatFor}</span>
+                        <span>{currencySymbol}{expense.howMuch}</span>
                     </div>
-                    <span>Received by vimal on date</span>
-                    <span className="mt-6 mb-6">split by Precentages</span>
+                    <span>{word} {expense.whospayment} {wordtwo} {`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`}</span>
+                    <span className="mt-6 mb-6">split by {expense.splitMethod}</span>
                     <ul>
-                        <li className="flex mb-4 flex-1 justify-between">
-                            <div className="flex flex-1 flex-col justify-between">
-                                <span>Vimal</span>
-                                <span className="text-[14px]">10%</span>
-                            </div>
-                            <span>$100.00</span>
-                        </li>
-                        <li className="flex flex-1 justify-between">
-                            <div className="flex flex-1 flex-col justify-between">
-                                <span>VIshwa</span>
-                                <span className="text-[14px]">10%</span>
-                            </div>
-                            <span>$100.00</span>
-                        </li>
+                        {
+                            Object.entries(expense.splitDifferent ?? {}).map(([p , amt] , idx)=>{
+                                return(
+                                   <li key={idx} className="flex mb-4 flex-1 justify-between">
+                                        <div className="flex flex-1 flex-col justify-between">
+                                            <span>{p}</span>
+                                            <span className="text-[14px]">{amt}</span>
+                                        </div>
+                                        <span>{currencySymbol}{amt}</span>
+                                    </li> 
+                                );
+                            })
+                        }
                     </ul>
                     <div className="flex justify-between text-black">
                         <Link href={`${expense?.id}/edit`} className="bg-sky-300 rounded-sm p-2">

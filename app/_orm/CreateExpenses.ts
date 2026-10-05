@@ -55,12 +55,21 @@ export async function createEventAction(formData: FormData) {
             };
         }
 
+        const splitTypeEnum = {
+           equally : "Equally", 
+           percent : "percentages", 
+           amount  : "amounts" , 
+           shares  : "shares"
+        } as const;
+
+
         const who = formData.get("participant") as string;
         const whatFor = formData.get("what") as string;
         const category = formData.get("category") as string;
         const notes = formData.get("notes") as string;
         const split_type = formData.get("splitType") as string;
-        
+        const splitkey = split_type  as keyof typeof splitTypeEnum
+
         let split_method: string | undefined;
         let whom: string | undefined;
         let json : Record<string, number> = {};
@@ -103,6 +112,7 @@ export async function createEventAction(formData: FormData) {
                     notes : notes , 
                     attachment : attachmentBuffer , 
                     isSplitEqually : false ,
+                    splitMethod : splitTypeEnum[splitkey] ,
                     splitDifferent : split_diff
                 }).returning();
 
@@ -135,31 +145,54 @@ export async function createEventAction(formData: FormData) {
             });
         }else{
             if(split_type === "equally"){
+                let count = 0;
+                let checkParticipants : string[] = [];
                 participant?.participants.forEach((p) => {
                     const field = formData.get(`equally-${p}`) as string
                     if( field !== null ){
-                        json[p] = amount;
+                        count += 1;
+                        checkParticipants.push(p);
+                        //json[p] = amount;
                     }
+                })
+                checkParticipants.forEach((cp) => {
+                    json[cp] = howMuch/count;
                 })
             }else if(split_type === "amount"){
                 participant?.participants.forEach((p) => {
                     const field = formData.get(`${p}-amount`) as string
                     if(field !== null){
-                        json[p] = amount
+                        json[p] = parseFloat(field);
                     }
                 })
             }else if(split_type === "shares"){
+                let active : string[] = [];
+                const total_shares = formData.get(".total_share") as string;
                 participant?.participants.forEach((p) => {
-                    const field = formData.get(`${p}-share`) as string
+                    const field = formData.get(`share-${p}`) as string
                     if(field !== null){
-                        json[p] = amount
+                        active.push(p);
                     }
                 })
+                if(active.length === 1){
+                    json[active[0]] = howMuch;
+                }
+                active.forEach((ap)=>{
+                    const field = formData.get(`${ap}-share`) as string;
+                    json[ap] = (parseFloat(field) / parseFloat(total_shares) ) * howMuch
+                })
             }else if(split_type === "percent"){
+                let active : string[] = [];
                 participant?.participants.forEach((p) => {
-                    const field = formData.get(`percent-${p}`) as string
+                    const field = formData.get(`share-${p}`) as string
                     if(field !== null){
-                        json[p] = amount
+                        active.push(p);
+                    }
+                })
+                active.forEach((ap) => {
+                    const field = formData.get(`percent-${ap}`) as string
+                    if(field !== null){
+                        json[ap] = parseFloat((( parseFloat(field) * howMuch ) / 100).toFixed(2))
                     }
                 })
             }
@@ -177,6 +210,7 @@ export async function createEventAction(formData: FormData) {
             notes: notes,
             attachment: attachmentBuffer,
             isSplitEqually: false,
+            splitMethod : splitTypeEnum[splitkey],
             splitDifferent: json,
         };
 

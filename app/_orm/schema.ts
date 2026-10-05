@@ -21,6 +21,8 @@ const blob = customType<{ data: Buffer }>({
 
 export const paymentTypeEnum = pgEnum("payment_type", ["expense", "transfer", "income"]);
 
+export const splitTypeEnum = pgEnum("split_type", ["Equally", "percentages", "amounts" , "shares"]);
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull(),
@@ -74,6 +76,7 @@ export const payments = pgTable("payments", {
   notes: text("notes"),
   attachment: blob("attachment"), 
   isSplitEqually: boolean("is_split_equally").default(true).notNull(),
+  splitMethod: splitTypeEnum("split_method").default("Equally").notNull(),
   splitDifferent: jsonb("split_different").$type<Record<string, number>>()
 });
 

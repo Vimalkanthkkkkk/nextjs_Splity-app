@@ -24,6 +24,7 @@ const INPUT: Record<SplitType, (p: string) => string | null> = {
 };
 
 const getAmount = () => parseFloat((document.getElementById("amount") as HTMLInputElement | null)?.value ?? "") || 0;
+const total_share_input = document.querySelector<HTMLInputElement>(`.total_share`);
 
 const numStr = (n: number) => (n > 0 ? String(Math.round(n * 100) / 100) : "");
 const BAD_CLASSES = ["ring-2", "ring-red-300", "bg-red-50"];
@@ -107,6 +108,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
             case "share": {
                 const shares = active.map((r) => parseFloat(r.input!.value) || 0);
                 const totalShares = shares.reduce((a, b) => a + b, 0);
+                total_share_input!.value = totalShares.toString();
                 owed = count === 1
                     ? [amountValue]
                     : shares.map((s) => (totalShares > 0 ? (s / totalShares) * amountValue : NaN));
@@ -311,6 +313,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                                     type="checkbox"
                                     name="equally-vimal"
                                     data-split="equal"
+                                    value={"1"}
                                     onChange={handleToggle}
                                     defaultChecked
                                     className="accent-gray-400 equally-vimal"
@@ -414,6 +417,7 @@ export default function SplitBox( {money} : SplitProps ) : ReactNode{
                         peer-checked/shares:block
                 ">
                     <ul className="flex flex-col gap-2">
+                        <input type="number" hidden className="total_share" name="total_share" />
                         <li className="flex justify-between gap-1 pl-2 pr-2">
                             <label className="text-black flex gap-2 items-center">
                                 <input
