@@ -74,7 +74,7 @@ export const payments = pgTable("payments", {
   notes: text("notes"),
   attachment: blob("attachment"), 
   isSplitEqually: boolean("is_split_equally").default(true).notNull(),
-  splitDifferent: jsonb("split_different"),
+  splitDifferent: jsonb("split_different").$type<Record<string, number>>()
 });
 
 export const comments = pgTable("comments", {

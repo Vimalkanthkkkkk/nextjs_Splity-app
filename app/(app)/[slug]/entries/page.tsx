@@ -90,14 +90,27 @@ export default async function EntriesPage({params}: {params: Promise<{ slug: str
                             :
                             
                             payments.map((p)=> {
+                                const word = p.type === "expense" ? "Paid" : p.type === "income" ? "received" : "gave" ;
+                                const date = `${p.when.getDate}/${p.when.getMonth}/${p.when.getFullYear}`
+                                const currency = p.event.currency;
+                                const myShare = p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
+                                                    return participant=== p.whospayment ? amount : '' 
+                                        }) : ''
                                 return(
                                     <li>
                                         <div className="grid grid-cols-12 items-center border-gray-200 text-black p-4">
                                             <div className="col-span-8">
-                                                <span className="block">{p.whospayment} paid {p.howMuch} for </span>
-                                                <span className="text-center text-sm">People involved: everyone. 09/24/2026 Your share: €12,948.00</span>
+                                                <span className="block">{p.whospayment} {word} {currency}{p.howMuch} for {p.whatFor}</span>
+                                                {
+                                                    p.type !== "transfer" ? 
+                                                    <span className="text-center text-sm">People involved: {p.isSplitEqually ? "everyone" : p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
+                                                        return participant;
+                                                    }) : ''} . {date} Your share: {currency}{myShare}</span>
+                                                    :
+                                                    <></>
+                                                }
                                             </div>
-                                            <span className="text-center min-h-fit rounded-4xl p-1 text-sm min-w-fit wrap-anywhere col-start-11 col-span-2 bg-blue-200">Rent & Home</span>
+                                            <span className="text-center min-h-fit rounded-4xl p-1 text-sm min-w-fit wrap-anywhere col-start-11 col-span-2 bg-blue-200">{p.category}</span>
                                         </div>
                                     </li>
                                 )

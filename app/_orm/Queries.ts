@@ -24,7 +24,14 @@ export async function getEvent(id:number) {
 
 export async function getAllpayments(id:number){
   const Allpayments = await db.query.payments.findMany({
-    where : eq(payments.eventId , id)
+    where : eq(payments.eventId , id) ,
+    with : {
+      event : {
+        columns : {
+          currency : true
+        }
+      }
+    }
   })
 
   return Allpayments;
