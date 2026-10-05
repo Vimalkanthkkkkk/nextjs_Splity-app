@@ -77,7 +77,7 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                 </div>
             </nav>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-4 shrink">
-                <div className="bg-amber-500 w-full rounded-4xl h-50 self-center relative ">
+                <div className="w-full rounded-4xl h-50 self-center relative ">
                     <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
                 </div>
                 <div className="content-center pl-2 w-full h-10 self-center">

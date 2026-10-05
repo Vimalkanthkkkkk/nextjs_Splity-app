@@ -167,7 +167,7 @@ export async function createEventAction(formData: FormData) {
 
         const values: typeof payments.$inferInsert = {
             eventId: eventID,
-            type: "transfer",
+            type: type,
             who: creatorID,
             whospayment: who,
             whatFor: whatFor,

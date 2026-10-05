@@ -1,5 +1,7 @@
+import { currencySymbols } from "@/app/_components/CurrencySymbols";
 import { getAllpayments } from "@/app/_orm/Queries";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function EntriesPage({params}: {params: Promise<{ slug: string }>}){
     const { slug } = await params;
@@ -8,7 +10,7 @@ export default async function EntriesPage({params}: {params: Promise<{ slug: str
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
                 <div className="w-full max-w-3xl items-center justify-between mx-auto px-2 flex">
-                    <div className="flex items-center">
+                    <Link href="/" className="flex items-center">
                         <Image
                             width={0} height={0}
                             style={{ width: '50px', height: '50px' }}
@@ -18,7 +20,7 @@ export default async function EntriesPage({params}: {params: Promise<{ slug: str
                             src="/noun_bill_5997839_@700.png"
                             alt="Splity logo"
                         />
-                    </div>
+                    </Link>
                     <div className="relative inline-block text-left group">
                         <button 
                             type="button" 
@@ -89,28 +91,35 @@ export default async function EntriesPage({params}: {params: Promise<{ slug: str
 
                             :
                             
-                            payments.map((p)=> {
+                            payments.map((p , i)=> {
                                 const word = p.type === "expense" ? "Paid" : p.type === "income" ? "received" : "gave" ;
                                 const date = `${p.when.getDate}/${p.when.getMonth}/${p.when.getFullYear}`
                                 const currency = p.event.currency;
+                                const currencyCode = currency as keyof typeof currencySymbols;
+                                const currencySymbol = currencySymbols[currencyCode] ;
                                 const myShare = p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
                                                     return participant=== p.whospayment ? amount : '' 
                                         }) : ''
                                 return(
-                                    <li>
-                                        <div className="grid grid-cols-12 items-center border-gray-200 text-black p-4">
+                                    <li key={i}>
+                                        <div className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
                                             <div className="col-span-8">
-                                                <span className="block">{p.whospayment} {word} {currency}{p.howMuch} for {p.whatFor}</span>
+                                                <span className="block">{p.whospayment} {word} {currencySymbol}{p.howMuch} for {p.whatFor}</span>
                                                 {
                                                     p.type !== "transfer" ? 
-                                                    <span className="text-center text-sm">People involved: {p.isSplitEqually ? "everyone" : p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
-                                                        return participant;
-                                                    }) : ''} . {date} Your share: {currency}{myShare}</span>
+                                                    <span className="text-center text-sm">People involved: {p.isSplitEqually ? "everyone" : p.splitDifferent 
+                                                        ? 
+                                                        Object.entries(p.splitDifferent).map(([participant , amount]) => {
+                                                            return participant;
+                                                        }) 
+                                                        : ''
+                                                        }. {date} Your share: {currencySymbol}{myShare}
+                                                    </span>
                                                     :
                                                     <></>
                                                 }
                                             </div>
-                                            <span className="text-center min-h-fit rounded-4xl p-1 text-sm min-w-fit wrap-anywhere col-start-11 col-span-2 bg-blue-200">{p.category}</span>
+                                            <span className="text-center rounded-4xl p-1 w-fit text-[12px] col-start-11 bg-blue-200">{p.category}</span>
                                         </div>
                                     </li>
                                 )

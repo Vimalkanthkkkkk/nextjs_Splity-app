@@ -92,9 +92,9 @@ export default async function ExpensePage( {params } : PageProps){
                     <div className="grid grid-cols-12 grid-rows-1">
                         <div className="flex flex-1 flex-col col-span-12 gap-4">
                             <div className="flex flex-row gap-2 text-black">
-                                <a href="/vfvfv/new/entries/expense" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "expense" ? '3px' : '' }` }}>Expense</a>
-                                <a href="/vfvfv/new/entries/transfer" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "transfer" ? '3px' : '' }` }}>Transfer</a>
-                                <a href="/vfvfv/new/entries/income" style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "income" ? '3px' : '' }` }}>Income</a>
+                                <Link href={`/${Number(slug)}/new/entries/expense`} style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "expense" ? '3px' : '' }` }}>Expense</Link>
+                                <Link href={`/${Number(slug)}/new/entries/transfer`} style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "transfer" ? '3px' : '' }` }}>Transfer</Link>
+                                <Link href={`/${Number(slug)}/new/entries/income`} style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "income" ? '3px' : '' }` }}>Income</Link>
                             </div>
                             <form action={createEventAction}>
                                 <input
