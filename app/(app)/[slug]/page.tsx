@@ -114,7 +114,7 @@ export default async function EventsMainPage({params}: {params: Promise<{ slug: 
                     <div className="text-black flex flex-1 flex-row self-end">
                         <Link href={`/${slug}/entries`} className="mr-2 p-1 rounded-sm bg-gray-200">View Expenses</Link>
                         <Link href={`/${slug}/new/entries/expense`} className="bg-gray-400 rounded-sm p-1">Add Expenses</Link>
-                        <Link href='/new/entries' className="flex">
+                        <Link href={`/${slug}/new/entries`} className="flex">
                             <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" 
                                 className="h-8 w-8" preserveAspectRatio="xMidYMid meet" fill="#000000">
                                 <g id="SVGRepo_bgCarrier" strokeWidth="0" />
