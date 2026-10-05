@@ -170,16 +170,18 @@ export default async function ExpensePage( {params } : PageProps){
                                     <>
                                         <label className="text-black block mt-2 mb-1">To whom?</label>
                                         <div className="flex gap-2 text-center text-wrap radio-group">
-                                            <input 
-                                                type="radio" id="whom-vimal" name="whom" defaultChecked value="vimal" 
-                                                className="text-black  outline-none border-0 accent-gray-400"
-                                            />
-                                            <label htmlFor="whom-vimal" className="text-black self-center mt-1">Vimal</label>
-                                            <input 
-                                                type="radio" id="whom-kavi" name="whom" value="kavi" 
-                                                className="text-black outline-none border-0 accent-gray-400"
-                                            />
-                                            <label htmlFor="whom-kavi" className="text-black self-center mt-1">Kavi</label>
+                                            {
+                                                participants?.participants.map((p , idx) => {
+                                                    return(
+                                                        <>
+                                                            <input type="radio" id={`whom-${p}`} name="whom" defaultChecked value={p} 
+                                                                className="text-black  outline-none border-0 accent-gray-400"
+                                                            />
+                                                            <label htmlFor={`whom-${p}`} className="text-black self-center mt-1">{p}</label>
+                                                        </>
+                                                    );
+                                                })
+                                            }
                                         </div>
                                     </>
                                     :
