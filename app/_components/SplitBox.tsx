@@ -1,4 +1,5 @@
 "use client"
+
 import { ReactNode, useEffect, useState } from "react";
 
 type SplitType = "equal" | "amount" | "share" | "per";
@@ -25,7 +26,6 @@ const INPUT: Record<SplitType, (p: string) => string | null> = {
 };
 
 const getAmount = () => parseFloat((document.getElementById("amount") as HTMLInputElement | null)?.value ?? "") || 0;
-const total_share_input = document.querySelector<HTMLInputElement>(`.total_share`);
 
 const numStr = (n: number) => (n > 0 ? String(Math.round(n * 100) / 100) : "");
 const BAD_CLASSES = ["ring-2", "ring-red-300", "bg-red-50"];
@@ -38,6 +38,7 @@ const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
 };
 
 export default function SplitBox( {money , participants} : SplitProps ) : ReactNode{
+    
     const TOTAL_PARTICIPANTS = participants.length;
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>(money ? money.toString() : '' );
@@ -49,7 +50,7 @@ export default function SplitBox( {money , participants} : SplitProps ) : ReactN
 
     const recalc = (type: SplitType, source?: HTMLInputElement) => {
         const amountValue = money  ? parseFloat(money) : getAmount();
-        
+        const total_share_input = document.querySelector<HTMLInputElement>(`.total_share`);
         const rows = participants.flatMap((p) => {
             const check = document.querySelector<HTMLInputElement>(`.${CHECK[type](p)}`);
             if (!check) return [];

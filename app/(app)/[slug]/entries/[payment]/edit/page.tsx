@@ -5,6 +5,7 @@ import SplitBox from "@/app//_components/SplitBox";
 import Link from "next/link";
 import { createEventAction } from "@/app/_orm/CreateExpenses";
 import { getAllparticipants } from "@/app/_orm/Queries";
+import { redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{
@@ -16,7 +17,9 @@ interface PageProps {
 export default async function ExpenseEditPage( {params } : PageProps){
     const { split , slug } = await params;
     const participants = await getAllparticipants(Number(slug));
-    
+    if(!participants){
+        redirect('/')
+    }
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">

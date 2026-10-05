@@ -72,7 +72,7 @@ export async function createEventAction(formData: FormData) {
 
         let split_method: string | undefined;
         let whom: string | undefined;
-        let json : Record<string, number> = {};
+        let json : Record<string, {amt :number; share? : number ; percent? : number}> = {};
 
         const participant = await tx.query.events.findFirst({
             where : eq(events.id , eventID) ,
@@ -97,7 +97,7 @@ export async function createEventAction(formData: FormData) {
             if (!whom || !participant.participants.includes(whom)) {
                 throw new Error("Invalid transfer participant");
             }
-            const split_diff = {[whom] : howMuch};
+            const split_diff = {[whom] : { amt : howMuch} };
             const [payment] = await tx
                 .insert(payments)
                 .values({
@@ -141,7 +141,7 @@ export async function createEventAction(formData: FormData) {
 
         if(split_method === "Eql"){
             participant?.participants.forEach((p) => {
-                json[p] = amount
+                json[p] = {amt : amount}
             });
         }else{
             if(split_type === "equally"){
@@ -152,17 +152,16 @@ export async function createEventAction(formData: FormData) {
                     if( field !== null ){
                         count += 1;
                         checkParticipants.push(p);
-                        //json[p] = amount;
                     }
                 })
                 checkParticipants.forEach((cp) => {
-                    json[cp] = howMuch/count;
+                    json[cp] = {amt : (howMuch/count)};
                 })
             }else if(split_type === "amount"){
                 participant?.participants.forEach((p) => {
                     const field = formData.get(`${p}-amount`) as string
                     if(field !== null){
-                        json[p] = parseFloat(field);
+                        json[p] = {amt : (parseFloat(field))};
                     }
                 })
             }else if(split_type === "shares"){
@@ -175,11 +174,11 @@ export async function createEventAction(formData: FormData) {
                     }
                 })
                 if(active.length === 1){
-                    json[active[0]] = howMuch;
+                    json[active[0]] = {amt : howMuch , share : 1 };
                 }
                 active.forEach((ap)=>{
                     const field = formData.get(`${ap}-share`) as string;
-                    json[ap] = (parseFloat(field) / parseFloat(total_shares) ) * howMuch
+                    json[ap] = {amt : ((parseFloat(field) / parseFloat(total_shares))*howMuch) , share : parseFloat(field) }
                 })
             }else if(split_type === "percent"){
                 let active : string[] = [];
@@ -192,7 +191,7 @@ export async function createEventAction(formData: FormData) {
                 active.forEach((ap) => {
                     const field = formData.get(`percent-${ap}`) as string
                     if(field !== null){
-                        json[ap] = parseFloat((( parseFloat(field) * howMuch ) / 100).toFixed(2))
+                        json[ap] = { amt : parseFloat((( parseFloat(field) * howMuch ) / 100).toFixed(2)) , percent : parseFloat(field) }
                     }
                 })
             }

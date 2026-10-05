@@ -102,7 +102,7 @@ export default async function EditpaymentsPage( {params } : PaymentProps){
                         <span>{currencySymbol}{expense.howMuch}</span>
                     </div>
                     <span>{word} {expense.whospayment} {wordtwo} {`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`}</span>
-                    <span className="mt-6 mb-6">split by {expense.splitMethod}</span>
+                    <span className="mt-6 mb-6">split by {expense.splitMethod === "amounts" ? `exacts ${expense.splitMethod}` : expense.splitMethod}</span>
                     <ul>
                         {
                             Object.entries(expense.splitDifferent ?? {}).map(([p , amt] , idx)=>{
@@ -110,9 +110,9 @@ export default async function EditpaymentsPage( {params } : PaymentProps){
                                    <li key={idx} className="flex mb-4 flex-1 justify-between">
                                         <div className="flex flex-1 flex-col justify-between">
                                             <span>{p}</span>
-                                            <span className="text-[14px]">{amt}</span>
+                                            <span className="text-[14px]">{expense.splitMethod === "percentages" ? `${amt.percent} %` : expense.splitMethod === "shares" ? `Shares : ${amt.share}` : ''}</span>
                                         </div>
-                                        <span>{currencySymbol}{amt}</span>
+                                        <span>{currencySymbol} {amt.amt}</span>
                                     </li> 
                                 );
                             })
