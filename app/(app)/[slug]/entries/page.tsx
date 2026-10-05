@@ -101,8 +101,8 @@ export default async function EntriesPage({params}: {params: Promise<{ slug: str
                                                     return participant=== p.whospayment ? amount : '' 
                                         }) : ''
                                 return(
-                                    <li key={i}>
-                                        <div className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
+                                    <li key={i} className="hover:bg-gray-100">
+                                        <Link href={`entries/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
                                             <div className="col-span-8">
                                                 <span className="block">{p.whospayment} {word} {currencySymbol}{p.howMuch} for {p.whatFor}</span>
                                                 {
@@ -120,7 +120,7 @@ export default async function EntriesPage({params}: {params: Promise<{ slug: str
                                                 }
                                             </div>
                                             <span className="text-center rounded-4xl p-1 w-fit text-[12px] col-start-11 bg-blue-200">{p.category}</span>
-                                        </div>
+                                        </Link>
                                     </li>
                                 )
                             })

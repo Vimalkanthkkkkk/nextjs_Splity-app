@@ -107,7 +107,7 @@ export default async function ExpensePage( {params } : PageProps){
                                     name="type"
                                     value={split}
                                 />
-                                <Participants split={split} participants={participants ? participants.participants : []} />
+                                <Participants split={split} participants={participants ? participants.participants : []} edit />
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="amount" id="amount" placeholder="Amount" className="

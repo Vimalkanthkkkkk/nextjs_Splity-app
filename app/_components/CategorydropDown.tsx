@@ -106,7 +106,7 @@ export default function CategoryDropdown(): ReactNode {
     };
 
     return (
-        <div className="grid grid-cols-12  ">
+        <div className="grid grid-cols-12">
             <input
                 type="hidden"
                 name="category"

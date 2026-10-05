@@ -37,6 +37,14 @@ export async function getAllpayments(id:number){
   return Allpayments;
 }
 
+export async function getpayment(id:number){
+  const payment = await db.query.payments.findFirst({
+    where : eq(payments.id , id) 
+  })
+
+  return payment;
+}
+
 export async function getAllparticipants(eventID : number){
   const participants = await db.query.events.findFirst({
     where : eq(events.id , eventID),
