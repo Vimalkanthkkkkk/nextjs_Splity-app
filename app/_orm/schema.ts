@@ -87,6 +87,14 @@ export const comments = pgTable("comments", {
   comment: text("comment").notNull(),
 });
 
+export const history = pgTable("history" , {
+  id : serial("id").primaryKey(),
+  eventID : integer("eventid").notNull().references(()=> events.id , {onDelete : "cascade"}),
+  paymentID : integer("payment_id").references(()=> payments.id , {onDelete : "set null"}),
+  action : text("action").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
 export const usersRelations = relations(users, ({ many }) => ({
   paymentsMade: many(payments),
 }));
@@ -100,3 +108,11 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
   event: one(events, { fields: [payments.eventId], references: [events.id] }),
   payer: one(users, { fields: [payments.who], references: [users.id] }),
 }));
+
+export const historyRelations = relations(history , ({one , many}) => ({
+  event : one(events , {fields : [history.eventID] ,references : [events.id] } ),
+  payment: one(payments, {
+    fields: [history.paymentID],
+    references: [payments.id],
+  })
+}))

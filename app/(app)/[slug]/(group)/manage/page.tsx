@@ -1,7 +1,5 @@
 import Actions from "@/app/_components/Actions";
 import { Props } from "@/app/_types/Props";
-import Image from "next/image";
-import Link from "next/link";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
 
