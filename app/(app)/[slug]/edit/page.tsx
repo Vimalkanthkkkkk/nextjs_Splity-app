@@ -38,7 +38,7 @@ export default async function EditEvent( {params} : editProps){
                             type="button" 
                             className="duration-400 inline-flex items-center justify-between px-4 py-2 text-white rounded-md cursor-pointer transition-colors focus:outline-none"
                         >
-                            Actions
+                            {event?.event}
                             <span className="ml-2 text-xs transition-transform duration-300 pointer-events-none group-focus-within:rotate-180">▼</span>
                         </button>
                         <ul className="absolute z-10 -right-12 mt-2 w-48 p-2
@@ -48,35 +48,35 @@ export default async function EditEvent( {params} : editProps){
                                 group-focus-within:opacity-100 [&_button]:rounded-sm
                                 group-focus-within:invisible-none group-focus-within:scale-100 
                                 group-focus-within:pointer-events-auto">
-                            <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
-                                Edit Event
-                            </button>
+                            <li className="w-full">
+                                <Link href={`/${slug}/edit`} className="w-full text-left px-4 pr-24 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
+                                    Edit Event
+                                </Link>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
-                                Invite to Event
-                            </button>
+                                <Link href={`/${slug}/invite`} className="w-full text-left px-4 pr-18 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
+                                    Invite to Event
+                                </Link>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
-                                Manage Participant
-                            </button>
+                                <Link href={`/${slug}/manage`} className="w-full text-left px-4 pr-11 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
+                                    Manage Participant
+                                </Link>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
-                                insights
-                            </button>
+                                <Link href={`/${slug}/insight`} className="w-full text-left px-4 pr-28 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
+                                    insights
+                                </Link>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
-                                Export as Excel file
-                            </button>
+                                <Link href={`/${slug}`} className="w-full text-left px-4 pr-12 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
+                                    Export as Excel file
+                                </Link>
                             </li>
                             <li>
-                            <button type="button" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
-                                Show history
-                            </button>
+                                <Link href={`/${slug}/history`} className="w-full text-left px-4 pr-21 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer">
+                                    Show history
+                                </Link>
                             </li>
                         </ul>
                     </div>
