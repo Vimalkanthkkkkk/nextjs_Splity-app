@@ -1,11 +1,27 @@
+import Attachment from "@/app/_components/Attachment";
+import { getEvent } from "@/app/_orm/Queries";
 import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default async function EditEvent(){
+type editProps ={
+    params : Promise<{slug: string}>;
+}
+
+export default async function EditEvent( {params} : editProps){
+    const {slug} = await params;
+    const event = await getEvent(Number(slug));
+
+    function bufferToDataUrl(buffer: Buffer, mimeType: string) {
+        return `data:${mimeType};base64,${buffer.toString("base64")}`;
+    }
+    const src = event?.eventImage ? bufferToDataUrl(event.eventImage, "image/jpeg") :null;
+
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
             <nav role="navigation" className="w-full bg-gray-600">
                 <div className="w-full max-w-3xl items-center justify-between mx-auto px-2 flex">
-                    <div className="flex items-center">
+                    <Link href={'/'} className="flex items-center">
                         <Image
                             width={0} height={0}
                             style={{ width: '50px', height: '50px' }}
@@ -15,7 +31,7 @@ export default async function EditEvent(){
                             src="/noun_bill_5997839_@700.png"
                             alt="Splity logo"
                         />
-                    </div>
+                    </Link>
                     <div className="relative inline-block text-left group">
                         <button 
                             type="button" 
@@ -68,18 +84,35 @@ export default async function EditEvent(){
             </nav>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-4 shrink">
                 <div className="content-center pl-2 w-full h-10 self-center">
-                    <span className="text-black">{`<- Back`}</span>
+                    <Link href={`/${slug}`} className="">
+                        <svg 
+                            fill="#000000" height="13px" width="20px" 
+                            version="1.1" id="Capa_1" className="inline"
+                            xmlns="http://www.w3.org/2000/svg" 
+                            xmlnsXlink="http://www.w3.org/1999/xlink" 
+                            viewBox="0 0 475 590" xmlSpace="preserve"
+                        >
+                            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier"> 
+                                <g>
+                                    <path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225 c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"></path> 
+                                </g> 
+                            </g>
+                        </svg>
+                        <span className="text-black text-center">Back</span>
+                    </Link>
                 </div>
-                <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
+                <form className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
                     <div className="flex flex-1 text-black items-center justify-between">
                         <span>Edit Event</span>
                     </div>
                     <div className="content-center w-full self-center">
                         <label htmlFor="eventName" className="text-black block">Event Name</label>
-                        <input type="text" name="eventName" id="eventName"
+                        <input type="text" name="eventName" id="eventName" value={event?.event}
                             className="
                                 text-black
-                                p-2 w-60 max-w-full h-8 border
+                                p-2 w-full max-w-lg h-8 border
                                 border-gray-600 rounded-sm
                             "
                         />
@@ -87,16 +120,7 @@ export default async function EditEvent(){
                     <div className="flex flex-1 text-black items-center justify-between">
                         <span>Event image</span>
                     </div>
-                    <div className="bg-amber-500 w-fit rounded-4xl h-40 relative ">
-                        <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
-                    </div>
-                    <div className="flex flex-1 text-black items-center justify-between">
-                        <span>JPEG, PNG or WebP. Up to 10 MB.</span>
-                    </div>
-                    <div className="text-black flex flex-1 flex-row">
-                        <button type="submit" className="mr-2 p-1 rounded-sm bg-gray-200">Change Image</button>
-                        <button type="submit" className="bg-gray-200 rounded-sm p-1">Remove Image</button>
-                    </div>
+                    <Attachment src={src} />
                     <div className="flex flex-1 text-black items-center justify-between">
                         <span>Home Currency</span>
                     </div>
@@ -119,22 +143,14 @@ export default async function EditEvent(){
                         <option value="PHP">PHP</option>
                         <option value="QAR">QAR</option>
                     </select>
-                    <div className="bg-white text-black rounded-sm gap-2 flex flex-col w-full h-fit self-center mt-4">
-                        <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">Send</button>
-                    </div>
-                </div>
+                    <button type="submit" className="text-black pl-2 pr-2 p-1 w-fit mt-6 rounded-sm bg-cyan-200">Send</button>
+                </form>
             </div>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-4 shrink">
-                <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
-                    <div className="flex flex-1 text-black items-center justify-between">
-                        <span>DANGER ZONE - Delete Event</span>
-                    </div>
-                    <div className="flex flex-1 mt-4 text-black items-center justify-between">
-                        <span>There is no way of retrieving a deleted Event!</span>
-                    </div>
-                    <div className="bg-white text-black rounded-sm gap-2 flex flex-col w-full h-fit self-center">
-                        <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">Delete Event</button>
-                    </div>
+                <div className="bg-white text-black rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
+                    <span>DANGER ZONE - Delete Event</span>
+                    <span>There is no way of retrieving a deleted Event!</span>
+                    <Link href={`/${slug}/delete`} className="pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-500">Delete Event</Link>
                 </div>
             </div>
         </div>

@@ -18,7 +18,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
     const { split , slug } = await params;
     const participants = await getAllparticipants(Number(slug));
     if(!participants){
-        redirect('/')
+        redirect(`/${slug}/entries`)
     }
     return(
         <div className="flex pb-2 flex-1 gap-2 flex-col shrink w-auto h-auto justify-between bg-white overflow-y-scroll">
@@ -148,7 +148,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                                             type="file" 
                                             name="attach" 
                                             id="attach" 
-                                            accept="image/png, image/jpeg" 
+                                            accept="image/jpeg" 
                                             className="
                                                 text-gray-700 outline-none border-0
                                                 w-60 max-w-full 
