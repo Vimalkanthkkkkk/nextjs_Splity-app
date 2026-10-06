@@ -1,4 +1,5 @@
 import Attachment from "@/app/_components/Attachment";
+import CurrencySelect from "@/app/_components/CurrencySelect";
 import { getEvent } from "@/app/_orm/Queries";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,10 +104,8 @@ export default async function EditEvent( {params} : editProps){
                         <span className="text-black text-center">Back</span>
                     </Link>
                 </div>
-                <form className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
-                    <div className="flex flex-1 text-black items-center justify-between">
-                        <span>Edit Event</span>
-                    </div>
+                <form className="bg-white text-black rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
+                    <span>Edit Event</span>
                     <div className="content-center w-full self-center">
                         <label htmlFor="eventName" className="text-black block">Event Name</label>
                         <input type="text" name="eventName" id="eventName" value={event?.event}
@@ -117,13 +116,10 @@ export default async function EditEvent( {params} : editProps){
                             "
                         />
                     </div>
-                    <div className="flex flex-1 text-black items-center justify-between">
-                        <span>Event image</span>
-                    </div>
+                    <span>Event image</span>
                     <Attachment src={src} />
-                    <div className="flex flex-1 text-black items-center justify-between">
-                        <span>Home Currency</span>
-                    </div>
+                    <CurrencySelect/>
+                    <span>Home Currency</span>
                     <select name="currency" id="currency"
                         className=" *:bg-gray-400 focus:*:bg-gray-700 hover:bg-gray-500
                             mb-2 text-center duration-400 items-center
