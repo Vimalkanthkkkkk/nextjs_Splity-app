@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import AddParticipants from "@/app/_components/AddParticipants";
 import { createEventAction } from "@/app/_orm/CreateEvent";
+import CurrencySelect from "@/app/_components/CurrencySelect";
 
 export default function CreateEvent(){
     return(
@@ -32,25 +33,7 @@ export default function CreateEvent(){
                         "
                     />
                     <label htmlFor="currency" className="text-black"> Home Currency</label>
-                    <select name="currency" id="currency"
-                        className=" *:bg-gray-400 focus:*:bg-gray-700 hover:bg-gray-500
-                            mb-2 text-center duration-400 items-center
-                            pl-1 pr-2 w-max max-h-max wrap-anywhere bg-gray-400 rounded-sm
-                            [appearance:base-select] [&_::picker(select)]:[appearance:base-select]
-                        ">
-                        <option value="INR">INR</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                        <option value="AED">AED</option>
-                        <option value="GBP">GBP</option>
-                        <option value="AFN">AFN</option>
-                        <option value="BDT">BDT</option>
-                        <option value="CAD">CAD</option>
-                        <option value="IDR">IDR</option>
-                        <option value="PKR">PKR</option>
-                        <option value="PHP">PHP</option>
-                        <option value="QAR">QAR</option>
-                    </select>
+                    <CurrencySelect/>
                     <label className="text-black"> Participants </label>
                     <label htmlFor="you" className="text-black"> You </label>
                     <input type="text" name="you" id="you" className="
