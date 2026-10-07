@@ -98,7 +98,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                                             h-8 
                                         "
                                     />
-                                    <SplitBox money={paymentData.howMuch.toString()} participants={ paymentData.event.participants}/>
+                                    <SplitBox predata={paymentData.splitDifferent ?? undefined} money={paymentData.howMuch.toString()} participants={ paymentData.event.participants}/>
                                 </>
                                 :
                                 <></>

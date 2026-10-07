@@ -7,7 +7,24 @@ type SplitType = "equal" | "amount" | "share" | "per";
 type SplitProps = {
     money? : string
     participants : string[]
+    splitMethod : SplitMethod
+    splitDifferent : SplitDifferent
 };
+
+type SplitDifferent = Record<
+  string,
+  {
+    amt: number;
+    share?: number;
+    percent?: number;
+  }
+>;
+
+type SplitMethod =
+  | "Equally"
+  | "percentages"
+  | "amounts"
+  | "shares";
 
 const SPLIT_TYPES: SplitType[] = ["equal", "amount", "share", "per"];
 
@@ -37,7 +54,7 @@ const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
     box.title = bad ? msg : "";
 };
 
-export default function SplitBox( {money , participants} : SplitProps ) : ReactNode{
+export default function SplitBox( {money , participants , splitMethod , splitDifferent} : SplitProps ) : ReactNode{
     const TOTAL_PARTICIPANTS = participants.length;
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>(money ? money.toString() : '' );
@@ -66,7 +83,6 @@ export default function SplitBox( {money , participants} : SplitProps ) : ReactN
             ) as HTMLElement | null | undefined;
             return [{ check, input, span }];
         });
-
         const active = rows.filter((r) => r.check.checked);
         const count = active.length;
         const allBox = document.querySelector<HTMLInputElement>(`input[data-type="${type}"]`);
@@ -164,6 +180,54 @@ export default function SplitBox( {money , participants} : SplitProps ) : ReactN
     const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => recalc("amount", event.target);
     const handleShare = (event: React.ChangeEvent<HTMLInputElement>) => recalc("share", event.target);
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => recalc("per", event.target);
+
+    useEffect(() => {
+        if (!splitDifferent) return;
+        const typeMap = {
+            Equally: "equal",
+            amounts: "amount",
+            shares: "share",
+            percentages: "per",
+        } as const;
+        const type = typeMap[splitMethod];
+        participants.forEach((p) => {
+            const saved = splitDifferent[p];
+            const check = document.querySelector<HTMLInputElement>(
+            `.${CHECK[type](p)}`
+            );
+            if (!check) return;
+            check.checked = !!saved;
+            const inputClass = INPUT[type](p);
+            if (inputClass) {
+                const input = document.querySelector<HTMLInputElement>(`.${inputClass}`
+            );
+            if (input) {
+                input.disabled = !saved;
+                if (saved) {
+                    if (type === "amount") {
+                        input.value = saved.amt.toString();
+                    }
+                    if (type === "share") {
+                        input.value = saved.share?.toString() ?? "";
+                    }
+                    if (type === "per") {
+                        input.value = saved.percent?.toString() ?? "";
+                    }
+                }
+            }
+            }
+        });
+        const allBox = document.querySelector<HTMLInputElement>(
+            `input[data-type="${type}"]`
+        );
+        const selectedCount = participants.filter(
+            (p) => splitDifferent[p]
+        ).length;
+        if (allBox) {
+            allBox.checked = selectedCount === participants.length;
+        }
+        recalc(type);
+    }, []);
 
     useEffect(() => {
         if(money){
