@@ -1,4 +1,4 @@
-import {  EventProvider } from "../_components/Context";
+import {  NotificationProvider } from "../_components/Context";
 import Header from "../_components/Header";
 import { CircularEvents } from "../_components/CirculatEvents";
 import Link from "next/link";
@@ -7,7 +7,7 @@ import { getAllEvent } from "../_orm/Queries";
 export default async function Home() {
   const Allevents = await getAllEvent();
   return (
-    <EventProvider>
+    <NotificationProvider>
       <div className="flex flex-1 flex-col text-black font-sansbg-[#fafbfc] bg-linear-to-b from-[#ffffff] to-[#ffffff]">
         <Header></Header>
         <div className="fixed inset-0 flex items-center justify-center bg-linear-to-b from-[#ffffff] to-[#e9e7e7]">
@@ -19,6 +19,6 @@ export default async function Home() {
         </div>
         <CircularEvents events={Allevents} />
       </div>
-    </EventProvider>   
+    </NotificationProvider>   
   );
 }

@@ -1,11 +1,11 @@
 "use server";
 
 import { db } from "@/app/_orm/db";
-import {  events , idempotencyKeys ,payments } from "@/app/_orm/schema";
+import {  events , idempotencyKeys , payments } from "@/app/_orm/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-export async function createEventAction(formData: FormData) {
+export async function createExpenseAction(formData: FormData) {
     const idempotencyKey = formData.get("idempotencyKey")?.toString();
     if (!idempotencyKey) {
       throw new Error("Missing idempotency key");

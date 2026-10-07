@@ -3,7 +3,7 @@ import Link from "next/link";
 import AddParticipants from "@/app/_components/AddParticipants";
 import { createEventAction } from "@/app/_orm/CreateEvent";
 import CurrencySelect from "@/app/_components/CurrencySelect";
-
+import ActionForm from "@/app/_components/ActionForm";
 export default function CreateEvent(){
     return(
         <>
@@ -22,10 +22,20 @@ export default function CreateEvent(){
                         <span className="text-black"> Splity </span>
                     </Link>
                 </div>
-                <form className="bg-gray-50 wrap-anywhere row-start-2 col-start-2 col-span-2 h-fit w-full flex flex-col gap-y-2 p-2 mb-10 not-md:col-span-4 not-md:col-start-2 "  action={createEventAction}>
+                <ActionForm
+                    action={createEventAction}
+                    submitLabel="Create Event"
+                    useIdempotencyKey
+                    savingString="Creating"
+                    className="bg-gray-50 wrap-anywhere 
+                        row-start-2 col-start-2 col-span-2 
+                        h-fit w-full flex flex-col 
+                        gap-y-2 p-2 mb-10 not-md:col-span-4 not-md:col-start-2
+                    "
+                >
                     <h1 className="text-black"> Create a new Event </h1>
                     <label htmlFor="eventName" className="text-black"> Event Name </label>
-                    <input type="text" name="eventName" id="eventName"
+                    <input required min={3} type="text" name="eventName" id="eventName"
                         className="
                             text-black
                             p-2 w-60 max-w-full h-8 border
@@ -36,7 +46,7 @@ export default function CreateEvent(){
                     <CurrencySelect/>
                     <label className="text-black"> Participants </label>
                     <label htmlFor="you" className="text-black"> You </label>
-                    <input type="text" name="you" id="you" className="
+                    <input type="text" required name="you" id="you" className="
                             p-2
                             text-black
                             w-60
@@ -47,7 +57,7 @@ export default function CreateEvent(){
                             rounded-sm
                         "
                     />
-                    <input type="text" name="email" id="email" placeholder="your email (recommended)"
+                    <input type="email" name="email" id="email" placeholder="your email (recommended)"
                         className="
                             p-2
                             text-black
@@ -66,7 +76,7 @@ export default function CreateEvent(){
                         from any device.
                     </span>
                     <label htmlFor="Person2" className="text-black">Person 2</label>
-                    <input type="text" name="Person2" id="Person2"
+                    <input required min={3} type="text" name="Person2" id="Person2"
                         className="
                             p-2
                             text-black
@@ -79,7 +89,7 @@ export default function CreateEvent(){
                         "
                     />
                     <AddParticipants />
-                </form>
+                </ActionForm>
                 <div className="wrap-anywhere text-wrap bg-gray-50 row-start-2 col-start-4 col-span-2 hidden md:flex flex-col gap-y-2 p-2 mb-10 text-black">
                     <span className="text-2xl">
                         Good examples for creating a Event

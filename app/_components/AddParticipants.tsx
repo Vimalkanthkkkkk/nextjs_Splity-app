@@ -6,9 +6,7 @@ import { useFormStatus } from "react-dom";
 export default function AddParticipants() {
   const MAX_LIMIT = 20;
   const [participantIds, setParticipantIds] = useState<string[]>([]);
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
   const { pending } = useFormStatus();
-
 
   const addParticipant = (): void => {
     if (participantIds.length >= MAX_LIMIT) return;
@@ -22,11 +20,6 @@ export default function AddParticipants() {
 
   return (
     <>
-    <input
-        type="hidden"
-        name="idempotencyKey"
-        value={idempotencyKey}
-    />
     <div className="wrap-anywhere">
       {participantIds.map((id, idx) => {
         const personNumber = idx + 3;
@@ -65,17 +58,6 @@ export default function AddParticipants() {
         + Add Participant
       </button>
     </div>
-    <button type="submit"
-      className="
-          bg-mauve-700
-          p-2
-          w-fit
-          rounded-sm
-          mt-2
-      "
-    >
-      { pending ? "Creating ..." : "Create Event" }
-    </button>
     </>
   );
 }

@@ -19,6 +19,8 @@ const blob = customType<{ data: Buffer }>({
   },
 });
 
+export const historyTypeEnum = pgEnum("history_type", ["updated", "deleted", "created"]);
+
 export const paymentTypeEnum = pgEnum("payment_type", ["expense", "transfer", "income"]);
 
 export const splitTypeEnum = pgEnum("split_type", ["Equally", "percentages", "amounts" , "shares"]);
@@ -77,7 +79,7 @@ export const payments = pgTable("payments", {
   attachment: blob("attachment"), 
   isSplitEqually: boolean("is_split_equally").default(true).notNull(),
   splitMethod: splitTypeEnum("split_method").default("Equally").notNull(),
-  splitDifferent: jsonb("split_different").$type<Record<string, {  amt: number; share?: number; percent?:number} >>()
+  splitDifferent: jsonb("split_different").$type<Record<string, {amt: number; share?: number; percent?:number} >>()
 });
 
 export const comments = pgTable("comments", {
@@ -91,7 +93,7 @@ export const history = pgTable("history" , {
   id : serial("id").primaryKey(),
   eventID : integer("eventid").notNull().references(()=> events.id , {onDelete : "cascade"}),
   paymentID : integer("payment_id").references(()=> payments.id , {onDelete : "set null"}),
-  action : text("action").notNull(),
+  action : historyTypeEnum("action").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

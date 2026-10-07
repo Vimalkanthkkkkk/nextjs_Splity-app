@@ -4,8 +4,9 @@ import { db } from "@/app/_orm/db";
 import { users, events , idempotencyKeys } from "@/app/_orm/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { ActionResult } from "../_types/ActionType";
 
-export async function createEventAction(formData: FormData) {
+export async function createEventAction(_prev : ActionResult | null , formData: FormData): Promise<ActionResult> {
     const idempotencyKey =  formData.get("idempotencyKey")?.toString();
     if (!idempotencyKey) {
       throw new Error("Missing idempotency key");

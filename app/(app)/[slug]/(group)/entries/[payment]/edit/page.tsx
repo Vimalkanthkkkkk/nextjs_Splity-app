@@ -2,7 +2,7 @@ import CategoryDropdown from "@/app//_components/CategorydropDown";
 import Navigation from "@/app/_components/Navigation";
 import Participants from "@/app/_components/Participants";
 import SplitBox from "@/app//_components/SplitBox";
-import { createEventAction } from "@/app/_orm/CreateExpenses";
+import { createExpenseAction } from "@/app/_orm/CreateExpenses";
 import { getpayment } from "@/app/_orm/Queries";
 import { redirect } from "next/navigation";
 import Actions from "@/app/_components/Actions";
@@ -30,7 +30,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-10 shrink">
                 <BackButton route={`/${slug}/entries`} />
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 gap-10 flex flex-col w-full h-fit self-center">
-                    <form action={createEventAction}>
+                    <form action={createExpenseAction}>
                         <input type="hidden"
                             name="event_id"
                             value={slug}
@@ -45,7 +45,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                             <label htmlFor="amount" className="text-black block col-span-3 mt-2 mb-1">How much?</label>
                             <span className="text-black row-start-2 h-8 border-t border-l border-b w-full p-1 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                             <input type="number" name="amount" id="amount" placeholder="Amount" 
-                                value={paymentData.howMuch}
+                                defaultValue={paymentData.howMuch}
                                 className="
                                     p-2 text-black row-start-2 col-start-2 col-end-9
                                     max-w-full outline-none
@@ -66,7 +66,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                         
                         <label htmlFor="date" className="text-black block mt-2 mb-1">When?</label>
                         <input type="date" name="date" id="date" placeholder="Amount" 
-                            value={paymentData.when.toString()}
+                            defaultValue={paymentData.when.toString()}
                             className="
                                 p-2 text-black outline-none
                                 max-w-full
@@ -74,7 +74,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                                 border-gray-600 rounded-sm
                         "/>
                         <label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
-                        <textarea name="notes" rows={1} cols={3} id="notes" value={paymentData.notes ? paymentData.notes : ''} 
+                        <textarea name="notes" rows={1} cols={3} id="notes" defaultValue={paymentData.notes ? paymentData.notes : ''} 
                             placeholder="eg.who had what or a receipt number" 
                             className="
                                 p-2 text-black outline-none field-sizing-content 
@@ -98,7 +98,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                                             h-8 
                                         "
                                     />
-                                    <SplitBox participants={ paymentData.event.participants}/>
+                                    <SplitBox money={paymentData.howMuch.toString()} participants={ paymentData.event.participants}/>
                                 </>
                                 :
                                 <></>

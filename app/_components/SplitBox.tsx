@@ -38,7 +38,6 @@ const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
 };
 
 export default function SplitBox( {money , participants} : SplitProps ) : ReactNode{
-    
     const TOTAL_PARTICIPANTS = participants.length;
     const [option , setoption] = useState<boolean>(true);
     const [amount, setAmount] = useState<string>(money ? money.toString() : '' );

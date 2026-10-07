@@ -1,44 +1,54 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
-export interface Event {
-  who_ID : number,
-  who_Name : string,
-  event_name : string,
-  currency : string,
-  Participants : string[],
-}
+type NotificationType = "success" | "error";
 
-export interface EventContextType {
-  events : Event[] ;
-  setevent : (event : Event) => void;
-  dltevent : (id : number) => void;
-}
+type NotificationContextType = {
+  showNotification: (message: string, type?: NotificationType) => void;
+};
 
-const EventContext = createContext<EventContextType | null>(null);
+const NotificationContext = createContext<NotificationContextType | null>(null);
 
-interface EventProviderProps {
-  children: ReactNode;
-}
+export function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: NotificationType;
+  } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-export function EventProvider({ children }: EventProviderProps) {
-  const [event , setEvt] = useState<Event[]>([]);
-  const setevent = (event : Event):void => setEvt(s => [...s , event]);
-  const delete_event = (id : number) => {
-    setEvt(event.filter(e => e.who_ID !== id));
-  };
+  const showNotification = useCallback(
+    (message: string, type: NotificationType = "success") => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setNotification({ message, type });
+      timerRef.current = setTimeout(() => setNotification(null), 3000);
+    },
+    []
+  );
+
+  const value = useMemo(() => ({ showNotification }), [showNotification]);
+
   return (
-    <EventContext value={{ events : event , setevent , dltevent :delete_event}}>
+    <NotificationContext.Provider value={value}>
       {children}
-    </EventContext>
+      {notification && (
+        <div
+          role={notification.type === "error" ? "alert" : "status"}
+          className={`fixed right-5 top-5 z-50 rounded-lg px-4 py-3 text-white ${
+            notification.type === "error" ? "bg-red-600" : "bg-black"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
+    </NotificationContext.Provider>
   );
 }
 
-export function useEvent() : EventContextType {
-  const context = useContext(EventContext);
+export function useNotification() {
+  const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useEvent must be used within a ThemeProvider');
+    throw new Error("useNotification must be used inside NotificationProvider");
   }
-  return context; 
+  return context;
 }

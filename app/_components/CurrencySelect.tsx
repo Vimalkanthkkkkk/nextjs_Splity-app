@@ -29,7 +29,6 @@ export default function CurrencySelect({ currency: initialCurrency = "INR" }: Cu
       <span className="text-sm text-gray-600">
         Home Currency
       </span>
-
       <input
         type="hidden"
         name="currency"
