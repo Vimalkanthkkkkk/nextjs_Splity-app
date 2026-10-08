@@ -32,20 +32,21 @@ export default async function ManageParticipantsPage({params} : Props){
                                 <div  className="col-span-2" style={{ width: '1px' }} />
                             </div>
                         </li>
-                        <li>
-                            <div className="grid grid-cols-12 items-center border-t border-gray-200 text-black p-4">
-                                <span className="col-span-4">vimal</span>
-                                <span className="col-span-6 text-center">0</span>
-                                <button type="submit" className="mr-2 p-1 rounded-sm wrap-anywhere col-span-2 bg-gray-200">Edit</button>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="grid grid-cols-12 items-center border-t border-gray-200 text-black p-4">
-                                <span className="col-span-4">kavi</span>
-                                <span className="col-span-6 text-center">0</span>
-                                <button type="submit" className="mr-2 p-1 wrap-anywhere rounded-sm col-span-2 bg-gray-200">Edit</button>
-                            </div>
-                        </li>
+
+                        {
+                            event.participants.map((p)=>{
+                                return(
+                                    <li>
+                                        <div className="grid grid-cols-12 items-center border-t border-gray-200 text-black p-4">
+                                            <span className="col-span-4">{p}</span>
+                                            <span className="col-span-6 text-center">1</span>
+                                            <button type="submit" className="mr-2 p-1 rounded-sm wrap-anywhere col-span-2 bg-gray-200">Edit</button>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                        }
+                        
                     </ul>                    
                 </div>
             </div>
