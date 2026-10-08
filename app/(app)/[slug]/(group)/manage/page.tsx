@@ -2,10 +2,16 @@ import Actions from "@/app/_components/Actions";
 import { Props } from "@/app/_types/Props";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
-
+import { getEvent } from "@/app/_orm/Queries";
+import { redirect } from "next/navigation";
 
 export default async function ManageParticipantsPage({params} : Props){
     const {slug} = await params;
+    const event = await getEvent(Number(slug));
+    if(!event){
+        redirect(`/${slug}`)
+    }
+    
     return(
         <>
             <Navigation route={`/${slug}`}>

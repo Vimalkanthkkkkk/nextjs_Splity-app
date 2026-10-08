@@ -2,9 +2,19 @@ import Actions from "@/app/_components/Actions";
 import { Props } from "@/app/_types/Props";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
+import { redirect } from "next/navigation";
+import { getEvent, getEventInsights } from "@/app/_orm/Queries";
+import InsightsCharts from "@/app/_components/InsightCharts";
 
 export default async function InsightPage({params} : Props){
     const {slug} = await params;
+    const event = await getEvent(Number(slug));
+    if(!event){
+        redirect(`/${slug}`)
+    }
+
+    const insights = await getEventInsights(event.id);
+
     return(
         <>
             <Navigation route={`/${slug}`}>
@@ -16,8 +26,52 @@ export default async function InsightPage({params} : Props){
                     <div className="flex flex-1 text-black items-center justify-between">
                         <span>Insights</span>
                     </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-black">
+                        <div className="bg-gray-100 rounded-sm p-4">
+                            <span className="text-sm text-gray-500">
+                                Total Spent
+                            </span>
+                            <div className="text-xl font-semibold">
+                                {event.currency}{" "}
+                                {insights.summary.totalSpent.toFixed(2)}
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-100 rounded-sm p-4">
+                            <span className="text-sm text-gray-500">
+                                Average Expense
+                            </span>
+                            <div className="text-xl font-semibold">
+                                {event.currency}{" "}
+                                {insights.summary.averageExpense.toFixed(2)}
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-100 rounded-sm p-4">
+                            <span className="text-sm text-gray-500">
+                                Expenses
+                            </span>
+                            <div className="text-xl font-semibold">
+                                {insights.summary.expenseCount}
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-100 rounded-sm p-4">
+                            <span className="text-sm text-gray-500">
+                                Largest Expense
+                            </span>
+                            <div className="text-xl font-semibold">
+                                {event.currency}{" "}
+                                {insights.summary.largestExpense.toFixed(2)}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex flex-1 text-black bg-gray-400 rounded-sm items-center p-4 justify-between">
+                        <InsightsCharts insights={insights} currency={event.currency} />
                     </div>  
+                    
                 </div>
             </div>
         </>
