@@ -9,7 +9,8 @@ import {
   jsonb,
   pgEnum,
   customType,
-  uniqueIndex
+  uniqueIndex,
+  index
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -95,7 +96,15 @@ export const history = pgTable("history" , {
   paymentID : integer("payment_id").references(()=> payments.id , {onDelete : "set null"}),
   action : historyTypeEnum("action").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+},
+(table) => [
+    index("history_event_created_idx").on(
+      table.eventID,
+      table.createdAt,
+      table.id
+    ),
+  ]
+)
 
 export const usersRelations = relations(users, ({ many }) => ({
   paymentsMade: many(payments),

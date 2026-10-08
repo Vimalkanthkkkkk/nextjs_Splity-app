@@ -65,3 +65,4 @@ export async function getAllparticipants(eventID : number){
   })
   return participants;
 }
+
