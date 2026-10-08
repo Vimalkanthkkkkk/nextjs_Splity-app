@@ -1,13 +1,14 @@
-import CategoryDropdown from "@/app//_components/CategorydropDown";
-import Participants from "@/app/_components/Participants";
-import SplitBox from "@/app//_components/SplitBox";
 import Link from "next/link";
-import { createEventAction } from "@/app/_orm/CreateExpenses";
-import { getAllparticipants } from "@/app/_orm/Queries";
+import { redirect } from "next/navigation";
+import Actions from "@/app/_components/Actions";
+import SplitBox from "@/app//_components/SplitBox";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
-import Actions from "@/app/_components/Actions";
-import { redirect } from "next/navigation";
+import ActionForm from "@/app/_components/ActionForm";
+import { getAllparticipants } from "@/app/_orm/Queries";
+import Participants from "@/app/_components/Participants";
+import { createExpenseAction } from "@/app/_orm/CreateExpenses";
+import CategoryDropdown from "@/app//_components/CategorydropDown";
 
 interface PageProps {
   params: Promise<{
@@ -38,18 +39,23 @@ export default async function ExpensePage( {params } : PageProps){
                                 <Link href={`/${Number(slug)}/new/entries/transfer`} style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "transfer" ? '3px' : '' }` }}>Transfer</Link>
                                 <Link href={`/${Number(slug)}/new/entries/income`} style={{borderBottomStyle : "solid" , borderBottomWidth : `${split === "income" ? '3px' : '' }` }}>Income</Link>
                             </div>
-                            <form action={createEventAction}>
-                                <input
-                                    type="hidden"
-                                    name="event_id"
-                                    value={slug}
-                                />
-                                <input
-                                    type="hidden"
-                                    name="type"
-                                    value={split}
-                                />
+                            <ActionForm
+                                action={createExpenseAction}
+                                successMessage={`Created ${split}`}
+                                submitLabel="Add"
+                                savingString="Saving..."
+                                submitButtonColorString="bg-cyan-200"
+                                useIdempotencyKey
+                                needCancelButton
+                                cancelString="Cancel"
+                                cancelRedirection={`/${slug}`}
+                                className=""
+                            >
+                                <input type="hidden" name="event_id" value={slug}/>
+                                <input type="hidden" name="type" value={split}/>
+
                                 <Participants split={split} participants={participants ? participants.participants : []} edit />
+
                                 <label htmlFor="amount" className="text-black block mt-2 mb-1">How much?</label>
                                 <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
                                 <input type="number" name="amount" id="amount" placeholder="Amount" className="
@@ -77,6 +83,7 @@ export default async function ExpensePage( {params } : PageProps){
                                     h-8 border
                                     border-gray-600 rounded-sm
                                 "/>
+
                                 <label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
                                 <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
                                 className="
@@ -130,12 +137,7 @@ export default async function ExpensePage( {params } : PageProps){
                                     <>
                                     </>
                                 }
-                                <div className="flex gap-4">
-                                    <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">Add</button>
-                                    <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">Cancel</button>
-                                </div>
-                            </form>
-                            
+                            </ActionForm>                            
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { NotificationProvider } from "../_components/Context";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,9 +13,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`font-lexend h-full antialiased scrollbar-none `}
     >
-      <body className="min-h-full flex flex-col">
-        {children}
-      </body>
+      <NotificationProvider>
+        <body className="min-h-full flex flex-col">
+          {children}
+        </body>
+      </NotificationProvider>
     </html>
   );
 }

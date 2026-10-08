@@ -2,26 +2,29 @@
 
 import { useState } from "react";
 import { createWorker } from "tesseract.js";
-import ParticipantDropdown from "@/app/_components/ParticipantDropdown";
 import SplitBox from "@/app//_components/SplitBox";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
 import Actions from "./Actions";
+import CategoryDropdown from "./CategorydropDown";
+import Participants from "./Participants";
+import ActionForm from "./ActionForm";
+import { createExpenseAction } from "../_orm/CreateExpenses";
 
 type Props = {
     participants: string[];
     Eventname :  string;
     slug : string;
+    split : string
 };
 
 
-export default function OCRClient( {participants , Eventname , slug} : Props ) {
+export default function OCRClient( {participants , Eventname , slug , split} : Props ) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>(false);
     const [totalInput, setTotalInput] = useState<string>("");
     const [hasResult, setHasResult] = useState(false);
     const [notFound, setNotFound] = useState(false);
-    const [selected, setSelected] = useState<string>(participants[0]);
 
     const preprocessImage = (imageSrc: string): Promise<string> => {
         return new Promise((resolve) => {
@@ -157,8 +160,6 @@ export default function OCRClient( {participants , Eventname , slug} : Props ) {
         }
     };
 
-    const finalTotal = totalInput === "" ? null : parseFloat(totalInput);
-
     const handleImageChange = ( e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) {
@@ -190,7 +191,19 @@ export default function OCRClient( {participants , Eventname , slug} : Props ) {
             </Navigation>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-10 shrink">
                 <BackButton route={`/${slug}`} />
-                <div className="flex flex-col col-span-12 gap-4 shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 rounded-sm">
+                <ActionForm
+                    action={createExpenseAction}
+                    successMessage='Created Expense'
+                    submitLabel="Add"
+                    savingString="Saving..."
+                    submitButtonColorString="bg-cyan-200"
+                    useIdempotencyKey
+                    needCancelButton
+                    cancelString="Cancel"
+                    className="flex flex-col gap-4 shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 rounded-sm"
+                >
+                    <input type="hidden" name="event_id" value={slug}/>
+                    <input type="hidden" name="type" value={split}/>
                     <div className="flex flex-col text-black bg-gray-400 justify-center rounded-sm p-4 items-center">
                         {selectedImage ? (
                             <img
@@ -250,6 +263,7 @@ export default function OCRClient( {participants , Eventname , slug} : Props ) {
                             <div className="flex items-center gap-2 bg-gray-100 rounded-sm p-3">
                                 <span className="text-black font-semibold">₹</span>
                                 <input id="total-input"
+                                    name="amount"
                                     type="number" 
                                     onWheel={numberInputOnWheelPreventChange}
                                     value={totalInput} onChange={handleTotalChange}
@@ -266,15 +280,64 @@ export default function OCRClient( {participants , Eventname , slug} : Props ) {
                                     Detected automatically. Edit if it's not correct.
                                 </p>
                             )}
-                            <ParticipantDropdown selected={selected} participants={participants} onSelect={setSelected} />
-                            <SplitBox money={totalInput} participants={participants} />
+
+                            <Participants split={split} participants={participants} edit />
+
+                            <label htmlFor="category" className="text-black block mt-3">Which Category?</label>
+                            <CategoryDropdown/>
+
+                            <label htmlFor="date" className="text-black block mt-2 mb-1">When?</label>
+                            <input type="date" name="date" id="date" placeholder="Amount" className="
+                                p-2 text-black outline-none
+                                w-60 max-w-full
+                                h-8 border
+                                border-gray-600 rounded-sm
+                            "/>
+
+                            <label htmlFor="notes" className="text-black block mt-2 mb-1">Any Notes</label>
+                            <textarea name="notes" rows={1} cols={3} id="notes" placeholder="eg.who had what or a receipt number" 
+                            className="
+                                p-2 text-black outline-none field-sizing-content 
+                                w-60 h-fit 
+                                border
+                                border-gray-600 rounded-sm
+                            "></textarea>
+
+                            {
+                                split !== "transfer" 
+                                ? 
+                                <SplitBox  money={totalInput} participants={participants} />
+                                :
+                                split === "transfer" 
+                                ?
+                                <>
+                                    <label className="text-black block mt-2 mb-1">To whom?</label>
+                                    <div className="flex gap-2 text-center text-wrap radio-group">
+                                        {
+                                            participants.map((p , idx) => {
+                                                return(
+                                                    <>
+                                                        <input type="radio" id={`whom-${p}`} name="whom" defaultChecked value={p} 
+                                                            className="text-black  outline-none border-0 accent-gray-400"
+                                                        />
+                                                        <label htmlFor={`whom-${p}`} className="text-black self-center mt-1">{p}</label>
+                                                    </>
+                                                );
+                                            })
+                                        }
+                                    </div>
+                                </>
+                                :
+                                <></>
+                            }
+
                             <div className="flex gap-4">
                                 <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">Add</button>
                                 <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">Cancel</button>
                             </div>
                         </div>
                     )}                
-                </div>
+                </ActionForm>              
             </div>
         </>
     );

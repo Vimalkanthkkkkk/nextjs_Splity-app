@@ -1,26 +1,35 @@
 "use server";
 
 import { db } from "@/app/_orm/db";
-import {  events , idempotencyKeys , payments } from "@/app/_orm/schema";
+import { history , events , idempotencyKeys , payments } from "@/app/_orm/schema";
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
+import { ActionResult } from "../_types/ActionType";
 
-export async function createExpenseAction(formData: FormData) {
+export async function createExpenseAction( prev: ActionResult | null ,  formData: FormData) : Promise<ActionResult> {
     const idempotencyKey = formData.get("idempotencyKey")?.toString();
     if (!idempotencyKey) {
-      throw new Error("Missing idempotency key");
+      return {
+        ok : false,
+        error : "Please retry one more time"
+      }
     }
     const type = formData.get("type") as "expense" | "transfer" | "income";
     const eventID = Number(formData.get("event_id"));
 
     if (!Number.isInteger(eventID)) {
-        throw new Error("Invalid event ID");
+        return {
+            ok : false ,
+            error : "Please retry one more time"
+        };
     }
 
     const howMuch = Number( formData.get("amount"));
 
     if (!Number.isFinite(howMuch) || howMuch <= 0) {
-        throw new Error("Invalid amount");
+        return {
+            ok : false ,
+            error : "Invalid amount"
+        };
     }
 
     const whenString = formData.get("date") as string;
@@ -35,7 +44,7 @@ export async function createExpenseAction(formData: FormData) {
         attachmentBuffer = Buffer.from(await attachmentFile.arrayBuffer());
     }
 
-    const result = await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx): Promise<ActionResult> => {
         const [claiming] = await tx.insert(idempotencyKeys).values(
             {
                 key: idempotencyKey,
@@ -50,8 +59,8 @@ export async function createExpenseAction(formData: FormData) {
               where: eq(idempotencyKeys.key, idempotencyKey),
             });
             return {
-              duplicate: true,
-              id: existing?.resourceId,
+                ok : true ,
+                message : `Created ${type}`
             };
         }
 
@@ -83,7 +92,10 @@ export async function createExpenseAction(formData: FormData) {
         });
 
         if (!participant) {
-            throw new Error("Event not found");
+            return {
+                ok : false ,
+                error : `Please retry one more time`
+            };
         }
 
 
@@ -95,7 +107,10 @@ export async function createExpenseAction(formData: FormData) {
         if(type === "transfer"){
             whom = formData.get("whom") as string;
             if (!whom || !participant.participants.includes(whom)) {
-                throw new Error("Invalid transfer participant");
+                return {
+                    ok : false ,
+                    error : `Invalid Participant`
+                };
             }
             const split_diff = {[whom] : { amt : howMuch} };
             const [payment] = await tx
@@ -110,7 +125,7 @@ export async function createExpenseAction(formData: FormData) {
                     category : category ,
                     when : when , 
                     notes : notes , 
-                    attachment : attachmentBuffer , 
+                    attachment : attachmentBuffer ? attachmentBuffer : null , 
                     isSplitEqually : false ,
                     splitMethod : splitTypeEnum[splitkey] ,
                     splitDifferent : split_diff
@@ -124,9 +139,10 @@ export async function createExpenseAction(formData: FormData) {
                 .where(
                 eq(idempotencyKeys.id, claiming.id)
                 );
+
             return {
-              duplicate: false,
-              id: eventID,
+                ok : true ,
+                message : `Created ${type}`
             };
 
         }
@@ -134,7 +150,10 @@ export async function createExpenseAction(formData: FormData) {
         const total_members = participant?.participants.length ?? 0;
 
         if (total_members === 0) {
-            throw new Error("Event has no participants");
+             return {
+                ok : false ,
+                error : `No participants`
+            };
         }
 
         const amount = howMuch/total_members;
@@ -207,7 +226,7 @@ export async function createExpenseAction(formData: FormData) {
             category: category,
             when: when,
             notes: notes,
-            attachment: attachmentBuffer,
+            attachment: attachmentBuffer ? attachmentBuffer : null,
             isSplitEqually: false,
             splitMethod : splitTypeEnum[splitkey],
             splitDifferent: json,
@@ -221,9 +240,20 @@ export async function createExpenseAction(formData: FormData) {
             }).where(
               eq(idempotencyKeys.id, claiming.id)
             );
+           
+        await tx.insert(history).values({
+            eventID : eventID ,
+            paymentID : payment.id ,
+            action : "created" ,
+        })
             
-        return payment;
+        return {
+            ok : true ,
+            message : `Created ${type}`,
+            redirectTo : `entries/${payment.id}`
+        };
+
     })
 
-    redirect(`/${result?.id}`);
+    return result;
 }

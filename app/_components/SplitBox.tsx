@@ -7,8 +7,8 @@ type SplitType = "equal" | "amount" | "share" | "per";
 type SplitProps = {
     money? : string
     participants : string[]
-    splitMethod : SplitMethod
-    splitDifferent : SplitDifferent
+    splitMethod? : SplitMethod
+    splitDifferent? : SplitDifferent
 };
 
 type SplitDifferent = Record<
@@ -182,7 +182,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => recalc("per", event.target);
 
     useEffect(() => {
-        if (!splitDifferent) return;
+        if (!splitDifferent || !splitMethod) return;
         const typeMap = {
             Equally: "equal",
             amounts: "amount",

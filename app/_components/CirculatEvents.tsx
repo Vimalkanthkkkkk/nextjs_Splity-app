@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { EventContextType, useEvent } from "./Context";
 import { Notes } from "./Notes";
 
 type params ={
@@ -19,7 +18,6 @@ type Props = {
 
 
 export function CircularEvents( {events} : Props) {
-    const eventContext: EventContextType = useEvent();
     const total_events = events.length;
     const baseradius = 130;
     const baseStepAngle = 45; 
@@ -62,15 +60,6 @@ export function CircularEvents( {events} : Props) {
                 <button
                     type="button"
                     className="bg-mauve-500 min-w-20 p-2 rounded-sm pointer-events-auto"
-                    onClick={() =>
-                        eventContext.setevent({
-                            who_ID: Date.now(), 
-                            who_Name: "vimal",
-                            event_name: "party",
-                            currency: "Ind",
-                            Participants: []
-                        })
-                    }
                 >
                     Add
                 </button>
