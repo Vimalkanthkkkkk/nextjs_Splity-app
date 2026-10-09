@@ -61,6 +61,7 @@ export const events = pgTable("events", {
   participants: jsonb("participants").$type<string[]>().notNull().default([]), 
   eventImage: blob("event_image"), 
   currency: text("currency").notNull().default("USD"),
+  ownerTokenHash: text("owner_token_hash"),
 });
 
 export const payments = pgTable("payments", {
