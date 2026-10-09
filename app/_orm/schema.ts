@@ -106,6 +106,37 @@ export const history = pgTable("history" , {
   ]
 )
 
+export const eventInvites = pgTable("event_invites", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"),
+  revokedAt: timestamp("revoked_at"),
+});
+
+export const eventMembers = pgTable(
+  "event_members",
+  {
+    id: serial("id").primaryKey(),
+    eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    email: text("email"),
+    sessionTokenHash: text("session_token_hash"), // null = unclaimed
+    claimedAt: timestamp("claimed_at"),
+  },
+  (t) => [uniqueIndex("event_members_event_name_idx").on(t.eventId, t.name)]
+);
+
+export const recoveryTokens = pgTable("member_recovery_tokens", {
+  id: serial("id").primaryKey(),
+  memberId: integer("member_id").notNull().references(() => eventMembers.id, { onDelete: "cascade" }),
+  tokenHash: text("token_hash").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   paymentsMade: many(payments),
 }));
