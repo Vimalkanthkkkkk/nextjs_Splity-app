@@ -12,9 +12,23 @@ const ONE_YEAR = 60 * 60 * 24 * 365;
 
 export const newToken = () => randomBytes(32).toString("base64url");
 export const hashToken = (t: string) => createHash("sha256").update(t).digest("hex");
-const cookieName = (eventId: number) => `member_${eventId}`; // one cookie per event
 
 export const inviteUrl = (token: string) => `${process.env.NEXT_PUBLIC_APP_URL}/join/${token}`;
+
+const cookieName = (eventId: number) => `member_${eventId}`; 
+
+const ownerCookieName = (eventId: number) => `owner_${eventId}`;
+
+export async function setOwnerCookie(eventId: number, token: string) {
+  const store = await cookies();
+  store.set(ownerCookieName(eventId), token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: ONE_YEAR,
+  });
+}
 
 export async function setMemberCookie(eventId: number, token: string) {
   const store = await cookies();
@@ -25,6 +39,25 @@ export async function setMemberCookie(eventId: number, token: string) {
     path: "/",
     maxAge: ONE_YEAR,
   });
+}
+
+export async function setupOwner(eventId: number, participants: string[], ownerName: string) {
+  const ownerToken = newToken();
+  await ensureMembers(eventId, participants);
+  const [ownerMember] = await db
+    .update(eventMembers)
+    .set({ isOwner: true, claimedAt: new Date() })
+    .where(and(eq(eventMembers.eventId, eventId), eq(eventMembers.name, ownerName)))
+    .returning();
+
+  if (!ownerMember) throw new Error("The creator's name must be one of the participants");
+
+  await db
+    .update(events)
+    .set({ ownerTokenHash: hashToken(ownerToken) })
+    .where(eq(events.id, eventId));
+
+  await setOwnerCookie(eventId, ownerToken);
 }
 
 export async function getCurrentMember(eventId: number) {
@@ -53,12 +86,18 @@ export async function getEventAccess(eventId: number) {
   const event = await db.query.events.findFirst({ where: eq(events.id, eventId) });
   if (!event) return null;
 
-  const user = await getCurrentUser();
-  if (user && user.id === event.whoCreated) {
-    return { role: "owner" as const, event, member: null };
+  const store = await cookies();
+  const ownerToken = store.get(ownerCookieName(eventId))?.value;
+  if (ownerToken && event.ownerTokenHash && event.ownerTokenHash === hashToken(ownerToken)) {
+    const member = await db.query.eventMembers.findFirst({
+      where: and(eq(eventMembers.eventId, eventId), eq(eventMembers.isOwner, true)),
+    });
+    return { role: "owner" as const, event, member: member ?? null };
   }
+
   const member = await getCurrentMember(eventId);
   if (member) return { role: "member" as const, event, member };
+
   return null;
 }
 

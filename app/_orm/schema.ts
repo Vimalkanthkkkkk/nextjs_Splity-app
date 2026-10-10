@@ -123,8 +123,9 @@ export const eventMembers = pgTable(
     eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     email: text("email"),
-    sessionTokenHash: text("session_token_hash"), // null = unclaimed
+    sessionTokenHash: text("session_token_hash"), 
     claimedAt: timestamp("claimed_at"),
+    isOwner: boolean("is_owner").notNull().default(false),
   },
   (t) => [uniqueIndex("event_members_event_name_idx").on(t.eventId, t.name)]
 );

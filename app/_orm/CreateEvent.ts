@@ -5,6 +5,7 @@ import { users, events , idempotencyKeys } from "@/app/_orm/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { ActionResult } from "../_types/ActionType";
+import { hashToken, newToken, setOwnerCookie } from "@/app/_components/utils"
 
 export async function createEventAction(_prev : ActionResult | null , formData: FormData): Promise<ActionResult> {
     const idempotencyKey =  formData.get("idempotencyKey")?.toString();
@@ -54,6 +55,8 @@ export async function createEventAction(_prev : ActionResult | null , formData: 
             ...additionalParticipants,
         ].filter(Boolean);
 
+        const ownerToken = newToken();
+
         const [newEvent] = await tx
             .insert(events)
             .values({
@@ -61,8 +64,11 @@ export async function createEventAction(_prev : ActionResult | null , formData: 
                 whoCreated: creator.id,
                 participants: allParticipants,
                 currency,
+                ownerTokenHash : ownerToken
             })
             .returning();
+
+        await setOwnerCookie(newEvent.id, ownerToken);
 
         await tx
             .update(idempotencyKeys)
