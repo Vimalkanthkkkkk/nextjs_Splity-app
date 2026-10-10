@@ -3,9 +3,8 @@
 import { db } from "@/app/_orm/db";
 import { users, events , idempotencyKeys } from "@/app/_orm/schema";
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { ActionResult } from "../_types/ActionType";
-import { createOwnerRows, hashToken, newToken, setOwnerCookie } from "@/app/_components/utils"
+import { createOwnerRows, setOwnerCookie } from "@/app/_components/utils"
 
 const clean = (v: FormDataEntryValue | null) =>
   (v?.toString() ?? "").replace(/\s+/g, " ").trim();
