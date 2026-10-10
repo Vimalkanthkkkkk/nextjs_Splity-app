@@ -19,6 +19,8 @@ const cookieName = (eventId: number) => `member_${eventId}`;
 
 const ownerCookieName = (eventId: number) => `owner_${eventId}`;
 
+type Executor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+
 export async function setOwnerCookie(eventId: number, token: string) {
   const store = await cookies();
   store.set(ownerCookieName(eventId), token, {
@@ -41,23 +43,20 @@ export async function setMemberCookie(eventId: number, token: string) {
   });
 }
 
-export async function setupOwner(eventId: number, participants: string[], ownerName: string) {
+export async function createOwnerRows( tx: Executor, event: { id: number; participants: string[] }, creator: { id: number; username: string }) {
   const ownerToken = newToken();
-  await ensureMembers(eventId, participants);
-  const [ownerMember] = await db
+  await ensureMembers(event.id, event.participants, tx);
+  const [ownerMember] = await tx
     .update(eventMembers)
-    .set({ isOwner: true, claimedAt: new Date() })
-    .where(and(eq(eventMembers.eventId, eventId), eq(eventMembers.name, ownerName)))
+    .set({ isOwner: true, userId: creator.id, claimedAt: new Date() })
+    .where(and(eq(eventMembers.eventId, event.id), eq(eventMembers.name, creator.username)))
     .returning();
-
   if (!ownerMember) throw new Error("The creator's name must be one of the participants");
-
-  await db
+  await tx
     .update(events)
     .set({ ownerTokenHash: hashToken(ownerToken) })
-    .where(eq(events.id, eventId));
-
-  await setOwnerCookie(eventId, ownerToken);
+    .where(eq(events.id, event.id));
+  return ownerToken; 
 }
 
 export async function getCurrentMember(eventId: number) {
@@ -73,9 +72,9 @@ export async function getCurrentMember(eventId: number) {
   return member ?? null;
 }
 
-export async function ensureMembers(eventId: number, names: string[]) {
+export async function ensureMembers(eventId: number, names: string[], executor: Executor = db) {
   if (names.length === 0) return;
-  await db
+  await executor
     .insert(eventMembers)
     .values(names.map((name) => ({ eventId, name })))
     .onConflictDoNothing({ target: [eventMembers.eventId, eventMembers.name] });
@@ -90,7 +89,10 @@ export async function getEventAccess(eventId: number) {
   const ownerToken = store.get(ownerCookieName(eventId))?.value;
   if (ownerToken && event.ownerTokenHash && event.ownerTokenHash === hashToken(ownerToken)) {
     const member = await db.query.eventMembers.findFirst({
-      where: and(eq(eventMembers.eventId, eventId), eq(eventMembers.isOwner, true)),
+      where: and(
+        eq(eventMembers.eventId, eventId),
+        eq(eventMembers.userId, event.whoCreated)
+      ),
     });
     return { role: "owner" as const, event, member: member ?? null };
   }
