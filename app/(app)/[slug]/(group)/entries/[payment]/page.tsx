@@ -27,7 +27,7 @@ export default async function EntriesPage({params}: Props){
                         <button type="submit" className="pl-2 mr-2 pr-2 p-1.5 shrink-0 self-center rounded-sm bg-gray-200">
                             <Image width={0} height={0} style={{ width: "24px", height: '20px' , borderRadius: 20 , objectFit: "contain" }} className="self-center" preload loading="eager" src="/search.png" alt="Splity logo" />
                         </button>
-                        <button type="submit" className="wrap-anywhere pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">+ Add participant</button>
+                        <Link href={`/${slug}/new/entries/expense`} className="wrap-anywhere pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">+ Add Expense</Link>
                     </div>
                     <ul className="list-none ">
                         {
@@ -39,8 +39,9 @@ export default async function EntriesPage({params}: Props){
                             
                             payments.map((p , i)=> {
                                 const word = p.type === "expense" ? "Paid" : p.type === "income" ? "received" : "gave" ;
-                                const date = `${p.when.getDate}/${p.when.getMonth}/${p.when.getFullYear}`
+                                const date = `${p.when.getDate()}/${p.when.getMonth()}/${p.when.getFullYear()}`
                                 const currency = p.event.currency;
+                                const length = Object.keys(p.splitDifferent ?? {}).length - 1;
                                 const currencyCode = currency as keyof typeof currencySymbols;
                                 const currencySymbol = currencySymbols[currencyCode] ;
                                 const myShare = p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
@@ -50,14 +51,14 @@ export default async function EntriesPage({params}: Props){
                                     <li key={i} className="hover:bg-gray-100">
                                         <Link href={`entries/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
                                             <div className="col-span-8">
-                                                <span className="block">{p.whospayment} {word} {currencySymbol}{p.howMuch} for {p.whatFor}</span>
+                                                <span className="block text-[20px]">{p.whospayment} {word} {currencySymbol}{p.howMuch} for {p.whatFor}</span>
                                                 {
                                                     p.type !== "transfer" ? 
                                                     <span className="text-center text-sm">People involved: {p.isSplitEqually ? "everyone" : p.splitDifferent 
                                                         ? 
-                                                        Object.entries(p.splitDifferent).map(([participant , amount]) => {
-                                                            return participant;
-                                                        }) 
+                                                        Object.entries(p.splitDifferent).map(([participant , amount] , idx) => {
+                                                            return (`${participant}${length !== idx ? " , " : '' }`);
+                                                        })  
                                                         : ''
                                                         }. {date} Your share: {currencySymbol}{myShare}
                                                     </span>

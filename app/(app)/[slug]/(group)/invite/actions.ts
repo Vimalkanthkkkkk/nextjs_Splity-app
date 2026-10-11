@@ -7,8 +7,8 @@ import { eventInvites, eventMembers } from "@/app/_orm/schema";
 import type { ActionResult } from "@/app/_types/ActionType";
 import { sendEmail , escapeHtml } from "@/app/_components/utils";
 import {
-  ensureMembers, getActiveInvite, getOwnerAccess, hashToken,
-  inviteUrl, newToken, setMemberCookie,
+  ensureMembers, getActiveInvite, getOwnerAccess,
+  inviteUrl, newToken
 } from "@/app/_components/utils"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

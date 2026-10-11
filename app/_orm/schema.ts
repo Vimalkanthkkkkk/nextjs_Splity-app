@@ -1,16 +1,5 @@
-import { 
-  pgTable, 
-  serial, 
-  text, 
-  timestamp, 
-  integer, 
-  numeric, 
-  boolean, 
-  jsonb,
-  pgEnum,
-  customType,
-  uniqueIndex,
-  index
+import {  pgTable,serial, text, timestamp, integer, numeric, 
+  boolean, jsonb,pgEnum,customType,uniqueIndex,index
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -20,7 +9,7 @@ const blob = customType<{ data: Buffer }>({
   },
 });
 
-export const historyTypeEnum = pgEnum("history_type", ["updated", "deleted", "created"]);
+export const historyTypeEnum = pgEnum("history_type", ["updated", "deleted", "created" , "settlement_marked"]);
 
 export const paymentTypeEnum = pgEnum("payment_type", ["expense", "transfer", "income"]);
 
@@ -91,12 +80,27 @@ export const comments = pgTable("comments", {
   comment: text("comment").notNull(),
 });
 
+export const settlements = pgTable(
+  "settlements",
+  {
+    id: serial("id").primaryKey(),
+    eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+    fromName: text("from_name").notNull(),   
+    toName: text("to_name").notNull(), 
+    amount: numeric("amount", { precision: 10, scale: 2, mode: "number" }).notNull(),
+    markedBy: text("marked_by").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [index("settlements_event_idx").on(t.eventId)]
+);
+
 export const history = pgTable("history" , {
   id : serial("id").primaryKey(),
   eventID : integer("eventid").notNull().references(()=> events.id , {onDelete : "cascade"}),
   paymentID : integer("payment_id").references(()=> payments.id , {onDelete : "set null"}),
   action : historyTypeEnum("action").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  settlementId: integer("settlement_id").references(() => settlements.id, { onDelete: "set null" }),
 },
 (table) => [
     index("history_event_created_idx").on(

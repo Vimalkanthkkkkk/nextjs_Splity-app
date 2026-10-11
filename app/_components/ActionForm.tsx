@@ -20,8 +20,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function ActionForm({
-  action,
+export default function ActionForm({action,
   successMessage = "Saved",
   submitLabel = "Save",
   useIdempotencyKey = false,
@@ -65,7 +64,7 @@ export default function ActionForm({
         <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
       )}
       {children}
-      <button type="submit" disabled={isPending} className={`disabled:opacity-50 text-black pl-2 pr-2 p-1 w-fit mt-6 rounded-sm ${submitButtonColorString} bg-cyan-200`}>
+      <button type="submit" disabled={isPending} className={`disabled:opacity-50 text-black pl-2 pr-2 p-1 w-fit rounded-sm ${submitButtonColorString} bg-cyan-200`}>
         {isPending ? savingString : submitLabel}
       </button>
       {

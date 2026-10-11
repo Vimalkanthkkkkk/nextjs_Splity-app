@@ -4,6 +4,7 @@ import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
 import { getEvent } from "@/app/_orm/Queries";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function ManageParticipantsPage({params} : Props){
     const {slug} = await params;
@@ -22,7 +23,7 @@ export default async function ManageParticipantsPage({params} : Props){
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] flex flex-col w-full h-fit self-center">
                     <div className="flex flex-1 text-black items-center p-4 justify-between">
                         <span>Manage participant</span>
-                        <button type="submit" className="pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">+ Add participant</button>
+                        <Link href={''} className="pl-2 pr-2 p-1 w-fit rounded-sm bg-gray-200">+ Add participant</Link>
                     </div>
                     <ul className="list-none ">
                         <li className="">
@@ -34,9 +35,9 @@ export default async function ManageParticipantsPage({params} : Props){
                         </li>
 
                         {
-                            event.participants.map((p)=>{
+                            event.participants.map((p , idx)=>{
                                 return(
-                                    <li>
+                                    <li key={idx}>
                                         <div className="grid grid-cols-12 items-center border-t border-gray-200 text-black p-4">
                                             <span className="col-span-4">{p}</span>
                                             <span className="col-span-6 text-center">1</span>
