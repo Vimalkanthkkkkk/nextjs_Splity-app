@@ -1,6 +1,4 @@
 import "server-only";
-
-import "server-only";
 import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -178,6 +176,7 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function claimMemberAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  "use server";
   const token = formData.get("token")?.toString() ?? "";
   const memberId = Number(formData.get("member_id"));
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
@@ -215,6 +214,7 @@ export async function claimMemberAction( _prev: ActionResult | null, formData: F
 }
 
 export async function requestRecoveryAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  "use server";
   const token = formData.get("token")?.toString() ?? "";
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
 

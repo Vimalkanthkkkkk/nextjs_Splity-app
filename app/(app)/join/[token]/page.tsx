@@ -1,3 +1,5 @@
+"use server"
+
 import { notFound, redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/app/_orm/db";
@@ -37,8 +39,8 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
   );
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 flex flex-col gap-6 text-black">
-      <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 flex flex-col gap-4">
+    <div className="h-full w-full bg-linear-to-b from-[#ffffff] to-[#e9e7e7]  mx-auto p-4 flex flex-1 flex-col gap-6 text-black">
+      <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 mx-auto flex flex-col gap-4">
         <h1 className="text-lg font-semibold">Join "{event.event}"</h1>
 
         {free.length === 0 ? (
@@ -54,6 +56,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
             className="flex flex-col gap-3"
             submitButtonColorString="bg-cyan-200"
             needCancelButton
+            cancelString="Back"
           >
             <input type="hidden" name="token" value={token} />
             <p className="text-sm text-gray-600">Who are you?</p>
@@ -78,7 +81,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
         )}
       </div>
 
-      <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 flex flex-col gap-3">
+      <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 mx-auto flex flex-col gap-3">
         <h2 className="font-medium">Already joined before?</h2>
         <p className="text-sm text-gray-600">
           Enter the email you used and we'll send you a sign-in link.
