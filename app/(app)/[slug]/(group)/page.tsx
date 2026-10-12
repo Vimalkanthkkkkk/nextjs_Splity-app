@@ -40,7 +40,7 @@ export default async function EventsMainPage({params}: Props){
                 <div className="content-center pl-2 w-full h-10 self-center">
                     <span className="text-black">Hi {me ?? event.creator.username}</span>
                 </div>
-                <Link href={`${slug}/invite`} className="bg-gray-400 wrap-anywhere rounded-sm border-2 text-black w-full p-2 self-center content-center pl-2">
+                <Link href={`/invite`} className="bg-gray-400 wrap-anywhere rounded-sm border-2 text-black w-full p-2 self-center content-center pl-2">
                     Invite your friends to participate in this Event
                 </Link>
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
