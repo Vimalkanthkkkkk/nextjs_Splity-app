@@ -5,10 +5,7 @@ import { eventMembers } from "@/app/_orm/schema";
 import ActionForm from "@/app/_components/ActionForm";
 import CopyButton from "@/app/_components/CopyButton";
 import { ensureMembers, getActiveInvite, getOwnerAccess, inviteUrl } from "@/app/_components/utils";
-import {
-  createInviteAction, revokeInviteAction, resetMemberAction,
-   sendInviteEmailAction,
-} from "./actions";
+import { createInviteAction, revokeInviteAction, resetMemberAction, sendInviteEmailAction } from "./actions";
 import Navigation from "@/app/_components/Navigation";
 import Actions from "@/app/_components/Actions";
 import BackButton from "@/app/_components/Backbutton";

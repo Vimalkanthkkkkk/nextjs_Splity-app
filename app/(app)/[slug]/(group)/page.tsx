@@ -5,13 +5,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navigation from "@/app/_components/Navigation";
+import ActionForm from "@/app/_components/ActionForm";
+import { getEventBalances } from "@/app/_components/balance";
+import { requireEventAccess } from "@/app/_components/utils";
+import { markSettlementAction } from "@/app/_orm/Settlement";
 
 export default async function EventsMainPage({params}: Props){
     const { slug } = await params;
-    const event = await getEvent(Number(slug));
-    if(!event){
-        redirect("/");
-    }
+    const eventId = Number(slug);
+    const access = await requireEventAccess(eventId);   
+    const event = await getEvent(eventId);
+
+    if (!event) redirect("/");
+    
+    const me = access.member?.name ?? null;
+    const data = await getEventBalances(event.id, event.participants);
+    const fmt = (cents: number) => `${event.currency} ${(cents / 100).toFixed(2)}`;
+    const myNet = me ? data.net[me] ?? 0 : 0;
     
     return(
         <>        
@@ -19,39 +29,44 @@ export default async function EventsMainPage({params}: Props){
                 <Actions eventName={event.event} slug={slug}  />
             </Navigation>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-4 shrink">
-                <div className="w-full rounded-4xl h-50 self-center relative ">
-                    <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
-                </div>
+                {
+                    event.eventImage ?
+                    <div className="w-full rounded-4xl h-50 self-center relative ">
+                        <Image width={0} height={0} sizes="100vw" style={{ width: "100%", height: '100%' , borderRadius: 20 , objectFit: "fill" }} className="items-start" preload loading="eager" src="/split.jpeg" alt="Splity logo" />
+                    </div> 
+                    :
+                    <></>
+                }
                 <div className="content-center pl-2 w-full h-10 self-center">
-                    <span className="text-black">Hi {event.creator.username}</span>
+                    <span className="text-black">Hi {me ?? event.creator.username}</span>
                 </div>
-                <div className="bg-gray-400 wrap-anywhere rounded-sm border-2 text-black w-full p-2 self-center content-center pl-2">
+                <Link href={`${slug}/invite`} className="bg-gray-400 wrap-anywhere rounded-sm border-2 text-black w-full p-2 self-center content-center pl-2">
                     Invite your friends to participate in this Event
-                </div>
+                </Link>
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)]  gap-2 flex flex-col w-full h-fit self-center p-4">
                     <div className="flex flex-1 text-black items-center justify-between">
                         <span>Overview</span>
-                        <span>0 Expenses</span>
+                        <span>{data.expenseCount} Expenses</span>
                     </div>
                     <span className="text-black">For families or couples who share their balance, set up default shares.</span>
                     <hr className="w-full bg-gray-950 h-0.5"/>  
                     <div className="text-black">
                         <div className="flex flex-1 items-center justify-between">
                             <span>This event cost the group:</span>
-                            <span>0</span>
-                        </div>
-                        <div className="flex flex-1  items-center justify-between">
-                            <span>It cost you:</span>
-                            <span>0</span>
-                        </div>
-                        <div className="flex flex-1  items-center justify-between">
-                            <span>You've paid:</span>
-                            <span>0</span>
+                            <span>{fmt(data.groupCost)}</span>
                         </div>
                         <div className="flex flex-1 items-center justify-between">
-                            <span>You are owed:</span>
-                            <span>0</span>
-                        </div>   
+                            <span>It cost you:</span>
+                            <span>{fmt(me ? data.owed[me] ?? 0 : 0)}</span>
+                        </div>
+                        <div className="flex flex-1 items-center justify-between">
+                            <span>You've paid:</span>
+                            <span>{fmt(me ? data.paid[me] ?? 0 : 0)}</span>
+                        </div>
+                        <div className="flex flex-1 items-center justify-between">
+                            <span>{myNet < 0 ? "You owe:" : "You are owed:"}</span>
+                            <span>{fmt(Math.abs(myNet))}</span>
+                        </div>
                     </div>
                     <div className="text-black flex flex-1 flex-row self-end">
                         <Link href={`/${slug}/entries`} className="mr-2 p-1 rounded-sm bg-gray-200">View Expenses</Link>
@@ -76,11 +91,54 @@ export default async function EventsMainPage({params}: Props){
                     </div>
                 </div>
                 <div className="bg-white shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] text-black rounded-sm gap-2 flex flex-col w-full h-fit self-center p-4">
-                        <div className="flex flex-1 items-center justify-between">
-                            <span className="">How to settle all debts</span>
-                            <span className="">?</span>
+                    <div className="flex flex-1 items-center justify-between">
+                        <span>How to settle all debts</span>
+                        <span>?</span>
+                    </div>
+
+                    {data.transfers.length === 0 ? (
+                        <span className="text-sm text-gray-600">
+                            {
+                                data.expenseCount === 0 ? 
+                                "No expenses yet." : 
+                                "All settled up. Nobody owes anything."
+                            }
+                        </span>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                        {data.transfers.map((t) => {
+                            const canMark = access.role === "owner" || me === t.from || me === t.to;
+                            return (
+                            <div
+                                key={`${t.from}-${t.to}`}
+                                className="flex flex-wrap items-center justify-between gap-2 bg-gray-100 rounded-sm p-3"
+                            >
+                                <span>
+                                <b>{t.from}</b> pays <b>{t.to}</b>
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold">{fmt(t.cents)}</span>
+                                    {canMark && (
+                                        <ActionForm
+                                        action={markSettlementAction}
+                                        submitLabel="Mark this settlement"
+                                        savingString="Saving..."
+                                        successMessage="Settlement marked"
+                                        className="flex"
+                                        submitButtonColorString="bg-gray-300"
+                                        >
+                                            <input type="hidden" name="event_id" value={event.id} />
+                                            <input type="hidden" name="from" value={t.from} />
+                                            <input type="hidden" name="to" value={t.to} />
+                                            <input type="hidden" name="cents" value={t.cents} />
+                                        </ActionForm>
+                                    )}
+                                </div>
+                            </div>
+                            );
+                        })}
                         </div>
-                    <span>To see how the settlements are calculated, export this Kitty as Excel file.</span>
+                    )}
                 </div>
                 <div className="bg-white shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] text-black rounded-sm gap-2 flex flex-1 flex-col w-full h-fit self-center p-4">
                     <div className="flex flex-1 items-center justify-between">

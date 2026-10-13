@@ -76,7 +76,7 @@ export async function createEventAction(_prev: ActionResult | null, formData: Fo
         .set({ resourceId: newEvent.id })
         .where(eq(idempotencyKeys.id, idempotency.id));
 
-      return { duplicate: false as const, eventId: newEvent.id, ownerToken };
+      return { ok: true , eventId: newEvent.id, ownerToken };
     });
 
     if (!result.eventId) {

@@ -13,11 +13,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`font-lexend h-full antialiased scrollbar-none `}
     >
-      <NotificationProvider>
         <body className="min-h-full flex flex-col">
-          {children}
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
         </body>
-      </NotificationProvider>
     </html>
   );
 }

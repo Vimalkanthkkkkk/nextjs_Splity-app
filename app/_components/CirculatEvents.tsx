@@ -56,14 +56,6 @@ export function CircularEvents( {events} : Props) {
                 }} 
                 className="w-full pointer-events-none"
             >
-            <div className="fixed left-1/2 translate-y-150 -translate-x-1/2  z-50">
-                <button
-                    type="button"
-                    className="bg-mauve-500 min-w-20 p-2 rounded-sm pointer-events-auto"
-                >
-                    Add
-                </button>
-            </div>
             <div className="fixed inset-0 pointer-events-none flex items-center justify-center">
                 <div
                     className="relative self-end-safe transition-transform duration-75 ease-out"

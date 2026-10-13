@@ -57,10 +57,11 @@ export default async function HistoryPage({params , searchParams} : HistoryProps
                         <span>History</span>
                     </div> 
                     <ul className="list-none gap-4 flex flex-col text-black ">
-                        {data.map((item) => (
-                            <li key={item.id}>
+                        {data.map((item) => {
+                            const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+                            return <li key={item.id}>
                                 <div className="flex flex-1 h-full items-center bg-gray-300">
-                                    <div className="w-1.5 self-stretch bg-amber-400"></div>
+                                    <div className="w-1.5 self-stretch" style={{ backgroundColor: randomColor }}></div>
                                     <div className="p-2 pl-4 pb-6 flex flex-col self-center">
                                         <span className="pb-4">
                                             {item.action}
@@ -91,7 +92,7 @@ export default async function HistoryPage({params , searchParams} : HistoryProps
 
                                 </div>
                             </li>
-                        ))}
+                        })}
                     </ul>
                     <div className="flex justify-between">
                         {

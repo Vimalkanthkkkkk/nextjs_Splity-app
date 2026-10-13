@@ -1,6 +1,4 @@
 import "server-only";
-
-import "server-only";
 import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -10,7 +8,6 @@ import { eventInvites, eventMembers, events, recoveryTokens } from "../_orm/sche
 import { ActionResult } from "../_types/ActionType";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
-
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
 export const newToken = () => randomBytes(32).toString("base64url");
@@ -77,11 +74,11 @@ export async function getCurrentMember(eventId: number) {
 
 export async function ensureMembers(eventId: number, names: string[], executor: Executor = db) {
   if (names.length === 0) return;
-  await executor
-    .insert(eventMembers)
+  await executor.insert(eventMembers)
     .values(names.map((name) => ({ eventId, name })))
     .onConflictDoNothing({ target: [eventMembers.eventId, eventMembers.name] });
 }
+
 
 export async function getEventAccess(eventId: number) {
   if (!Number.isInteger(eventId)) return null;
@@ -179,6 +176,7 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function claimMemberAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  "use server";
   const token = formData.get("token")?.toString() ?? "";
   const memberId = Number(formData.get("member_id"));
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
@@ -216,6 +214,7 @@ export async function claimMemberAction( _prev: ActionResult | null, formData: F
 }
 
 export async function requestRecoveryAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  "use server";
   const token = formData.get("token")?.toString() ?? "";
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
 
