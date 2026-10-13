@@ -13,6 +13,13 @@ interface PageProps {
   }>;
 }
 
+interface PaymentDetail {
+  amt: number;
+  share?: number;
+  percent?: number;
+}
+
+
 export default async function PaymentPage({params}: PageProps){
     const { payment , slug } = await params;
     const paymentData = await getpayment(Number(payment));
@@ -36,6 +43,12 @@ export default async function PaymentPage({params}: PageProps){
     const paymentMembers : string[] = Object.entries(paymentData.splitDifferent ?? {}).map(([name , amt], idx) => {
         return name;
     })
+    const paymentMembersLookup: Record<string, PaymentDetail> = Object.fromEntries(
+        Object.entries(paymentData.splitDifferent ?? {}).map(([name, amt]) => {
+            const paymentDetail: PaymentDetail = typeof amt === 'number' ? { amt } : amt;  
+            return [name, paymentDetail]; 
+        })
+    );
     return(
         <>
             <Navigation route={`/${slug}`}>
@@ -65,8 +78,14 @@ export default async function PaymentPage({params}: PageProps){
                                         return (
                                             <li key={idx}>
                                                 <div className="flex flex-row justify-between w-full" >
-                                                    <span className={`${paymentMembers.includes(p) ? 'text-black' : 'text-gray-200' }`}>
+                                                    <span className={`${paymentMembers.includes(p) ? 'text-black' : 'text-gray-200' } flex flex-col `}>
                                                         {p}
+                                                        <span>
+                                                            { 
+                                                                splitMethod === "percentages" ? `${paymentMembersLookup[p].percent} %` : 
+                                                                splitMethod === "shares"  ? `Shares : ${paymentMembersLookup[p].share} ` : ``
+                                                            }
+                                                        </span>
                                                     </span>
                                                     <span className={`${paymentMembers.includes(p) ? 'text-black' : 'text-gray-200' }`}>
                                                         {
@@ -83,10 +102,10 @@ export default async function PaymentPage({params}: PageProps){
                             </ul>
                         </div>
                         <div className="flex flex-row justify-between w-full" >
-                            <Link href={''} className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">
+                            <Link href={`${payment}/edit`} className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-cyan-200">
                                 Edit
                             </Link>
-                            <Link href={''} className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">
+                            <Link href={``} className="pl-2 pr-2 p-1 w-fit rounded-sm text-black bg-gray-200">
                                 Delete
                             </Link>
                         </div>

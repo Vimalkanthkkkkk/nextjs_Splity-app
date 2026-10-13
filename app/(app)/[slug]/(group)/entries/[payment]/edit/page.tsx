@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import Actions from "@/app/_components/Actions";
 import BackButton from "@/app/_components/Backbutton";
 import ActionForm from "@/app/_components/ActionForm";
+import { currencySymbols } from "@/app/_components/CurrencySymbols";
 
 interface PageProps {
   params: Promise<{
@@ -23,6 +24,8 @@ export default async function ExpenseEditPage( {params } : PageProps){
         redirect(`/${slug}/entries`)
     }
     const splitType = paymentData.type;
+    const currencyCode = paymentData.event.currency as keyof typeof currencySymbols;
+    const currencySymbol = currencySymbols[currencyCode];
     return(
         <>
             <Navigation route={`/${slug}`}>
@@ -32,7 +35,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                 <BackButton route={`/${slug}/entries`} />
                 <ActionForm
                     action={createExpenseAction}
-                    className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 gap-10 flex flex-col w-full h-fit self-center"
+                    className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] p-4 flex flex-col w-full h-fit self-center"
                     successMessage={`Updated ${paymentData.type}`}
                     useIdempotencyKey
                     submitLabel="Save"
@@ -48,10 +51,10 @@ export default async function ExpenseEditPage( {params } : PageProps){
                         value={splitType}
                     />
                     <span className="text-black">Who Paid for it?</span>
-                    <Participants split={splitType} participants={ paymentData.event.participants} edit={false} />
+                    <Participants whatfor={paymentData.whatFor} split={splitType} participants={ paymentData.event.participants} edit={false} />
                     <div className="grid grid-cols-12 grid-rows-2">
                         <label htmlFor="amount" className="text-black block col-span-3 mt-2 mb-1">How much?</label>
-                        <span className="text-black row-start-2 h-8 border-t border-l border-b w-full p-1 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
+                        <span className="text-black row-start-2 h-8 border-t border-l border-b w-full p-1 border-gray-600 rounded-tl-sm rounded-bl-sm">{currencySymbol}</span>
                         <input type="number" name="amount" id="amount" placeholder="Amount" 
                             defaultValue={paymentData.howMuch}
                             className="
@@ -66,7 +69,7 @@ export default async function ExpenseEditPage( {params } : PageProps){
                         splitType !== "transfer" ?
                             <>
                                 <label htmlFor="category" className="text-black block mt-3">Which Category?</label>
-                                <CategoryDropdown/>
+                                <CategoryDropdown ctgry={paymentData.category ?? ''} />
                             </>
                             :
                             <></>

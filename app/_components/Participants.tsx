@@ -8,10 +8,11 @@ type ParticipantProps = {
   participants: string[];
   split: string;
   edit : boolean
+  whatfor? : string
 };
 
 
-export default function Participants({participants , split , edit}:ParticipantProps){
+export default function Participants({whatfor, participants , split , edit}:ParticipantProps){
     const [selected, setSelected] = useState<string>(participants[0]);
     return(
         <div className="grid grid-cols-12">
@@ -31,6 +32,7 @@ export default function Participants({participants , split , edit}:ParticipantPr
                 }
                 <label htmlFor="what" className="text-black block mt-4 mb-2">What for? </label>
                 <input
+                    defaultValue={whatfor}
                     type="text"
                     name="what"
                     id="what"

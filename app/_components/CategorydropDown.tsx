@@ -85,7 +85,11 @@ const category : CategortType[] = [
     }
 ]
 
-export default function CategoryDropdown(): ReactNode {
+type props = {
+    ctgry? : string
+}
+
+export default function CategoryDropdown(  { ctgry } : props  ): ReactNode {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState<CategortType>(category[0]);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -110,6 +114,7 @@ export default function CategoryDropdown(): ReactNode {
             <input
                 type="hidden"
                 name="category"
+                defaultValue={ctgry}
                 value={selected.mainTitle}
             />
             <div ref={dropdownRef} className="block w-full text-black mt-1 col-span-8">
