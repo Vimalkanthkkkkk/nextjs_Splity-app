@@ -9,9 +9,9 @@ const blob = customType<{ data: Buffer }>({
   },
 });
 
-export const historyTypeEnum = pgEnum("history_type", ["updated", "deleted", "created" , "settlement_marked"]);
+export const historyTypeEnum = pgEnum("history_type", ["updated", "deleted", "created" , "Settlement added" , "Settlement deleted"]);
 
-export const paymentTypeEnum = pgEnum("payment_type", ["expense", "transfer", "income"]);
+export const paymentTypeEnum = pgEnum("payment_type", ["expense", "transfer", "income" , "settlement"]);
 
 export const splitTypeEnum = pgEnum("split_type", ["Equally", "percentages", "amounts" , "shares"]);
 
@@ -93,6 +93,8 @@ export const settlements = pgTable(
     eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
     fromName: text("from_name").notNull(),   
     toName: text("to_name").notNull(), 
+    undoneAt: timestamp("undone_at"),
+    undoneBy: text("undone_by"),
     amount: numeric("amount", { precision: 10, scale: 2, mode: "number" }).notNull(),
     markedBy: text("marked_by").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

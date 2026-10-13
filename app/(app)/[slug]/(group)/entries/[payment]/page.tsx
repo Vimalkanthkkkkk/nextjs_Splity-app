@@ -31,7 +31,7 @@ export default async function PaymentPage({params}: PageProps){
     const participants = paymentData.event.participants;
     const splitType = paymentData.type;
     const splitMethod = paymentData.splitMethod;
-    const word = paymentData.type === "expense" ? "Paid" : paymentData.type === "income" ? "received" : "gave" ;
+    const word = paymentData.type === "expense" ? "Paid by" : paymentData.type === "income" ? "received by" : "gave to" ;
     const date = `${paymentData.when.getDate()}/${paymentData.when.getMonth()}/${paymentData.when.getFullYear()}`
     const equally = Boolean(paymentData.isSplitEqually || ( Object.entries(paymentData.splitDifferent ?? {}).length === participants.length ) );
     const splitWord = `Equally between ${equally ? "Everyone" : "involved participants"}`;
@@ -43,6 +43,7 @@ export default async function PaymentPage({params}: PageProps){
     const paymentMembers : string[] = Object.entries(paymentData.splitDifferent ?? {}).map(([name , amt], idx) => {
         return name;
     })
+    const [whom] = Object.entries(paymentData.splitDifferent ?? {})[0] ?? [];
     const paymentMembersLookup: Record<string, PaymentDetail> = Object.fromEntries(
         Object.entries(paymentData.splitDifferent ?? {}).map(([name, amt]) => {
             const paymentDetail: PaymentDetail = typeof amt === 'number' ? { amt } : amt;  
@@ -64,7 +65,7 @@ export default async function PaymentPage({params}: PageProps){
                             <span>{currencySymbol} {paymentData.howMuch.toFixed(2)}</span>
                         </div>
                         <span>
-                            {word} by {paymentData.whospayment} on {date}
+                            {word} { paymentData.type !== "transfer" ? paymentData.whospayment : whom} on {date}
                         </span>
                         <div>
                             <label>Notes</label>

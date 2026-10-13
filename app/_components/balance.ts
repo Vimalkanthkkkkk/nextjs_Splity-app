@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, isNull , and} from "drizzle-orm";
 import { db } from "../_orm/db";
 import { payments, settlements } from "@/app/_orm/schema";
 
@@ -70,8 +70,7 @@ export function minimizeTransfers(net: Record<string, number>): Transfer[] {
 
 export async function getEventBalances(eventId: number, participants: string[], executor: Executor = db) {
   const rows = await executor.select().from(payments).where(eq(payments.eventId, eventId));
-  const settled = await executor.select().from(settlements).where(eq(settlements.eventId, eventId));
-
+  const settled = await executor.select().from(settlements).where(and(eq(settlements.eventId, eventId), isNull(settlements.undoneAt)));
   const net: Record<string, number> = {};   
   const paid: Record<string, number> = {};  
   const owed: Record<string, number> = {};  

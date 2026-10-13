@@ -10,6 +10,7 @@ import { getEventBalances } from "@/app/_components/balance";
 import { requireEventAccess } from "@/app/_components/utils";
 import { markSettlementAction } from "@/app/_orm/Settlement";
 import { addCommentAction } from "@/app/_components/utils";
+import { currencySymbols } from "@/app/_components/CurrencySymbols";
 
 export default async function EventsMainPage({params}: Props){
     const { slug } = await params;
@@ -20,8 +21,10 @@ export default async function EventsMainPage({params}: Props){
     if (!event) redirect("/");
     const eventComments = await getComments(eventId);
     const me = access.member?.name ?? null;
+    const currencyCode = event.currency as keyof typeof currencySymbols;
+    const currencySymbol = currencySymbols[currencyCode] ;
     const data = await getEventBalances(event.id, event.participants);
-    const fmt = (cents: number) => `${event.currency} ${(cents / 100).toFixed(2)}`;
+    const fmt = (cents: number) => `${currencySymbol} ${(cents / 100).toFixed(2)}`;
     const myNet = me ? data.net[me] ?? 0 : 0;
     
     return(

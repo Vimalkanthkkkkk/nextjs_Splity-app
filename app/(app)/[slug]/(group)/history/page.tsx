@@ -64,7 +64,7 @@ export default async function HistoryPage({params , searchParams} : HistoryProps
                                     <div className="w-1.5 self-stretch" style={{ backgroundColor: randomColor }}></div>
                                     <div className="p-2 pl-4 pb-6 flex flex-col self-center">
                                         <span className="pb-4">
-                                            {item.action}
+                                           {item.payment?.type.toLocaleUpperCase()} {item.action}
                                         </span>
                                         <span className="pb-1">
                                             {

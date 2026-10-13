@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
-import { history, settlements } from "@/app/_orm/schema";
+import { history, payments, settlements } from "@/app/_orm/schema";
 import type { ActionResult } from "@/app/_types/ActionType"
 import { getEventBalances } from "@/app/_components/balance"
 import { getEventAccess } from "@/app/_components/utils";
@@ -48,10 +48,11 @@ export async function markSettlementAction(
           markedBy: me ?? "Organiser",
         })
         .returning();
+      
 
       await tx.insert(history).values({
         eventID: eventId,
-        action: "settlement_marked",
+        action: "Settlement added",
         settlementId: s.id,
       });
     });
