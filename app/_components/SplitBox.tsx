@@ -231,7 +231,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
         <>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split-ery-equally" name="split-method" checked={option} onChange={() => setoption(true)} defaultChecked value="Eql" 
+                    type="radio" id="split-ery-equally" name="split-method" checked={option} onChange={() => setoption(true)} value="Eql" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split-ery-equally" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
