@@ -27,6 +27,7 @@ export default function CreateEvent(){
                     submitLabel="Create Event"
                     useIdempotencyKey
                     savingString="Creating"
+                    submitButtonColorString="bg-cyan-200"
                     className="bg-gray-50 wrap-anywhere 
                         row-start-2 col-start-2 col-span-2 
                         h-fit w-full flex flex-col 

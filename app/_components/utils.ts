@@ -102,7 +102,6 @@ export async function getEventAccess(eventId: number) {
 
   const member = await getCurrentMember(eventId);
   if (member) return { role: "member" as const, event, member };
-
   return null;
 }
 
