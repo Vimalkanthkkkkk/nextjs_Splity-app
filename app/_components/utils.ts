@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { and, desc, eq, gt, isNotNull, isNull } from "drizzle-orm";
 import { db } from "../_orm/db"
-import { eventInvites, eventMembers, events, recoveryTokens } from "../_orm/schema";
+import { comments, eventInvites, eventMembers, events, recoveryTokens } from "../_orm/schema";
 import { ActionResult } from "../_types/ActionType";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
@@ -300,3 +300,29 @@ export async function completeRecoveryAction( _prev: ActionResult | null,formDat
 }
 
 
+export async function addCommentAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  "use server"
+  const eventId = Number(formData.get("event_id"));
+  const text = (formData.get("comment")?.toString() ?? "").trim();
+  if (!Number.isInteger(eventId)) return { ok: false, error: "Invalid event" };
+  if (!text) return { ok: false, error: "Write a comment first" };
+  if (text.length > 1000) return { ok: false, error: "Comments can be at most 1000 characters" };
+  const access = await getEventAccess(eventId);
+  if (!access) return { ok: false, error: "You don't have access to this event" };
+  const author = access.member?.name;
+  if (!author) return { ok: false, error: "Join the event with your name before commenting" };
+  try {
+    await db.insert(comments).values({
+      eventId,
+      userId: access.member?.userId ?? null, 
+      authorName: author,
+      comment: text,
+    });
+  } catch (error) {
+    console.error("addCommentAction failed:", error);
+    return { ok: false, error: "Couldn't post your comment. Please try again." };
+  }
+
+  revalidatePath(`/${eventId}`);
+  return { ok: true, message: "Comment posted" };
+}

@@ -1,5 +1,5 @@
 import Actions from "@/app/_components/Actions";
-import { getEvent } from "@/app/_orm/Queries";
+import { getComments, getEvent } from "@/app/_orm/Queries";
 import { Props } from "@/app/_types/Props";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import ActionForm from "@/app/_components/ActionForm";
 import { getEventBalances } from "@/app/_components/balance";
 import { requireEventAccess } from "@/app/_components/utils";
 import { markSettlementAction } from "@/app/_orm/Settlement";
+import { addCommentAction } from "@/app/_components/utils";
 
 export default async function EventsMainPage({params}: Props){
     const { slug } = await params;
@@ -17,7 +18,7 @@ export default async function EventsMainPage({params}: Props){
     const event = await getEvent(eventId);
 
     if (!event) redirect("/");
-    
+    const eventComments = await getComments(eventId);
     const me = access.member?.name ?? null;
     const data = await getEventBalances(event.id, event.participants);
     const fmt = (cents: number) => `${event.currency} ${(cents / 100).toFixed(2)}`;
@@ -153,11 +154,51 @@ export default async function EventsMainPage({params}: Props){
                     }
                     <button type="submit" className="p-1 w-fit self-end rounded-sm bg-gray-200">View Expenses</button>
                 </div>
-                <div className="bg-white shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] text-black rounded-sm gap-2 flex flex-col w-full h-fit self-center p-4">
-                    <h1 className="">Comments</h1>
-                    <textarea name="comments" id="comments" className="border rounded-sm"></textarea>
-                    <button type="submit" className="pl-2 pr-2 p-1 w-fit self-end rounded-sm bg-gray-200">Send</button>
-                </div>
+                <div className="bg-white shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] text-black rounded-sm gap-3 flex flex-col w-full h-fit self-center p-4">
+                    <h1 className="font-medium">Comments</h1>
+
+                    <ActionForm
+                        action={addCommentAction}
+                        successMessage="Comment posted"
+                        submitLabel="Send"
+                        savingString="Sending..."
+                        className="flex flex-col gap-2"
+                        submitButtonColorString="bg-gray-200"
+                    >
+                        <input type="hidden" name="event_id" value={event.id} />
+                        <label htmlFor="comment" className="sr-only">Write a comment</label>
+                        <textarea
+                        id="comment"
+                        name="comment"
+                        required
+                        rows={3}
+                        maxLength={1000}
+                        placeholder="Write a comment..."
+                        className="border rounded-sm p-2"
+                        />
+                    </ActionForm>
+
+                    {eventComments.length === 0 ? (
+                        <p className="text-sm text-gray-500">No comments yet.</p>
+                    ) : (
+                        <ul className="flex flex-col gap-2">
+                        {eventComments.map((c) => (
+                            <li key={c.id} className="bg-gray-100 rounded-sm p-3">
+                            <div className="flex items-baseline justify-between gap-2">
+                                <span className="text-sm font-semibold">
+                                {c.authorName}
+                                {c.authorName === me && " (you)"}
+                                </span>
+                                <time dateTime={c.createdAt.toISOString()} className="text-xs text-gray-500">
+                                {c.createdAt.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                                </time>
+                            </div>
+                            <p className="mt-1 text-sm whitespace-pre-wrap break-words">{c.comment}</p>
+                            </li>
+                        ))}
+                        </ul>
+                    )}
+                    </div>
             </div>
         </>
     );

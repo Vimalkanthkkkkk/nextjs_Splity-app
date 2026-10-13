@@ -73,12 +73,18 @@ export const payments = pgTable("payments", {
   splitDifferent: jsonb("split_different").$type<Record<string, {amt: number; share?: number; percent?:number} >>()
 });
 
-export const comments = pgTable("comments", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
-  comment: text("comment").notNull(),
-});
+export const comments = pgTable(
+  "comments",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }), // now optional
+    eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+    authorName: text("author_name").notNull().default("Unknown"),
+    comment: text("comment").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [index("comments_event_created_idx").on(t.eventId, t.createdAt)]
+);
 
 export const settlements = pgTable(
   "settlements",

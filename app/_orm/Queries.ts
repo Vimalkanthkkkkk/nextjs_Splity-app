@@ -1,7 +1,7 @@
 "use server"
 import { db } from "@/app/_orm/db";
 import { and, desc, eq, gt, lt, or } from "drizzle-orm";
-import { events, history, payments  } from "./schema";
+import { comments, events, history, payments  } from "./schema";
 import { getSpendingByCategory, getSpendingByPerson, getSpendingOverTime, getSummary } from "./Insights";
 
 export async function getAllEvent() {
@@ -224,4 +224,14 @@ export async function getEventInsights(eventID: number) {
     people,
     timeline,
   };
+}
+
+export async function getComments(eventID : number){
+  const eventComments = await db
+  .select()
+  .from(comments)
+  .where(eq(comments.eventId, eventID))
+  .orderBy(desc(comments.createdAt))
+  .limit(50);
+  return eventComments;
 }
