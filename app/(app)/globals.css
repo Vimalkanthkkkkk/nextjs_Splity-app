@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  box-sizing: border-box;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-lexend: "League Spartan", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@utility picker-icon {
+  &::picker-icon {
+    @apply transition-transform duration-400;
+  }
+}
+
+select[appearance="base-select"] {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+select::picker-icon {
+  display: none !important;
+}
+
+::picker(select) {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  position-area: bottom left;
+  position-try-options: flip-block, flip-inline;
+}
+
+select[appearance="base-select"] option {
+  padding: 8px 16px;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: #000000;
+  display: flex;
+}
+
+select[appearance="base-select"] option:hover,
+select[appearance="base-select"] option:focus {
+  background-color: #2563eb !important; 
+  color: #ffffff !important;
+}
+
+@utility invisible-none {
+  visibility: visible;
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
