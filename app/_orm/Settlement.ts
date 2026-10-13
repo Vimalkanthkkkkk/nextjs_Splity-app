@@ -8,10 +8,7 @@ import { getEventAccess } from "@/app/_components/utils";
 
 class UserError extends Error {}
 
-export async function markSettlementAction(
-  _prev: ActionResult | null,
-  formData: FormData
-): Promise<ActionResult> {
+export async function markSettlementAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
   "use server";
   const eventId = Number(formData.get("event_id"));
   const from = formData.get("from")?.toString() ?? "";
@@ -37,6 +34,8 @@ export async function markSettlementAction(
       const match = transfers.find((t) => t.from === from && t.to === to && t.cents === cents);
       if (!match) throw new UserError("These balances just changed. Refresh the page and try again.");
 
+      const actor = me ?? "Organiser";
+
       const [s] = await tx
         .insert(settlements)
         .values({
@@ -44,16 +43,17 @@ export async function markSettlementAction(
           fromName: from,
           toName: to,
           amount: cents / 100,
-          markedBy: me ?? "Organiser",
+          markedBy: actor,
         })
         .returning();
-      
 
       await tx.insert(history).values({
         eventID: eventId,
         action: "Settlement added",
         settlementId: s.id,
+        actorName : actor
       });
+
     });
   } catch (error) {
     if (error instanceof UserError) return { ok: false, error: error.message };
@@ -81,7 +81,6 @@ export async function undoSettlementAction( _prev: ActionResult | null, formData
   try {
     await db.transaction(async (tx) => {
       await tx.execute(sql`SELECT pg_advisory_xact_lock(${eventId}::bigint)`);
-
       const existing = await tx.query.settlements.findFirst({
         where: and(eq(settlements.id, settlementId), eq(settlements.eventId, eventId)),
       });
@@ -89,16 +88,17 @@ export async function undoSettlementAction( _prev: ActionResult | null, formData
       if (existing.undoneAt) throw new UserError("This settlement was already undone");
       const allowed = access.role === "owner" || me === existing.fromName || me === existing.toName;
       if (!allowed) throw new UserError("Only the two people involved, or the organiser, can undo this");
-
+      const actor = me ?? "Organiser";
       await tx
         .update(settlements)
-        .set({ undoneAt: new Date(), undoneBy: me ?? "Organiser" })
+        .set({ undoneAt: new Date(), undoneBy : actor })
         .where(and(eq(settlements.id, settlementId), isNull(settlements.undoneAt)));
 
       await tx.insert(history).values({
         eventID: eventId,
         action: "Settlement deleted",
         settlementId,
+        actorName: actor,
       });
     });
   } catch (error) {
@@ -109,5 +109,5 @@ export async function undoSettlementAction( _prev: ActionResult | null, formData
 
   revalidatePath(`/${eventId}`);
   revalidatePath(`/${eventId}/entries`);
-  return { ok: true, message: "Settlement undone", redirectTo: `/${eventId}` };
+  return { ok: true, message: "Settlement deleted", redirectTo: `/${eventId}` };
 }

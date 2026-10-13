@@ -1,7 +1,7 @@
 "use server"
 import { db } from "@/app/_orm/db";
 import { and, desc, eq, gt, lt, or } from "drizzle-orm";
-import { comments, events, history, payments  } from "./schema";
+import { comments, events, history, payments, settlements  } from "./schema";
 import { getSpendingByCategory, getSpendingByPerson, getSpendingOverTime, getSummary } from "./Insights";
 
 export async function getAllEvent() {
@@ -234,4 +234,25 @@ export async function getComments(eventID : number){
   .orderBy(desc(comments.createdAt))
   .limit(50);
   return eventComments;
+}
+
+type PaymentRow = typeof payments.$inferSelect;
+type SettlementRow = typeof settlements.$inferSelect;
+
+export type EntryItem =
+  | { kind: "payment"; date: Date; payment: PaymentRow }
+  | { kind: "settlement"; date: Date; settlement: SettlementRow };
+
+export async function getEventEntries(eventId: number): Promise<EntryItem[]> {
+  const [paymentRows, settlementRows] = await Promise.all([
+    ((await db.select().from(payments).where(eq(payments.eventId, eventId)))) ,
+    db.select().from(settlements).where(eq(settlements.eventId, eventId)),
+  ]);
+
+  const items: EntryItem[] = [
+    ...paymentRows.map((p) => ({ kind: "payment" as const, date: p.when, payment: p })),
+    ...settlementRows.map((s) => ({ kind: "settlement" as const, date: s.createdAt, settlement: s })),
+  ];
+
+  return items.sort((a, b) => b.date.getTime() - a.date.getTime()); 
 }

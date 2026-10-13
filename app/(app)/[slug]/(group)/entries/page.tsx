@@ -1,23 +1,25 @@
 import Actions from "@/app/_components/Actions";
 import { currencySymbols } from "@/app/_components/CurrencySymbols";
-import { getAllpayments } from "@/app/_orm/Queries";
+import { getAllpayments, getEventEntries } from "@/app/_orm/Queries";
 import { Props } from "@/app/_types/Props";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
+import { requireEventAccess } from "@/app/_components/utils";
 
 export default async function EntriesPage({params}: Props){
     const { slug } = await params;
-    const payments = await getAllpayments(Number(slug));
-    if(payments.length === 0){
+    const access = await requireEventAccess(Number(slug));
+    const entries = await getEventEntries(access.event.id);
+    if(entries.length === 0){
         redirect(`/${slug}`);
     }
     return(
         <>
             <Navigation route={`/${slug}`}>
-                <Actions eventName={payments[0].event.event} slug={slug}  />
+                <Actions eventName={entries[0].event.event} slug={slug}  />
             </Navigation>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-10 shrink">
                 <BackButton route={`/${slug}`} />

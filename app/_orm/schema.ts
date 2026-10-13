@@ -108,6 +108,7 @@ export const history = pgTable("history" , {
   paymentID : integer("payment_id").references(()=> payments.id , {onDelete : "set null"}),
   action : historyTypeEnum("action").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  actorName: text("actor_name"),
   settlementId: integer("settlement_id").references(() => settlements.id, { onDelete: "set null" }),
 },
 (table) => [
