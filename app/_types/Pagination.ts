@@ -1,6 +1,6 @@
-type Cursor = {
+export type Cursor = {
   createdAt: Date;
   id: number;
 };
 
-type HistoryDirection = "next" | "previous";
+export type HistoryDirection = "next" | "previous";

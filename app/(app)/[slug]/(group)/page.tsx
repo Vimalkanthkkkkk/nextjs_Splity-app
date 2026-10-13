@@ -193,7 +193,7 @@ export default async function EventsMainPage({params}: Props){
                                 {c.createdAt.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
                                 </time>
                             </div>
-                            <p className="mt-1 text-sm whitespace-pre-wrap break-words">{c.comment}</p>
+                            <p className="mt-1 text-sm whitespace-pre-wrap wrap-break-word">{c.comment}</p>
                             </li>
                         ))}
                         </ul>
