@@ -1,7 +1,6 @@
 import Actions from "@/app/_components/Actions";
 import { currencySymbols } from "@/app/_components/CurrencySymbols";
 import { getpayment } from "@/app/_orm/Queries";
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navigation from "@/app/_components/Navigation";
@@ -37,7 +36,6 @@ export default async function PaymentPage({params}: PageProps){
     const paymentMembers : string[] = Object.entries(paymentData.splitDifferent ?? {}).map(([name , amt], idx) => {
         return name;
     })
-
     return(
         <>
             <Navigation route={`/${slug}`}>
