@@ -1,7 +1,5 @@
-"use server";
-
 import { revalidatePath } from "next/cache";
-import { sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { db } from "./db";
 import { history, payments, settlements } from "@/app/_orm/schema";
 import type { ActionResult } from "@/app/_types/ActionType"
@@ -14,6 +12,7 @@ export async function markSettlementAction(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  "use server";
   const eventId = Number(formData.get("event_id"));
   const from = formData.get("from")?.toString() ?? "";
   const to = formData.get("to")?.toString() ?? "";
@@ -64,4 +63,51 @@ export async function markSettlementAction(
 
   revalidatePath(`/${eventId}`);
   return { ok: true, message: "Settlement marked" };
+}
+
+
+export async function undoSettlementAction( _prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  "use server";
+  const eventId = Number(formData.get("event_id"));
+  const settlementId = Number(formData.get("settlement_id"));
+  if (!Number.isInteger(eventId) || !Number.isInteger(settlementId)) {
+    return { ok: false, error: "Invalid settlement" };
+  }
+
+  const access = await getEventAccess(eventId);
+  if (!access) return { ok: false, error: "You don't have access to this event" };
+  const me = access.member?.name ?? null;
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx.execute(sql`SELECT pg_advisory_xact_lock(${eventId}::bigint)`);
+
+      const existing = await tx.query.settlements.findFirst({
+        where: and(eq(settlements.id, settlementId), eq(settlements.eventId, eventId)),
+      });
+      if (!existing) throw new UserError("Settlement not found");
+      if (existing.undoneAt) throw new UserError("This settlement was already undone");
+      const allowed = access.role === "owner" || me === existing.fromName || me === existing.toName;
+      if (!allowed) throw new UserError("Only the two people involved, or the organiser, can undo this");
+
+      await tx
+        .update(settlements)
+        .set({ undoneAt: new Date(), undoneBy: me ?? "Organiser" })
+        .where(and(eq(settlements.id, settlementId), isNull(settlements.undoneAt)));
+
+      await tx.insert(history).values({
+        eventID: eventId,
+        action: "Settlement deleted",
+        settlementId,
+      });
+    });
+  } catch (error) {
+    if (error instanceof UserError) return { ok: false, error: error.message };
+    console.error("undoSettlementAction failed:", error);
+    return { ok: false, error: "Couldn't undo the settlement. Please try again." };
+  }
+
+  revalidatePath(`/${eventId}`);
+  revalidatePath(`/${eventId}/entries`);
+  return { ok: true, message: "Settlement undone", redirectTo: `/${eventId}` };
 }
