@@ -14,6 +14,10 @@ export default async function InsightPage({params} : Props){
     }
 
     const insights = await getEventInsights(event.id);
+    const exp = Number(insights.summary.totalSpent).toFixed(2);
+    const avg = Number(insights.summary.averageExpense).toFixed(2);
+    const exp_cnt = Number(insights.summary.expenseCount).toFixed(2);
+    const lrg_exp = Number(insights.summary.largestExpense).toFixed(2);
 
     return(
         <>
@@ -34,7 +38,7 @@ export default async function InsightPage({params} : Props){
                             </span>
                             <div className="text-xl font-semibold">
                                 {event.currency}{" "}
-                                {insights.summary.totalSpent.toFixed(2)}
+                                {exp}
                             </div>
                         </div>
 
@@ -44,7 +48,7 @@ export default async function InsightPage({params} : Props){
                             </span>
                             <div className="text-xl font-semibold">
                                 {event.currency}{" "}
-                                {insights.summary.averageExpense.toFixed(2)}
+                                {avg}
                             </div>
                         </div>
 
@@ -53,7 +57,7 @@ export default async function InsightPage({params} : Props){
                                 Expenses
                             </span>
                             <div className="text-xl font-semibold">
-                                {insights.summary.expenseCount}
+                                {exp_cnt}
                             </div>
                         </div>
 
@@ -63,15 +67,14 @@ export default async function InsightPage({params} : Props){
                             </span>
                             <div className="text-xl font-semibold">
                                 {event.currency}{" "}
-                                {insights.summary.largestExpense.toFixed(2)}
+                                {lrg_exp}
                             </div>
                         </div>
                     </div>
-
+                    
                     <div className="flex flex-1 text-black bg-gray-400 rounded-sm items-center p-4 justify-between">
                         <InsightsCharts insights={insights} currency={event.currency} />
                     </div>  
-                    
                 </div>
             </div>
         </>

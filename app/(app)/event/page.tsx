@@ -7,7 +7,7 @@ import ActionForm from "@/app/_components/ActionForm";
 export default function CreateEvent(){
     return(
         <>
-            <section className="bg-gray-200 w-full min-h-screen overflow-y-auto overflow-x-hidden grid grid-cols-6 grid-rows-[80px_auto]">
+            <section className="bg-gray-200 w-full min-h-screen overflow-y-auto overflow-x-hidden grid grid-cols-6 grid-rows-[80px_auto_80px]">
                 <div className="col-start-2 row-start-1 z-10">
                     <Link href="/" className="flex items-center">
                         <Image
@@ -27,10 +27,11 @@ export default function CreateEvent(){
                     submitLabel="Create Event"
                     useIdempotencyKey
                     savingString="Creating"
+                    submitButtonColorString="bg-cyan-200"
                     className="bg-gray-50 wrap-anywhere 
-                        row-start-2 col-start-2 col-span-2 
-                        h-fit w-full flex flex-col 
-                        gap-y-2 p-2 mb-10 not-md:col-span-4 not-md:col-start-2
+                        row-start-2 row-end-3 col-start-2 col-span-2 
+                         w-full flex flex-col
+                        gap-y-2 p-2 not-md:col-span-4 not-md:col-start-2
                     "
                 >
                     <h1 className="text-black"> Create a new Event </h1>
@@ -89,15 +90,18 @@ export default function CreateEvent(){
                         "
                     />
                     <AddParticipants />
-                </ActionForm>
-                <div className="wrap-anywhere text-wrap bg-gray-50 row-start-2 col-start-4 col-span-2 hidden md:flex flex-col gap-y-2 p-2 mb-10 text-black">
-                    <span className="text-2xl">
-                        Good examples for creating a Event
-                    </span>
-                    <div className="flex gap-2">
-                        <div className="before: h-12 w-1.5 bg-gray-400 "></div>
-                        <span className="text-black">You are organising a bachelorette party or a baby shower.</span>
-                    </div>
+
+                    
+                    
+            </ActionForm>
+                <div className="wrap-anywhere text-wrap bg-gray-50 row-start-2 row-end-3 col-start-4 col-span-2 hidden md:flex flex-col gap-y-2 p-2 text-black">
+                        <span className="text-2xl">
+                            Good examples for creating a Event
+                        </span>
+                        <div className="flex gap-2">
+                            <div className="before: h-12 w-1.5 bg-gray-400 "></div>
+                            <span className="text-black">You are organising a bachelorette party or a baby shower.</span>
+                        </div>
                 </div>
             </section>
         </>
