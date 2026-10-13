@@ -54,17 +54,41 @@ const flag = (input: HTMLInputElement | null, bad: boolean, msg = "") => {
     box.title = bad ? msg : "";
 };
 
+const TYPE_OF_METHOD = {
+    Equally: "equal",
+    amounts: "amount",
+    shares: "share",
+    percentages: "per",
+} as const;
+
+
 export default function SplitBox( {money , participants , splitMethod , splitDifferent} : SplitProps ) : ReactNode{
     const TOTAL_PARTICIPANTS = participants.length;
-    const [option , setoption] = useState<boolean>(true);
+
+    const editing = !!splitMethod && !!splitDifferent;
+    const savedType: SplitType | null = editing ? TYPE_OF_METHOD[splitMethod!] : null;
+
+    const savedForEveryone = editing && savedType === "equal" && participants.every((p) => !!splitDifferent![p]);
+
+    const [option , setoption] = useState<boolean>(!editing || savedForEveryone);
+    const [splitType, setSplitType] = useState<SplitType>(savedType ?? "equal");
     const [amount, setAmount] = useState<string>(money ? money.toString() : '' );
     const [total, settotal] = useState<number>(TOTAL_PARTICIPANTS);
 
-    const selectSplitMethod = () => {
-        setoption(p => { return !p });
-    }
+    const rowChecked = (type: SplitType, p: string) => editing && savedType === type ? !!splitDifferent![p] : true;
+    const allChecked = (type: SplitType) => participants.every((p) => rowChecked(type, p));
 
-    const recalc = (type: SplitType, source?: HTMLInputElement) => {
+    const savedValue = (type: SplitType, p: string) => {
+        if (!(editing && savedType === type)) return undefined;
+        const s = splitDifferent![p];
+        if (!s) return undefined;
+        if (type === "amount") return s.amt;
+        if (type === "share") return s.share;
+        if (type === "per") return s.percent;
+        return undefined;
+    };
+
+    const recalc = (type: SplitType, source?: HTMLInputElement , keepValues = false) => {
         const amountValue = money  ? parseFloat(money) : getAmount();
         const total_share_input = document.querySelector<HTMLInputElement>(`.total_share`);
         const rows = participants.flatMap((p) => {
@@ -113,6 +137,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                 break;
             }
             case "amount": {
+                if (keepValues) break;
                 const rest = srcRow && count > 1
                     ? Math.max(0, amountValue - typed) / (count - 1)
                     : amountValue / count;
@@ -131,12 +156,14 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                 break;
             }
             case "per": {
-                const rest = srcRow && count > 1
-                    ? Math.max(0, 100 - typed) / (count - 1)
-                    : 100 / count;
-                active.forEach((r) => {
-                    if (r !== srcRow || count === 1) r.input!.value = numStr(rest);
-                });
+                if (!keepValues) {
+                    const rest = srcRow && count > 1
+                        ? Math.max(0, 100 - typed) / (count - 1)
+                        : 100 / count;
+                    active.forEach((r) => {
+                        if (r !== srcRow || count === 1) r.input!.value = numStr(rest);
+                    });
+                }
                 owed = active.map((r) => (amountValue * (parseFloat(r.input!.value) || 0)) / 100);
                 break;
             }
@@ -182,59 +209,14 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
     const handlePercent = (event: React.ChangeEvent<HTMLInputElement>) => recalc("per", event.target);
 
     useEffect(() => {
-        if (!splitDifferent || !splitMethod) return;
-        const typeMap = {
-            Equally: "equal",
-            amounts: "amount",
-            shares: "share",
-            percentages: "per",
-        } as const;
-        const type = typeMap[splitMethod];
-        participants.forEach((p) => {
-            const saved = splitDifferent[p];
-            const check = document.querySelector<HTMLInputElement>(
-            `.${CHECK[type](p)}`
-            );
-            if (!check) return;
-            check.checked = !!saved;
-            const inputClass = INPUT[type](p);
-            if (inputClass) {
-                const input = document.querySelector<HTMLInputElement>(`.${inputClass}`
-            );
-            if (input) {
-                input.disabled = !saved;
-                if (saved) {
-                    if (type === "amount") {
-                        input.value = saved.amt.toString();
-                    }
-                    if (type === "share") {
-                        input.value = saved.share?.toString() ?? "";
-                    }
-                    if (type === "per") {
-                        input.value = saved.percent?.toString() ?? "";
-                    }
-                }
-            }
-            }
-        });
-        const allBox = document.querySelector<HTMLInputElement>(
-            `input[data-type="${type}"]`
-        );
-        const selectedCount = participants.filter(
-            (p) => splitDifferent[p]
-        ).length;
-        if (allBox) {
-            allBox.checked = selectedCount === participants.length;
-        }
-        recalc(type);
-    }, []);
+        if (editing) SPLIT_TYPES.forEach((t) => recalc(t, undefined, t === savedType));
 
-    useEffect(() => {
-        if(money){
+        if (money) {
             setAmount(money);
-            SPLIT_TYPES.forEach((t) => recalc(t));
+            if (!editing) SPLIT_TYPES.forEach((t) => recalc(t));
             return;
         }
+
         const input = document.getElementById("amount") as HTMLInputElement | null;
         if (!input) return;
         const handleInput = () => {
@@ -242,23 +224,21 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
             SPLIT_TYPES.forEach((t) => recalc(t));
         };
         input.addEventListener("input", handleInput);
-        return () => {
-            input.removeEventListener("input", handleInput);
-        };
+        return () => input.removeEventListener("input", handleInput);
     }, []);
 
     return(
         <>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split-ery-equally" name="split-method" onChange={selectSplitMethod} defaultChecked value="Eql" 
+                    type="radio" id="split-ery-equally" name="split-method" checked={option} onChange={() => setoption(true)} defaultChecked value="Eql" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split-ery-equally" className="text-black self-center inline mt-2">Split Equally between Everyone</label>
             </div>
             <div className="flex gap-2 text-center text-wrap">
                 <input 
-                    type="radio" id="split-diff" name="split-method" onChange={selectSplitMethod}  value="dif" 
+                    type="radio" id="split-diff" name="split-method" checked={!option} onChange={() => setoption(false)}  value="dif" 
                     className="text-black outline-none border-0 accent-gray-400"
                 />
                 <label htmlFor="split-diff" className="text-black self-center inline mt-1 mb-1">Split differently</label>
@@ -298,7 +278,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                     id="equally"
                     name="splitType"
                     value="equally"
-                    defaultChecked
+                    checked={splitType === "equal"} onChange={() => setSplitType("equal")}
                     className="peer/equally sr-only"
                 />
                 <input
@@ -306,6 +286,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                     id="splitamount"
                     name="splitType"
                     value="amount"
+                    checked={splitType === "amount"} onChange={() => setSplitType("amount")}
                     className="peer/split-amount sr-only"
                 />
                 <input
@@ -313,6 +294,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                     id="shares"
                     name="splitType"
                     value="shares"
+                    checked={splitType === "share"} onChange={() => setSplitType("share")}
                     className="peer/shares sr-only"
                 />
                 <input
@@ -320,6 +302,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                     id="percent"
                     name="splitType"
                     value="percent"
+                    checked={splitType === "per"} onChange={() => setSplitType("per")}
                     className="peer/percent sr-only"
                 />
                 <div className="flex flex-row text-black gap-10 p-2">
@@ -358,7 +341,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                 <input
                                     type="checkbox"
                                     name="equally-all"
-                                    defaultChecked
+                                    defaultChecked={allChecked("equal")}
                                     data-type="equal"
                                     className="accent-gray-400"
                                     onChange={handleAll}
@@ -380,7 +363,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                                 data-split="equal"
                                                 value={"1"}
                                                 onChange={handleToggle}
-                                                defaultChecked
+                                                defaultChecked={rowChecked("equal", p)}
                                                 className={`accent-gray-400 equally-${p}`}
                                             />
                                             {p}
@@ -405,7 +388,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                     type="checkbox"
                                     name="spilt-amount-all"
                                     className="accent-gray-400"
-                                    defaultChecked
+                                    defaultChecked={allChecked("amount")}
                                     data-type="amount"
                                     onChange={handleAll}
                                 />
@@ -423,13 +406,14 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                                 data-split="amount"
                                                 onChange={handleToggle}
                                                 className={`accent-gray-400 amount-${p}`}
-                                                defaultChecked
+                                                defaultChecked={rowChecked("amount", p)}
                                             />
                                             {p}
                                         </label>
                                         <div className="w-fit rounded-sm transition">
                                             <span className="inline text-black border-t border-l border-b p-2 border-gray-600 rounded-tl-sm rounded-bl-sm">$</span>
-                                            <input type="number" name={`${p}-amount`} onChange={handleAmount} 
+                                            <input type="number" name={`${p}-amount`} onChange={handleAmount}
+                                                defaultValue={savedValue("amount", p)} 
                                                 className={`${p}-amount
                                                     p-2 text-black text-right
                                                     max-w-full outline-none
@@ -458,7 +442,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                     type="checkbox"
                                     name="shares-all"
                                     className="accent-gray-400"
-                                    defaultChecked
+                                    defaultChecked={allChecked("share")}
                                     data-type="share"
                                     onChange={handleAll}
                                 />
@@ -476,12 +460,13 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                                 data-split="share"
                                                 onChange={handleToggle}
                                                 className={`accent-gray-400 share-${p}`}
-                                                defaultChecked
+                                                defaultChecked={rowChecked("share", p)} 
                                             />
-                                            Vimal
+                                            {p}
                                         </label>
                                         <div className="w-fit rounded-sm transition">
                                             <input type="number" name={`${p}-share`} onChange={handleShare}
+                                                defaultValue={savedValue("share", p)}
                                                 className={`p-2 text-black ${p}-share
                                                 max-w-full outline-none text-right
                                                 h-8 border-l border-t border-b
@@ -511,7 +496,7 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                     type="checkbox"
                                     name="percent-all"
                                     className="accent-gray-400"
-                                    defaultChecked
+                                    defaultChecked={allChecked("per")}
                                     data-type="per"
                                     onChange={handleAll}
                                 />
@@ -529,12 +514,13 @@ export default function SplitBox( {money , participants , splitMethod , splitDif
                                                 data-split="per"
                                                 onChange={handleToggle}
                                                 className={`accent-gray-400 per-${p}`}
-                                                defaultChecked
+                                                defaultChecked={rowChecked("per", p)}
                                             />
-                                            Vimal
+                                            {p}
                                         </label>
                                         <div className="w-fit rounded-sm transition">
                                             <input type="number" name={`percent-${p}`} onChange={handlePercent}
+                                            defaultValue={savedValue("per", p)}
                                             className={`
                                                 p-2 text-black percent-${p} text-right
                                                 outline-none max-w-ful

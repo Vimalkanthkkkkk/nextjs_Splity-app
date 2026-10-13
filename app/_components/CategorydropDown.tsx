@@ -114,8 +114,7 @@ export default function CategoryDropdown(  { ctgry } : props  ): ReactNode {
             <input
                 type="hidden"
                 name="category"
-                defaultValue={ctgry}
-                value={selected.mainTitle}
+                value={ctgry !== undefined ? ctgry : selected.mainTitle}
             />
             <div ref={dropdownRef} className="block w-full text-black mt-1 col-span-8">
                 <button

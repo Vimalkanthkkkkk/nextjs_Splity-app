@@ -32,7 +32,7 @@ function readInputs(formData: FormData, participants: string[], mode: SplitMode)
     } else if (mode === "shares") {
       value = formData.get(`share-${p}`) !== null ? Number(formData.get(`${p}-share`) || 0) : 0;
     } else {
-      value = formData.get(`share-${p}`) !== null ? Number(formData.get(`percent-${p}`) || 0) : 0;
+      value = formData.get(`per-${p}`) !== null ? Number(formData.get(`percent-${p}`) || 0) : 0;
     }
     inputs[p] = Number.isFinite(value) && value > 0 ? value : 0;
   }
