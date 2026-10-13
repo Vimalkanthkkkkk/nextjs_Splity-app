@@ -126,6 +126,7 @@ export const eventMembers = pgTable(
     sessionTokenHash: text("session_token_hash"), 
     claimedAt: timestamp("claimed_at"),
     isOwner: boolean("is_owner").notNull().default(false),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
   },
   (t) => [uniqueIndex("event_members_event_name_idx").on(t.eventId, t.name)]
 );
