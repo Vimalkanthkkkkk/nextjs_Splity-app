@@ -83,10 +83,10 @@ export default async function EntriesPage({params}: Props){
                                     const currencySymbol = currencySymbols[currencyCode] ;
                                     return(
                                         <li key={i} className="hover:bg-gray-100">
-                                            <Link href={`entries/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
+                                            <Link href={`entries/settlement/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
                                                 <div className="col-span-8">
                                                     <span className="block text-[20px]">{p.fromName} {word} {currencySymbol}{p.toName} for {p.amount}</span>
-                                                    <span className="text-center text-sm">{date} Your share: { access.member?.name === p.markedBy ? p.amount : ''}</span>
+                                                    <span className="text-center text-sm">{date} Your share: {currencySymbol} { access.member?.name === p.markedBy ? p.amount : ''}</span>
                                                 </div>
                                             </Link>
                                         </li>

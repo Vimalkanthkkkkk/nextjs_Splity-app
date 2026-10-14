@@ -60,8 +60,8 @@ export default async function PaymentPage({params}: PageProps){
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] flex flex-col w-full h-fit self-center">
                     <div className="flex flex-1 gap-10 flex-col text-black justify-between p-4">
                         <div className="flex flex-1 w-full justify-between text-black">
-                            <span className="mr-auto">{splitType.toUpperCase()}</span>
-                            <span className="mr-auto">{paymentData.category}</span>
+                            <span>{splitType.toUpperCase()}</span>
+                            <span>{paymentData.category === "None" ? '' : paymentData.category}</span>
                         </div>
                         <div className="flex flex-1 w-full justify-between text-black">
                             <span className="text-2xl" >{paymentData.whatFor}</span>

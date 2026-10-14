@@ -1,7 +1,6 @@
 import Actions from "@/app/_components/Actions";
 import { currencySymbols } from "@/app/_components/CurrencySymbols";
 import { getSettlement } from "@/app/_orm/Queries";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Navigation from "@/app/_components/Navigation";
 import BackButton from "@/app/_components/Backbutton";
@@ -16,11 +15,6 @@ interface PageProps {
   }>;
 }
 
-interface PaymentDetail {
-  amt: number;
-  share?: number;
-  percent?: number;
-}
 
 
 export default async function SettlementUndoPage({params}: PageProps){
@@ -52,20 +46,26 @@ export default async function SettlementUndoPage({params}: PageProps){
                             <span className="mr-auto text-2xl">Settlement</span>
                             <span className="text-2xl" >{currencySymbol}{s.amount}</span>
                         </div>
-                        <span> {s.fromName} settled with {s.toName} on {date} </span>
-                        <div className="flex flex-row justify-between w-full" >
-                            <div className="w-10"></div>
-                            <ActionForm
-                                action={undoSettlementAction}
-                                submitLabel="Undo settlement"
-                                savingString="Undoing..."
-                                successMessage="Settlement deleted"
-                                submitButtonColorString="bg-gray-200"
-                            >
-                                <input type="hidden" name="event_id" value={eventId} />
-                                <input type="hidden" name="settlement_id" value={s.id} />
-                            </ActionForm>
-                        </div>
+                        <span> <span className="text-gray-500">{s.fromName}</span> settled with <span className="text-gray-500">{s.toName}</span> on {date} </span>
+                        {
+                            canUndo
+                            ?
+                            <div className="flex flex-row justify-between w-full" >
+                                <div className="w-10"></div>
+                                <ActionForm
+                                    action={undoSettlementAction}
+                                    submitLabel="Undo"
+                                    savingString="Undoing..."
+                                    successMessage="Settlement deleted"
+                                    submitButtonColorString="bg-gray-200"
+                                >
+                                    <input type="hidden" name="event_id" value={eventId} />
+                                    <input type="hidden" name="settlement_id" value={s.id} />
+                                </ActionForm>
+                            </div>
+                            :
+                            <></>
+                        }
                     </div>
                 </div>
             </div>
