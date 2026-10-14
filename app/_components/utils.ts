@@ -271,6 +271,7 @@ export async function requestRecoveryAction( _prev: ActionResult | null, formDat
 }
 
 export async function completeRecoveryAction( _prev: ActionResult | null,formData: FormData ): Promise<ActionResult> {
+  "use server"
   const raw = formData.get("token")?.toString() ?? "";
   if (!raw) return { ok: false, error: "Invalid link" };
 

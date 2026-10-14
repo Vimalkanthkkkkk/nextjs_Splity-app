@@ -29,7 +29,7 @@ export default function AddParticipants() {
                     Person {personNumber}
                 </label>
                 <div className="flex max-[400px]:flex-col">
-                    <input type="text" name="Person2" id="Person2"
+                    <input type="text" name="additionalParticipants" id="Person2"
                         className="
                             p-2 text-black
                             w-60 max-w-full border

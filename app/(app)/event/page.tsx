@@ -90,9 +90,6 @@ export default function CreateEvent(){
                         "
                     />
                     <AddParticipants />
-
-                    
-                    
             </ActionForm>
                 <div className="wrap-anywhere text-wrap bg-gray-50 row-start-2 row-end-3 col-start-4 col-span-2 hidden md:flex flex-col gap-y-2 p-2 text-black">
                         <span className="text-2xl">
