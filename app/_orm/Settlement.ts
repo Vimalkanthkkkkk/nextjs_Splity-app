@@ -27,6 +27,11 @@ export async function markSettlementAction( _prev: ActionResult | null, formData
     return { ok: false, error: "Only the two people involved, or the organiser, can mark this" };
   }
 
+  const people = access.event.participants;
+  if (!people.includes(from) || !people.includes(to)) {
+    return { ok: false, error: "Both people must be participants of this event" };
+  }
+
   try {
     await db.transaction(async (tx) => {
       await tx.execute(sql`SELECT pg_advisory_xact_lock(${eventId}::bigint)`);
@@ -60,7 +65,6 @@ export async function markSettlementAction( _prev: ActionResult | null, formData
     console.error("markSettlementAction failed:", error);
     return { ok: false, error: "Couldn't mark the settlement. Please try again." };
   }
-
   revalidatePath(`/${eventId}`);
   return { ok: true, message: "Settlement marked" };
 }
@@ -76,6 +80,9 @@ export async function undoSettlementAction( _prev: ActionResult | null, formData
 
   const access = await getEventAccess(eventId);
   if (!access) return { ok: false, error: "You don't have access to this event" };
+  if (access.member && !access.event.participants.includes(access.member.name)) {
+    return { ok: false, error: "You're not a participant of this event" };
+  }
   const me = access.member?.name ?? null;
 
   try {
