@@ -1,6 +1,6 @@
 "use server"
 import { db } from "@/app/_orm/db";
-import { and, desc, eq, gt, lt, or } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, gt, isNull, lt, or, sql } from "drizzle-orm";
 import { comments, events, history, payments, settlements  } from "./schema";
 import { getSpendingByCategory, getSpendingByPerson, getSpendingOverTime, getSummary } from "./Insights";
 
@@ -226,6 +226,14 @@ export async function getEventInsights(eventID: number) {
   };
 }
 
+export async function getSettlement(eventId : number , settlementId : number){
+  const s = await db.query.settlements.findFirst({
+    where: and(eq(settlements.id, settlementId), eq(settlements.eventId, eventId)),
+  });
+
+  return s;
+}
+
 export async function getComments(eventID : number){
   const eventComments = await db
   .select()
@@ -236,17 +244,36 @@ export async function getComments(eventID : number){
   return eventComments;
 }
 
-type PaymentRow = typeof payments.$inferSelect;
+const { attachment: _attachment, ...paymentColumns } = getTableColumns(payments);
+
+type PaymentRow = Omit<typeof payments.$inferSelect, "attachment"> & {
+  eventName: string | null;
+  hasAttachment: boolean;
+};
 type SettlementRow = typeof settlements.$inferSelect;
 
 export type EntryItem =
   | { kind: "payment"; date: Date; payment: PaymentRow }
   | { kind: "settlement"; date: Date; settlement: SettlementRow };
 
+const idOf = (e: EntryItem) => (e.kind === "payment" ? e.payment.id : e.settlement.id);
+
 export async function getEventEntries(eventId: number): Promise<EntryItem[]> {
   const [paymentRows, settlementRows] = await Promise.all([
-    ((await db.select().from(payments).where(eq(payments.eventId, eventId)))) ,
-    db.select().from(settlements).where(eq(settlements.eventId, eventId)),
+    db
+      .select({
+        ...paymentColumns,
+        hasAttachment: sql<boolean>`${payments.attachment} IS NOT NULL`,
+        eventName: events.event,
+      })
+      .from(payments)
+      .leftJoin(events, eq(payments.eventId, events.id))
+      .where(eq(payments.eventId, eventId)),
+
+    db
+      .select()
+      .from(settlements)
+      .where(and(eq(settlements.eventId, eventId), isNull(settlements.undoneAt))),
   ]);
 
   const items: EntryItem[] = [
@@ -254,5 +281,6 @@ export async function getEventEntries(eventId: number): Promise<EntryItem[]> {
     ...settlementRows.map((s) => ({ kind: "settlement" as const, date: s.createdAt, settlement: s })),
   ];
 
-  return items.sort((a, b) => b.date.getTime() - a.date.getTime()); 
+  // Newest first. If two entries share a timestamp, the higher id goes first
+  return items.sort((a, b) => b.date.getTime() - a.date.getTime() || idOf(b) - idOf(a));
 }

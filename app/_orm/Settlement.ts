@@ -109,5 +109,6 @@ export async function undoSettlementAction( _prev: ActionResult | null, formData
 
   revalidatePath(`/${eventId}`);
   revalidatePath(`/${eventId}/entries`);
+  revalidatePath(`/${eventId}/history`);
   return { ok: true, message: "Settlement deleted", redirectTo: `/${eventId}` };
 }

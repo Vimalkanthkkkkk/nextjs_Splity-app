@@ -1,6 +1,6 @@
 import Actions from "@/app/_components/Actions";
 import { currencySymbols } from "@/app/_components/CurrencySymbols";
-import { getAllpayments, getEventEntries } from "@/app/_orm/Queries";
+import { EntryItem, getEventEntries } from "@/app/_orm/Queries";
 import { Props } from "@/app/_types/Props";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,14 +12,14 @@ import { requireEventAccess } from "@/app/_components/utils";
 export default async function EntriesPage({params}: Props){
     const { slug } = await params;
     const access = await requireEventAccess(Number(slug));
-    const entries = await getEventEntries(access.event.id);
+    const entries : EntryItem[] = await getEventEntries(access.event.id);
     if(entries.length === 0){
         redirect(`/${slug}`);
     }
     return(
         <>
             <Navigation route={`/${slug}`}>
-                <Actions eventName={entries[0].event.event} slug={slug}  />
+                <Actions eventName={access.event.event} slug={slug}  />
             </Navigation>
             <div className="w-full max-w-3xl mx-auto px-2 flex flex-1 flex-col gap-10 shrink">
                 <BackButton route={`/${slug}`} />
@@ -33,45 +33,65 @@ export default async function EntriesPage({params}: Props){
                     </div>
                     <ul className="list-none ">
                         {
-                            payments.length === 0 ? 
+                            entries.length === 0 ? 
 
                             <span className="p-4 mb-4 text-black">No payments yet</span>
 
                             :
                             
-                            payments.map((p , i)=> {
-                                const word = p.type === "expense" ? "Paid" : p.type === "income" ? "received" : "gave" ;
-                                const date = `${p.when.getDate()}/${p.when.getMonth()}/${p.when.getFullYear()}`
-                                const currency = p.event.currency;
-                                const length = Object.keys(p.splitDifferent ?? {}).length - 1;
-                                const currencyCode = currency as keyof typeof currencySymbols;
-                                const currencySymbol = currencySymbols[currencyCode] ;
-                                const myShare = p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
-                                                    return participant=== p.whospayment ? amount.amt : '' 
-                                        }) : ''
-                                return(
-                                    <li key={i} className="hover:bg-gray-100">
-                                        <Link href={`entries/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
-                                            <div className="col-span-8">
-                                                <span className="block text-[20px]">{p.whospayment} {word} {currencySymbol}{p.howMuch} for {p.whatFor}</span>
-                                                {
-                                                    p.type !== "transfer" ? 
-                                                    <span className="text-center text-sm">People involved: {p.isSplitEqually ? "everyone" : p.splitDifferent 
-                                                        ? 
-                                                        Object.entries(p.splitDifferent).map(([participant , amount] , idx) => {
-                                                            return (`${participant}${length !== idx ? " , " : '' }`);
-                                                        })  
-                                                        : ''
-                                                        }. {date} Your share: {currencySymbol}{myShare}
-                                                    </span>
-                                                    :
-                                                    <></>
-                                                }
-                                            </div>
-                                            <span className="text-center rounded-4xl p-1 w-fit text-[12px] col-start-11 bg-blue-200">{p.category}</span>
-                                        </Link>
-                                    </li>
-                                )
+                            entries.map((data , i)=> {
+                                if(data.kind === "payment"){
+                                    const p = data.payment; 
+                                    const word = p.type === "expense" ? "Paid" : p.type === "income" ? "received" : "gave" ;
+                                    const date = `${p.when.getDate()}/${p.when.getMonth()}/${p.when.getFullYear()}`
+                                    const currency = access.event.currency;
+                                    const length = Object.keys(p.splitDifferent ?? {}).length - 1;
+                                    const currencyCode = currency as keyof typeof currencySymbols;
+                                    const currencySymbol = currencySymbols[currencyCode] ;
+                                    const myShare = p.splitDifferent ? Object.entries(p.splitDifferent).map(([participant , amount]) => {
+                                                        return participant=== p.whospayment ? amount.amt : '' 
+                                            }) : ''
+                                    return(
+                                        <li key={i} className="hover:bg-gray-100">
+                                            <Link href={`entries/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
+                                                <div className="col-span-8">
+                                                    <span className="block text-[20px]">{p.whospayment} {word} {currencySymbol}{p.howMuch} for {p.whatFor}</span>
+                                                    {
+                                                        p.type !== "transfer" ? 
+                                                        <span className="text-center text-sm">People involved: {p.isSplitEqually ? "everyone" : p.splitDifferent 
+                                                            ? 
+                                                            Object.entries(p.splitDifferent).map(([participant , amount] , idx) => {
+                                                                return (`${participant}${length !== idx ? " , " : '' }`);
+                                                            })  
+                                                            : ''
+                                                            }. {date} Your share: {currencySymbol}{myShare}
+                                                        </span>
+                                                        :
+                                                        <></>
+                                                    }
+                                                </div>
+                                                <span className="text-center rounded-4xl p-1 w-fit text-[12px] col-start-11 bg-blue-200">{p.category}</span>
+                                            </Link>
+                                        </li>
+                                    );
+                                }else{
+                                    const p = data.settlement; 
+                                    const word = "Settled up with";
+                                    const date = `${p.createdAt.getDate()}/${p.createdAt.getMonth()}/${p.createdAt.getFullYear()}`
+                                    const currency = access.event.currency;
+                                    const currencyCode = currency as keyof typeof currencySymbols;
+                                    const currencySymbol = currencySymbols[currencyCode] ;
+                                    return(
+                                        <li key={i} className="hover:bg-gray-100">
+                                            <Link href={`entries/${p.id}`} className="flex flex-1 justify-between items-center border-gray-200 text-black p-4">
+                                                <div className="col-span-8">
+                                                    <span className="block text-[20px]">{p.fromName} {word} {currencySymbol}{p.toName} for {p.amount}</span>
+                                                    <span className="text-center text-sm">{date} Your share: { access.member?.name === p.markedBy ? p.amount : ''}</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    );
+                                }
                             })
                         }
                     </ul>                    

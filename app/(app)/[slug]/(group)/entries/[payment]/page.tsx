@@ -59,7 +59,10 @@ export default async function PaymentPage({params}: PageProps){
                 <BackButton route={`/${slug}`} />
                 <div className="bg-white rounded-sm shadow-[1px_0.5px_4px_1px_rgba(0,0,0,0.15)] flex flex-col w-full h-fit self-center">
                     <div className="flex flex-1 gap-10 flex-col text-black justify-between p-4">
-                        <span className="mr-auto">{splitType.toUpperCase()}</span>
+                        <div className="flex flex-1 w-full justify-between text-black">
+                            <span className="mr-auto">{splitType.toUpperCase()}</span>
+                            <span className="mr-auto">{paymentData.category}</span>
+                        </div>
                         <div className="flex flex-1 w-full justify-between text-black">
                             <span className="text-2xl" >{paymentData.whatFor}</span>
                             <span>{currencySymbol} {paymentData.howMuch.toFixed(2)}</span>
